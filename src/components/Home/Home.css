@@ -1,0 +1,1013 @@
+.home-layout {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+  flex-direction: row;
+}
+
+/* svg logo  */
+.svg-icon {
+  width: 1.5rem;
+}
+.svg-icon path{
+  stroke: var(--text-primary);
+}
+
+/* ---- App Bar / Header ---- */
+.home-appbar.e-appbar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 56px;
+  z-index: 20;
+  padding: 0 1rem;
+  box-shadow: 0 1px 8px var(--box-shadow);
+  background: var(--surface-color);
+}
+.header-logo{
+  font-size: 2rem;
+  margin-right: .5rem;
+}
+
+.header-title{
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  user-select: none;
+}
+
+/* Theme Toggle Styles */
+.appbar-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.theme-toggle-switch.e-switch-wrapper .e-switch-handle {
+  width: 28px;
+  height: 28px;
+  border: 1.2px solid var(--scrollbar-thumb);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15) !important;
+}
+.theme-toggle-switch.e-switch-wrapper .e-switch-inner {
+  left: 2px;
+}
+
+.theme-toggle-switch .e-switch-handle {
+  background-size: contain !important;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+.theme-toggle-switch.light .e-switch-handle {
+  background-image: url("/assets/images/sun.png") !important;
+}
+.theme-toggle-switch.dark .e-switch-handle {
+  background-image: url("/assets/images/moon.png") !important;
+}
+
+/* ---- Sidebar ---- */
+.home-sidebar {
+  position: fixed;
+  left: 0;
+  top: 56px;
+  width: 240px;
+  height: calc(100vh - 56px);
+  z-index: 13;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  background: var(--surface-color);
+  border-right: 1px solid var(--border-color);
+  overflow: hidden;
+}
+.home-sidebar .e-listview, .home-sidebar .e-listview .e-list-item {
+  border: none !important;
+}
+.action-btn {
+  background: var(--gradient-primary) !important;
+  outline: none !important;
+  color: #fff;
+  border: none;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+.action-btn:hover {
+  box-shadow: 0 4px 5rem var(--box-shadow2) !important;
+}
+
+.create-workflow-btn {
+  padding: .55rem 0;
+  width: 90%;
+  margin: 1.5rem auto .5rem auto;
+  font-size: 1rem;
+  border-radius: 8rem;
+  font-weight: 500;
+}
+.create-workflow-btn:hover {
+  transform: translateY(-1px);
+}
+.sidebar-list .e-list-parent {
+  background: transparent !important;
+  border: none;
+}
+.sidebar-list .e-list-item {
+  border-radius: 8px;
+  margin: 10px;
+  padding: 9px !important;
+}
+.sidebar-list .e-list-item.e-hover {
+  background: var(--list-hover-bg);
+  color: var(--accent-color);
+}
+.sidebar-list .e-list-item.e-active {
+  background: var(--list-selected-bg);
+  color: var(--primary-color);
+}
+.sidebar-list .e-list-icon {
+  font-size: 2rem;
+  color: inherit !important;
+}
+
+
+/* ---- Main Content ---- */
+.home-main {
+  margin-left: 240px; /* Space for sidebar */
+  margin-top: 56px; /* Space for Header */
+  flex: 1;
+  overflow: auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--background-color);
+}
+.home-content {
+  width: 100%;
+  margin: 0 auto;
+  padding: 1.3rem;
+}
+.section-title {
+  font-weight: 700;
+  margin-bottom: 2rem;
+  color: var(--text-primary);
+  position: relative;
+  display: inline-block;
+}
+.section-title-group > .section-title{
+  margin: 0;
+}
+.section-title::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 0;
+  width: 60px;
+  height: 4px;
+  background: var(--gradient-accent);
+  border-radius: 2px;
+}
+
+/* Quick Access Section */
+.quick-access-section {
+  margin-bottom: 4rem;
+}
+.quick-access-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  align-items: stretch;
+}
+.quick-access-card {
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  background: var(--surface-color);
+  border-radius: 16px;
+  border: 1px solid var(--border-color);
+}
+.quick-access-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-hover);
+}
+
+/* Template Image Styling */
+.template-image {
+  flex: 1;
+  height: 160px;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--list-selected-hover-bg);
+  border-radius: 16px 16px 0 0;
+}
+.quick-access-card:hover .template-image {
+  background: var(--gradient-accent);
+}
+.template-image img {
+  width: 100%;
+  height: 100%;
+  opacity: .7;
+}
+
+.quick-access-card .e-card-content {
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.quick-access-card h3 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  color: var(--text-primary);
+}
+
+.quick-access-card p {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin-bottom: 0;
+}
+
+/* Recent Projects Section */
+.recent-projects-section {
+  margin-bottom: 3rem;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.section-title-container {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.projects-count {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+  background: var(--background-color);
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  border: 1px solid var(--border-color);
+  margin: .3rem 0;
+}
+
+.section-controls {
+  display: flex;
+  justify-content: space-between;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.search-sort-controls {
+  display: flex;
+  gap: 1rem;
+  align-items: stretch;
+  flex: 1;
+  min-width: 300px;
+}
+
+.search-container,
+.sort-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.search-container {
+  flex: 2;
+  min-width: 200px;
+}
+
+.sort-container {
+  flex: 1;
+  min-width: 150px;
+}
+
+/* Search Box Styles */
+.project-search.e-textbox {
+  width: 100%;
+}
+
+.project-search {
+  padding: 0.5rem;
+  border-radius: 12px;
+  border: 2px solid var(--border-color);
+  background: var(--surface-color);
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+  width: 100%;
+}
+
+/* Sort Dropdown Button Styles */
+.sort-dropdown-btn.e-dropdown-btn {
+  width: 100%;
+  height: 48px;
+  border-radius: 12px;
+  background: var(--surface-color);
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  font-weight: 400;
+  transition: all 0.3s ease;
+}
+
+/* View Toggle Styles */
+.view-toggle {
+  display: flex;
+  padding: 4px;
+  gap: 1rem;
+}
+
+.view-toggle-btn {
+  padding: 0.75rem;
+  background: transparent;
+  border-radius: 8px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1.5px solid var(--border-color) !important;
+}
+
+.view-toggle-btn.active {
+  background: var(--primary-color);
+  color: white;
+}
+
+.view-toggle-btn .e-icons {
+  font-size: 1.2rem;
+}
+
+/* Projects Container */
+.projects-container.card-view {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.projects-container.list-view {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.project-list-header {
+  display: flex;
+  align-items: center;
+  min-height: 38px;
+  padding: 0 8px;
+  background: var(--background-color);
+  color: var(--text-secondary);
+  font-size: 0.98rem;
+  font-weight: 500;
+  border-radius: 8px 8px 0 0;
+  border-bottom: 1.5px solid var(--border-color);
+}
+
+.project-list-item {
+  display: flex;
+  align-items: center;
+  min-height: 50px;
+  padding: 0 8px;
+  background: var(--surface-color);
+  font-size: 1rem;
+  cursor: pointer;
+  border-bottom: 1px solid var(--border-color);
+}
+.project-list-item:last-child {
+   border-bottom: 0;
+}
+.project-list-item:hover, .project-list-item:focus {
+   background: var(--list-hover-bg, #e7f1fe);
+}
+.project-list-item.selected {
+  background-color: var(--list-selected-bg);
+}
+.project-list-item.selected:hover {
+  background-color: var(--list-selected-hover-bg);
+}
+
+.project-col {
+   display: flex;
+   align-items: center; 
+   padding: 0 4px; 
+}
+.project-icon-header, .project-icon {
+  width: 40px;
+  justify-content: center;
+  position: relative;
+}
+
+/* Hide checkboxes by default */
+.project-item-checkbox,
+.project-select-all-checkbox {
+  opacity: 0;
+  position: absolute;
+  transform: scale(0.8);
+  transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
+  z-index: 10; /* Ensure checkbox is on top */
+  pointer-events: none; /* Disable clicks when hidden */
+}
+
+.project-item-icon-svg {
+  position: relative;
+  z-index: 5; /* Sit below the checkbox */
+}
+
+/* Svg folder icon style */
+.project-icon svg path, .project-item-icon-svg path{
+  stroke: transparent;
+  fill: var(--scrollbar-thumb-hover);
+}
+
+/* Show item checkbox on hover, but only when no items are selected */
+.project-list-item:hover .project-item-checkbox:not(:checked) {
+  opacity: 1;
+  transform: scale(1);
+}
+.project-list-item:hover .project-item-icon-svg {
+  opacity: 0;
+  transform: scale(0.8);
+}
+/* When selection is active, show checkbox and hide icon */
+.selection-active .project-item-checkbox,
+.project-list-item.selected .project-item-checkbox,
+.project-list-item:hover .project-item-checkbox {
+  opacity: 1;
+  transform: scale(1);
+  pointer-events: auto; /* Enable clicks when visible */
+}
+
+.selection-active .project-item-icon-svg,
+.project-list-item.selected .project-item-icon-svg {
+  opacity: 0;
+  transform: scale(0.8);
+  display: none; /* Hide icon completely when selected */
+}
+/* Ensure the icon is visible when not hovered or selected */
+.project-item-icon-svg {
+  opacity: .7;
+  transform: scale(1);
+  transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
+}
+/* Logic for the "Select All" checkbox - now always visible */
+.project-select-all-checkbox {
+  opacity: 1;
+  transform: scale(1);
+  pointer-events: auto; /* Ensure it's clickable when visible */
+}
+
+.project-title-header, .project-title {
+   flex: 2 1 140px;
+   white-space: nowrap; 
+   overflow: hidden; 
+   text-overflow: ellipsis;
+}
+.project-date-header, .project-date { 
+  width: 100px;
+  font-size: 0.97rem;
+  color: var(--text-secondary); 
+}
+.project-bookmark-header, .project-bookmark {
+  width: 38px;
+  justify-content: center;
+}
+.project-menu-header, .project-menu {
+  width: 38px;
+  justify-content: flex-end;
+}
+
+.project-list-item .project-title{
+  font-weight: 500;
+  margin: 0;
+  font-size: 1rem;
+}
+.project-list-item .project-menu-dropdown {
+  opacity: 0;
+  transition: opacity 0.16s;
+  overflow: auto;
+  background-color: transparent !important;
+  color: var(--text-primary); 
+  box-shadow: none;
+  overflow: hidden;
+}
+.project-list-item:hover .project-menu-dropdown,
+.project-list-item:focus .project-menu-dropdown { 
+  background-color: transparent !important;
+  opacity: 1; 
+}
+
+.show-more-btn{
+  background-color: transparent !important;
+  color: var(--text-secondary);
+  margin-top: 1rem;
+  box-shadow: none !important;
+  display: flex;
+  align-items: flex-end;
+}
+.show-more-btn:hover{
+  background-color: transparent !important;
+  color: var(--text-primary) !important;
+}
+
+.show-more-btn .e-btn-icon{
+  font-size: 1rem !important;
+}
+
+
+/* Cards Styling */
+.project-card {
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  border: 1px solid transparent;
+}
+.project-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-hover);
+}
+.project-card.list-item {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 1.5rem;
+  min-height: 100px;
+}
+.e-card-header {
+  border: 0 !important;
+}
+.e-card-actions {
+  border: 0 !important;
+}
+.project-card.list-item .e-card-header {
+  flex: 1;
+  margin-right: 2rem;
+  border: 0 !important;
+}
+.project-card.list-item .e-card-actions {
+  flex-shrink: 0;
+  border: 0 !important
+}
+.project-thumbnail {
+  height: 160px;
+  background: var(--box-shadow2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+  border-radius: 16px 16px 0 0;
+}
+.project-card:hover .project-thumbnail {
+  background: var(--gradient-accent);
+}
+.project-thumbnail img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: .7;
+  aspect-ratio: 16 / 9;
+}
+.project-card-overlay {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.project-card:hover .project-card-overlay {
+  opacity: 1;
+}
+.project-card .e-card-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  position: relative;
+}
+.project-info {
+  flex: 1;
+  padding-right: 0.5rem;
+  width: 100%;
+}
+.project-title {
+  display: inline-block;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-right: 0.5rem !important;
+  line-height: 1.3;
+  width: 85%;
+}
+.project-modified {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+/* Dropdown Menu Styling */
+.project-card-overlay .project-menu-dropdown.e-dropdown-btn {
+  background: var(--surface-color) !important;
+  border-radius: 50%;
+}
+.project-menu-dropdown .e-icons {
+  color: var(--text-primary) !important;
+  font-size: 16px !important;
+}
+
+/* Projects Empty State */
+.empty-state {
+  text-align: center;
+  padding: 6rem 2rem;
+  color: var(--text-secondary);
+  background: var(--surface-color);
+  border-radius: 20px;
+  border: 2px dashed var(--border-color);
+  margin: 2rem 0;
+}
+.empty-icon {
+  margin-bottom: 1rem;
+  animation: pulse 3s infinite;
+}
+.empty-icon svg {
+  width: 8rem;
+}
+.empty-icon svg path {
+  stroke: var(--scrollbar-thumb-hover)
+}
+.empty-icon .search-folder path {
+  stroke: transparent;
+  fill: var(--scrollbar-thumb-hover)
+}
+.empty-state h3 {
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+  color: var(--text-primary);
+  font-weight: 700;
+}
+.empty-state p {
+  margin-bottom: 3rem;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.empty-state .e-btn {
+  padding: .9rem 2.6rem;
+  font-size: 1.1rem;
+  font-weight: 500;
+  border-radius: 12px;
+}
+.empty-state .e-btn:hover {
+  transform: translateY(-2px);
+}
+
+/* Loading and interaction states */
+.quick-access-card:active {
+  transform: translateY(-2px) scale(0.98);
+}
+.project-card:active {
+  transform: translateY(-2px) scale(0.98);
+}
+
+/* Dark theme support */
+[data-theme="dark"] .project-search.e-textbox .e-input,
+[data-theme="dark"] .sort-dropdown-btn.e-dropdown-btn {
+  background: var(--surface-color);
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+[data-theme="dark"] .project-search.e-textbox .e-input::placeholder {
+  color: var(--text-secondary);
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .quick-access-grid {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  }
+
+  .projects-container.card-view {
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .section-header {
+    align-items: flex-start;
+    justify-content: space-between;
+    flex-direction: column;
+  }
+  .section-controls {
+    gap: 1.5rem;
+  }
+  .search-sort-controls {
+    flex-direction: row;
+    min-width: auto;
+    gap: 1rem;
+  }
+  .search-container {
+    flex: 2;
+    min-width: 0;
+  }
+  .sort-container {
+    flex: 1;
+    min-width: 120px;
+  }
+  .quick-access-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  .projects-container.card-view {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  .project-card.list-item {
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center;
+  }
+  .project-card.list-item .e-card-header {
+    margin-right: 0;
+    margin-bottom: 0;
+  }
+  .e-card-actions {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .e-card-btn {
+    flex: none;
+  }
+  .empty-state {
+    padding: 4rem 1.5rem;
+  }
+}
+
+/* ------ Responsive for Sidebar ------ */
+@media (max-width: 700px) {
+  .home-main {
+    margin-left: 56px;
+  }
+  .home-sidebar {
+    width: 56px;
+    min-width: 56px;
+  }
+
+  .sidebar-list .e-list-item,
+  .sidebar-list .e-list-item span {
+    font-size: 0;
+  }
+
+  .sidebar-list .e-list-icon {
+    margin: 0;
+    font-size: 1.4rem;
+  }
+
+  .create-workflow-btn {
+    width: 80%;
+    padding: 8px;
+    font-size: 0;
+  }
+  .create-workflow-btn .e-btn-icon {
+    margin: 0.1rem !important;
+    width: 80% !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .quick-access-card .e-card-content {
+    padding: 2rem 1.5rem;
+  }
+  .section-title {
+    margin-bottom: 1.5rem;
+  }
+  .section-title-container {
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: flex-start;
+  }
+  .projects-count {
+    font-size: 0.8rem;
+  }
+  .search-container,
+  .sort-container {
+    flex: none;
+    min-width: auto;
+  }
+  .project-search.e-textbox .e-input {
+    padding: 0.65rem 0.85rem;
+    font-size: 0.9rem;
+  }
+  .view-toggle-btn {
+    padding: 0.65rem;
+    min-width: 40px;
+  }
+  .view-toggle-btn .e-icons {
+    font-size: 1.1rem;
+  }
+}
+
+
+/* Card styling */
+.modern-card {
+  background: var(--surface-color);
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border-color);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+.modern-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--box-shadow);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.modern-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-hover);
+  background-color: var(--surface-color);
+}
+.modern-card:hover::before {
+  opacity: 1;
+}
+
+/* Animation utilities */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+
+/* Projects Tools */
+.section-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1.2rem;
+  margin-bottom: 2rem;
+}
+
+.section-title-group {
+  display: flex;
+  align-items: self-start;
+  gap: 1rem;
+  min-width: 0;
+}
+
+.tools-row {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  flex-wrap: wrap;
+  margin-left: auto;
+  min-width: 0;
+}
+.tools-row .project-search { min-width: 140px; width: 190px; max-width: 100vw; }
+.tools-row .sort-dropdown-btn { min-width: 120px; width: 150px; }
+.tools-row .view-toggle { display: flex; gap: 0.4rem; }
+
+@media (max-width: 1075px) {
+  .section-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1.2rem;
+  }
+  .tools-row {
+    width: 100%;
+    justify-content: flex-start;
+    gap: 0.7rem;
+    margin-left: 0;
+  }
+}
+
+@media (max-width: 600px) {
+  .tools-row {
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    gap: 0.65rem;
+    padding-top: 6px;
+  }
+  .tools-row .project-search,
+  .tools-row .sort-dropdown-btn {
+    min-width: 0;
+    width: 100%;
+    max-width: 100%;
+  }
+}
+
+/* filter dropdown border and color updated */
+.sort-dropdown-btn.e-dropdown-btn {
+  background-color: transparent !important;
+  border: 1.5px solid var(--border-color) !important;
+  border-radius: 5px !important;
+  color: var(--text-secondary) !important;
+}
+
+/* Bookmark Button Styling for List View */
+.bookmark-btn.e-btn {
+  background: transparent !important;
+  border: none !important;
+  width: 32px !important;
+  height: 32px !important;
+  border-radius: 50% !important;
+  padding: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-width: 32px !important;
+  transition: all 0.2s ease;
+  box-shadow: none;
+}
+/* show stroke styled bookmark icon be defualt */
+.bookmark-btn.e-btn .e-btn-icon, .bookmark-btn-card.e-btn .e-btn-icon  {
+  color: transparent !important;
+  -webkit-text-stroke: 1px var(--text-secondary) !important;
+  font-size: 16px !important;
+  margin: 0 !important;
+}
+.bookmark-btn.e-btn .e-star-filled.star-filled, .bookmark-btn-card.e-btn .e-star-filled.star-filled  {
+  color: var(--box-shadow2) !important;
+  -webkit-text-stroke-width: 0px !important;
+}
+
+
+/* Bookmark Button Styling for Card View */
+.project-bookmark-card {
+  position: absolute;
+  right: 10px;
+}
+.bookmark-btn-card.e-btn {
+  background: var(--surface-color) !important;
+  width: 36px !important;
+  height: 36px !important;
+  border-radius: 8px !important;
+  padding: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-width: 36px !important;
+  transition: all 0.2s ease;
+  box-shadow: none !important;
+}
+.bookmark-btn-card.e-btn:hover {
+  background: var(--list-hover-bg) !important;
+  transform: scale(1.05);
+}
+
+/* common bookmark styling - show only on hover or when bookmarked */
+.project-list-item .project-bookmark, .project-card .project-bookmark-card {
+  opacity: 0;
+  transition: opacity 0.16s;
+  box-shadow: none !important;
+}
+.project-list-item:hover .project-bookmark, 
+.project-card:hover .project-bookmark-card,
+.project-list-item:focus .project-bookmark {
+  opacity: 1;
+  box-shadow: none !important;
+}
+/* Always show bookmark in list if it's bookmarked */
+.project-list-item .bookmark-btn .star-filled,
+.project-bookmark-card .star-filled  {
+  opacity: 1 !important;
+}
+.project-card:has(.star-filled) .project-bookmark-card,
+.project-list-item:has(.star-filled) .project-bookmark {
+  opacity: 1;
+}

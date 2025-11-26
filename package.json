@@ -1,0 +1,74 @@
+{
+  "name": "@syncfusion/ej2-react-workflow-automation",
+  "version": "0.0.1",
+  "description": "Essential JS 2 for React - Workflow Automation",
+  "author": "Syncfusion Inc.",
+  "license": "SEE LICENSE IN license",
+  "dependencies": {
+    "@emailjs/browser": "^4.4.1",
+    "@syncfusion/ej2-base": "*",
+    "@syncfusion/ej2-react-buttons": "*",
+    "@syncfusion/ej2-react-calendars": "*",
+    "@syncfusion/ej2-react-diagrams": "*",
+    "@syncfusion/ej2-react-dropdowns": "*",
+    "@syncfusion/ej2-react-inputs": "*",
+    "@syncfusion/ej2-react-interactive-chat": "*",
+    "@syncfusion/ej2-react-lists": "*",
+    "@syncfusion/ej2-react-navigations": "*",
+    "@syncfusion/ej2-react-notifications": "*",
+    "@syncfusion/ej2-react-popups": "*",
+    "@syncfusion/ej2-react-richtexteditor": "*",
+    "@syncfusion/ej2-react-splitbuttons": "*",
+    "docxtemplater": "^3.67.4",
+    "html2canvas": "^1.4.1",
+    "pizzip": "^3.2.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "react-router-dom": "^6.30.1",
+    "react-scripts": "5.0.1",
+    "typescript": "^4.9.5",
+    "web-vitals": "*",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "@svgr/webpack": "^8.1.0",
+    "@syncfusion/ej2-showcase-helper": "*",
+    "@types/jest": "^27.5.1",
+    "@types/node": "^20.4.1",
+    "@types/react": "^18.2.14",
+    "@types/react-dom": "^18.2.6",
+    "css-loader": "^6.8.1",
+    "html-webpack-plugin": "^5.5.3",
+    "mini-css-extract-plugin": "^2.7.6",
+    "terser-webpack-plugin": "^5.3.9",
+    "ts-loader": "^9.5.1",
+    "typescript": "^4.9.5",
+    "webpack": "^5.91.0",
+    "webpack-cli": "^5.1.4",
+    "webpack-dev-server": "^4.15.1"
+  },
+  "scripts": {
+    "start": "webpack-dev-server --open --mode development",
+    "build": "webpack --mode production",
+    "ci-publish": "gulp publish-sample",
+    "hide-license": "gulp hide-license"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}

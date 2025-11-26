@@ -1,0 +1,268 @@
+#workflow-appbar {
+  background: var(--surface-color);
+  box-shadow: var(--shadow);
+  border-bottom: 1px solid var(--border-color);
+  padding: 0 1rem;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100000;
+  height: 56px;
+}
+
+#workflow-appbar .appbar-left, #workflow-appbar .appbar-right {
+  display: flex;
+  align-items: center;
+}
+
+.back-button {
+  border-radius: 100%;
+  transition: all 0.3s ease;
+  background-color: var(--surface-color) !important;
+  color: var(--text-primary);
+  width: 40px;
+  height: 40px;
+  margin: 0 !important;
+}
+.back-button .e-btn-icon {
+  margin-top: 4px;
+}
+.back-button:hover {
+  background-color: var(--background-color);
+  color: var(--text-primary);
+  transform: translateX(-2px);
+  box-shadow: none;
+}
+
+.project-name-section {
+  position: relative;
+}
+
+.project-name {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0;
+  color: var(--text-primary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.2rem;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  max-width: 300px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  position: relative;
+}
+
+.project-name:hover {
+  background-color: var(--background-color);
+}
+
+.project-name-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+  min-width: 0;
+}
+
+.project-name .edit-icon {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.project-name:hover .edit-icon {
+  opacity: 1;
+}
+
+.project-name-input {
+  font-size: 1.25rem;
+  font-weight: 600;
+  padding: 0.5rem 0.75rem;
+  border: 2px solid var(--primary-color);
+  border-radius: 8px;
+  background: var(--surface-color);
+  color: var(--text-primary);
+  outline: none;
+  min-width: 200px;
+  max-width: 300px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Buttons */
+.header-btn {
+  border-radius: 6px;
+}
+.header-btn.save-btn {
+  width: 4.5rem;
+  border-radius: 7px;
+  font-size: .95rem;
+  transition: none;
+}
+.header-btn:disabled {
+  pointer-events: none;
+  opacity: 0.7;
+  cursor: default;
+  color: inherit;
+  background: inherit; 
+  border: 1.9px solid var(--border-color);
+}
+.header-btn.more-btn{
+  background: var(--background-color);
+  color: var(--text-primary);
+  border: 1.9px solid var(--border-color);
+}
+
+/* Theme-specific styles */
+[data-theme="dark"] #workflow-appbar {
+  background: var(--surface-color);
+  border-bottom-color: var(--border-color);
+}
+
+[data-theme="dark"] .project-name-input {
+  background: var(--surface-color);
+  color: var(--text-primary);
+  border-color: var(--primary-color);
+}
+
+/* Settings Dialog Styles */
+.settings-dialog-container {
+  border-radius: 12px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+.settings-dialog-container .e-dlg-header-content {
+  background: var(--surface-color);
+  border-bottom: 1px solid var(--border-color);
+  padding: 24px;
+}
+
+.settings-dialog-container .e-dlg-header {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: -10px 0;
+}
+
+.settings-dialog-content {
+  padding: .5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.settings-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 2rem;
+  row-gap: 2rem;
+  position: relative;
+}
+
+/* Adds a divider betweeen the columns */
+.settings-grid::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 1px;
+  background-color: var(--border-color);
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.settings-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.settings-section-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.settings-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.settings-label {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin: 0;
+  flex: 1;
+}
+
+/* Sub-section that appears under a main setting */
+.settings-sub {
+  margin-left: 1rem;
+  padding-left: 1rem;
+  border-left: 2px dashed var(--border-color);
+  color: var(--text-secondary);
+  display: grid;
+}
+
+/* Make sub-rows slightly tighter */
+.settings-sub .settings-item {
+  min-height: 34px;
+}
+
+.settings-sub .e-checkbox-wrapper {
+  margin: 0 20px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  #workflow-appbar {
+    padding: 0 0.5rem;
+  }
+  
+  .project-name {
+    font-size: 1.1rem;
+    max-width: 200px;
+  }
+
+  .settings-grid::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 1px;
+    background-color: var(--border-color);
+    transform: translateX(-50%);
+    pointer-events: none;
+  }
+
+  .settings-grid {
+    grid-template-columns: 1fr;
+    column-gap: 24px;
+    row-gap: 16px;
+  }
+
+  /* Hide the vertical divider in 1-col mode */
+  .settings-grid::before {
+    display: none;
+  }
+
+}
+
+@media (max-width: 480px) {
+  .project-name {
+    max-width: 150px;
+  }
+}

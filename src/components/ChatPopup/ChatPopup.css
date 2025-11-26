@@ -1,0 +1,174 @@
+.chat-popup {
+    position: absolute;
+    top: 80px;
+    right: 20px;
+    min-width: 200px;
+    min-height: 38px;
+    max-width: 45%;
+    max-height: 90%;
+    width: 380px;
+    height: 380px;
+    background: var(--surface-color);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+    user-select: none;
+    z-index: 100000;
+    resize: both;
+}
+
+.chat-popup-title {
+    font-size: .9rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.chat-popup-btn-group {
+    display: flex;
+    gap: .6rem;
+}
+
+.chat-popup-btn,
+.chat-popup-btn:hover,
+.chat-popup-btn:focus {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    box-shadow: none;
+    padding: .1rem !important;
+}
+
+.chat-popup-btn .e-btn-icon {
+    font-size: 1rem !important;
+}
+
+.chat-popup-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: .5rem .75rem;
+    border-bottom: 1px solid var(--border-color);
+    background: var(--background-color);
+    cursor: move;
+}
+
+.e-aiassistview .e-banner-view {
+    margin: 0;
+}
+
+.banner-content svg {
+    margin: -4rem 0 -3rem 0;
+    width: 9rem;
+}
+.banner-content svg path {
+   fill: var(--scrollbar-thumb);
+}
+.banner-content span {
+   width: 90%;
+   margin-top: -1.3rem;
+}
+
+.banner-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    margin-bottom: 3rem;
+    font-weight: 500;
+    font-size: .9rem;
+    color: var(--scrollbar-thumb);
+}
+
+
+.chat-popup-body {
+    height: 90%;
+}
+
+.chat-popup-body .e-aiassistview {
+    border: none;
+}
+
+/* Hide the scrollbar */
+.chat-popup-body .e-aiassistview .e-views {
+    overflow: auto;
+}
+
+.e-aiassistview .e-view-container {
+    margin: 0;
+}
+
+/* Hide the header */
+.chat-popup-body .e-aiassistview .e-view-header {
+    display: none;
+}
+
+.chat-popup-body .e-aiassistview .e-view-content {
+    height: 100%;
+}
+
+/* Stop Response btn styles */
+.chat-popup-body .e-aiassistview .e-stop-response {
+    border: 1px solid var(--border-color);
+}
+
+.chat-popup-body .e-aiassistview .e-stop-response {
+    background-color: var(--background-color);
+    color: var(--text-primary);
+    border-radius: 12px;
+    padding: .4rem 1rem;
+    font-size: 13px;
+}
+
+.chat-popup-body .e-aiassistview .e-stop-response .e-icons.e-assist-stop {
+    font-size: .9rem !important;
+}
+
+/* fix the overflow of textbox */
+.chat-popup-body .e-footer {
+    width: 90%;
+}
+
+/* Textbox focus styles */
+.chat-popup-body .e-footer:not(.e-footer-template).focused {
+    border: 1px solid var(--secondary-color);
+    box-shadow: 0 0 0 1px var(--primary-color);
+}
+
+.chat-popup-body .e-aiassistview .e-footer:not(.e-footer-template) .e-assist-send {
+    color: var(--primary-color);
+}
+
+.chat-popup-body .e-assist-textarea {
+    color: var(--text-primary) !important;
+}
+
+/* Suggestion prompt styles */
+.chat-popup-body .e-aiassistview .e-suggestions li {
+    background-color: transparent;
+    border: 1px solid var(--scrollbar-thumb);
+    border-radius: 8px;
+    padding: .5rem 1rem;
+    color: var(--text-secondary);
+    margin: 0 1rem 0 0;
+    text-wrap-mode: wrap;
+    cursor: pointer;
+}
+.chat-popup-body .e-aiassistview .e-suggestions li:hover {
+    background-color: var(--accent-color);
+    border-color: var(--accent-color);
+    color: var(--surface-color);
+}
+
+/* update the html tags formatting */
+.chat-popup-body .e-aiassistview .e-views .e-content-body ol,
+.chat-popup-body .e-aiassistview .e-views .e-content-body ul {
+    padding: 0 0 0 2.4rem;
+}
+.chat-popup-body .e-aiassistview .e-views .e-content-body h1,  
+.chat-popup-body .e-aiassistview .e-views .e-content-body h2,  
+.chat-popup-body .e-aiassistview .e-views .e-content-body h3 {  
+    margin: 1rem 0 1rem 0;
+}

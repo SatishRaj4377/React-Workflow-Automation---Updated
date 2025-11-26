@@ -1,0 +1,44 @@
+
+.confirm-dialog-container .e-btn {
+  border-radius: 8px;
+  font-weight: 500;
+  padding: 0.4rem 1rem;
+  border: none;
+  box-shadow: none !important;
+}
+
+/* Cancel Button */
+.confirm-dialog-container .cancel-btn {
+  background: transparent !important;
+  color: var(--text-secondary) !important;
+  background-color: var(--border-color) !important;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+.confirm-dialog-container .cancel-btn:hover {
+   background: var(--list-hover-bg) !important;
+   border-color: var(--node-handle) !important;
+   transform: none;
+}
+
+
+/* Danger Variant */
+.confirm-dialog-container .confirm-btn.danger-btn {
+  background: var(--danger-color) !important;
+  color: #fff !important;
+  border-color: var(--danger-color) !important;
+}
+.confirm-dialog-container .confirm-btn.danger-btn:hover {
+  background: var(--danger-accent) !important;
+  border-color: var(--danger-accent) !important;
+}
+
+/* Primary Variant */
+.confirm-dialog-container .confirm-btn.primary-btn {
+  background: var(--primary-color) !important;
+  color: #fff !important;
+  border-color: var(--primary-color) !important;
+}
+.confirm-dialog-container .confirm-btn.primary-btn:hover {
+  background: var(--accent-color) !important;
+  border-color: var(--accent-color) !important;
+}

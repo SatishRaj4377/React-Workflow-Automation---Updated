@@ -1,0 +1,517 @@
+.custom-config-panel {
+  background: var(--surface-color);
+  display: flex;
+  flex-direction: column;
+  overflow: visible;
+  height: 100%;
+}
+
+/* EJ2 Sidebar specific styles */
+.e-sidebar.custom-config-panel {
+  background: var(--surface-color);
+  border-left: 1px solid var(--border-color);
+  box-shadow: -2px 0 8px rgba(0, 0, 0, 0.1);
+  overflow: visible; /* ensure absolute children can overflow */
+}
+
+.config-panel-header {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: .5rem 1rem;
+  background-color: var(--background-color);
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.config-panel-title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.config-panel-title h3 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 250px;
+}
+
+.custom-config-panel .node-icon {
+  font-size: 1.5rem;
+  border-radius: 8px;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.custom-config-panel .node-icon > img {
+  width: 100%;
+}
+
+.config-panel-content {
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* Tabs Styling */
+.config-tabs {
+  height: 100%;
+}
+
+.config-tabs .e-tab-header {
+  position: sticky;
+  top: 0;
+  background: var(--background-color);
+  border-bottom: 1px solid var(--border-color);
+  z-index: 100000;
+}
+
+.config-tabs .e-tab-header .e-toolbar-item {
+  border-radius: 0;
+}
+
+.config-tabs .e-tab-header .e-toolbar-item.e-active {
+  background: var(--surface-color);
+  border-bottom: 2px solid var(--primary-color);
+}
+
+.config-tabs .e-tab-header .e-toolbar-item.e-active .e-tab-text {
+  color: var(--accent-color) !important; /*  Updates the tab header text color */
+  font-weight: 500;
+  font-size: 0.875rem;
+}
+
+.e-tab .e-tab-header .e-toolbar-item.e-active .e-text-wrap::before {
+  border-color: var(--accent-color);  /*  Updates the tab header active border color */
+}
+
+.config-tab-content {
+  padding: .6rem;
+}
+
+/* Config Form Styling */
+.config-section {
+  margin-bottom: 1.5rem;
+}
+
+.config-section .show-chat-button {
+  position: relative;
+  width: 7.6rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+  transition: none;
+}
+.config-section .show-chat-button {
+  background: var(--primary-color);
+}
+.config-section .msg-svg-icon {
+  position: absolute;
+  left: 18px;
+  width: 40px;
+  height: 38px;
+  margin-left: -14px;
+  margin-right: -3px;
+  margin-top: 2px;
+}
+.config-section .show-chat-btn-text {
+  position: absolute;
+  left: 42px;
+}
+
+.config-label {
+  display: block;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.textbox-info {
+  margin-top: 5px;
+  color: var(--text-secondary);
+}
+
+.config-input,
+.config-textarea {
+  width: 100%;
+  background: var(--background-color);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  color: var(--text-primary);
+  transition: all 0.3s ease;
+}
+
+.config-input .e-input-group,
+.config-textarea .e-input-group {
+  background: transparent;
+}
+
+.config-input .e-input,
+.config-textarea .e-input {
+  background: transparent;
+  color: var(--text-primary);
+  padding: 0.75rem;
+}
+
+.config-input:focus,
+.config-textarea:focus,
+.config-select:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.15);
+}
+
+.config-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.config-row .help-icon {
+  color: var(--scrollbar-thumb);
+  font-size: 1rem !important;
+}
+.config-row .help-icon:hover {
+  color: var(--text-secondary);
+  font-size: 1rem !important;
+}
+
+.config-section .flat-btn{
+  min-width: 45px;
+  color: var(--text-secondary);
+  transition: none !important;
+}
+
+.add-field-btn {
+  padding: 0.5rem 0.8rem;
+  border-radius: 8px;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;  
+  margin-top: 1rem;
+}
+.add-field-btn .e-btn-icon {
+  font-weight: 500;
+  margin-top: .1rem;
+  font-size: 1.1rem !important;
+}
+
+.add-field-btn:hover {
+  background: var(--secondary-color);
+}
+
+/* Color of the dropdown list fixed head */
+.e-dropdownbase .e-fixed-head,
+.e-dropdownbase .e-list-group-item  {
+  color: var(--accent-color);
+}
+
+/* Empty State */
+.config-panel-empty {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+.empty-state-icon {
+  font-size: 4rem;
+  margin-bottom: 1.5rem;
+  opacity: 0.5;
+}
+
+.config-panel-empty h3 {
+  font-size: 1.25rem;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.config-panel-empty p {
+  max-width: 240px;
+  line-height: 1.5;
+  font-size: 0.875rem;
+}
+
+/* Maximized State */
+.e-sidebar.custom-config-panel.maximized {
+  width: 60% !important;
+}
+
+.e-sidebar.custom-config-panel.maximized .config-panel-title h3 {
+  max-width: 100%;
+}
+
+/* Scrollbar Styles */
+.config-panel-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.config-panel-content::-webkit-scrollbar-track {
+  background: var(--background-color);
+}
+
+.config-panel-content::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 3px;
+}
+
+.config-panel-content::-webkit-scrollbar-thumb:hover {
+  background: var(--text-secondary);
+}
+
+/* Google Sheets */
+.doc-url-preview { 
+  font-size: 12px;
+  color: var(--primary);
+  text-decoration: none;
+  word-break: break-all;
+}
+.doc-url-preview:hover { 
+  text-decoration: underline; 
+}
+
+.subtitle { font-size: 12px; 
+  font-weight: 600; 
+  color: var(--text-secondary); 
+  margin-bottom: 6px; 
+}
+
+.columns-grid { display: grid; 
+  grid-template-columns: 1fr; 
+  gap: 12px; 
+}
+.column-value-row { display: flex; 
+  flex-direction: column; 
+  gap: 6px; 
+  padding: 0 1rem; 
+}
+
+.filter-row { display: flex; 
+  gap: 8px; 
+  align-items: center; 
+}
+
+/* Rich text editor */
+.e-richtexteditor .e-rte-content .e-content {
+  padding: 0;
+}
+.e-richtexteditor #word-write-editorrte-view , .e-richtexteditor .e-rte-container {
+background-color: var(--background-color);
+}
+
+/* Variable Picker Styling */
+/* Popup shell */
+.vp-popup {
+  width: 320px;
+  max-height: 320px;
+  background: var(--surface-color);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+  overflow: hidden;
+  user-select: none;
+}
+
+/* Header */
+.vp-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: .5rem .75rem;
+  border-bottom: 1px solid var(--border-color);
+  background: var(--background-color);
+}
+.vp-title {
+  font-size: .85rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+.vp-close {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+/* Body */
+.vp-body {
+  max-height: 270px;
+  overflow: auto;
+  padding: .25rem .25rem .5rem;
+}
+
+/* Loading/empty */
+.vp-loading, .vp-empty {
+  padding: .75rem;
+  color: var(--text-secondary);
+  font-size: .85rem;
+}
+
+/* Groups */
+.vp-group {
+  padding: .25rem .25rem .5rem;
+}
+
+.vp-group-title {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .25rem .5rem;
+  margin: .25rem 0 .35rem;
+  background-color: var(--border-color);
+  color: var(--text-secondary);
+  font-size: .75rem;
+  text-transform: uppercase;
+  letter-spacing: .03em;
+}
+.vp-group-title .vp-node-type {
+  background: var(--background-color);
+  border: 1px solid var(--border-color);
+  border-radius: 999px;
+  padding: 0 .4rem;
+  font-size: .7rem;
+}
+
+/* Items */
+.vp-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.vp-item {
+  padding: .45rem .5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background .15s ease;
+}
+/* Hide Clear/Upload action bar for word uploader */
+.word-uploader .e-upload-actions {
+  display: none !important;
+}
+
+.vp-item:hover {
+  background: rgba(102, 126, 234, 0.08); /* primary tint */
+}
+.vp-item-main {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .5rem;
+}
+.vp-key {
+  background: var(--background-color);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: .15rem .35rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: .8rem;
+}
+.vp-key:hover{
+  background: var(--primary-color);
+}
+.vp-key:hover .vp-key-em{
+  color: var(--background-color);
+}
+.vp-key-em {
+  color: var(--primary-color);
+  font-weight: 700;
+}
+.vp-key-dim {
+  color: var(--text-secondary);
+  margin-left: .25rem;
+}
+.vp-type {
+  font-size: .7rem;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 999px;
+  padding: 0 .3rem;
+}
+.vp-preview {
+  color: var(--text-secondary);
+  font-size: .8rem;
+  padding-left: .15rem;
+}
+.vp-path {
+  margin-top: .15rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: .75rem;
+  color: var(--text-secondary);
+  padding-left: .15rem;
+}
+
+.e-btn.e-close.custom-font-size {
+  font-size: .85rem !important;
+}
+.config-row .e-checkbox-wrapper .e-label {
+  font-weight: 400 !important;
+}
+
+/* Scrollbar (match your panel style) */
+.vp-body::-webkit-scrollbar {
+  width: 6px;
+}
+.vp-body::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 3px;
+}
+.vp-body::-webkit-scrollbar-thumb:hover {
+  background: var(--text-secondary);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .e-sidebar.custom-config-panel:not(.maximized) {
+    width: 300px !important;
+  }
+  
+  .config-panel-header {
+    padding: 0.75rem;
+  }
+  
+  .config-panel-title h3 {
+    font-size: 1.1rem;
+    max-width: 160px;
+  }
+  
+  .node-icon {
+    font-size: 1.25rem;
+    width: 32px;
+    height: 32px;
+  }
+  
+  .config-tabs .e-tab-header .e-toolbar-item .e-tab-text {
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .e-sidebar.custom-config-panel {
+    width: 100% !important;
+  }
+  
+  .config-panel-header {
+    padding: 0.75rem 1rem;
+  }
+  
+  .config-panel-title h3 {
+    font-size: 1rem;
+    max-width: 140px;
+  }
+}
