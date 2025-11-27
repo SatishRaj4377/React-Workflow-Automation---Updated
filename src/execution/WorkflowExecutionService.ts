@@ -4,7 +4,6 @@ import { ExecutionContext, NodeConfig, NodeExecutionResult, WorkflowExecutionOpt
 import { findTriggerNodes, findConnectedNodes, updateNodeStatus, resetExecutionStates, getTargetsByPort } from '../helper/workflowExecution';
 import { showErrorToast, showSuccessToast } from '../components/Toast';
 import { globalExecutorRegistry } from './ExecutorRegistry';
-import { ServerNodeExecutor } from './ServerNodeExecutor';
 import { ClientSideNodeExecutor } from './ClientSideNodeExecutor';
 import { getNodeConfig, isIfConditionNode, isLoopNode, isSwitchNode } from '../helper/utilities';
 
@@ -48,10 +47,6 @@ export class WorkflowExecutionService {
   private initializeExecutors() {
     // Register client-side executor for logical operations
     globalExecutorRegistry.registerExecutor('client', new ClientSideNodeExecutor());
-
-    // Register server-side executor for integrations
-    const serverExecutor = new ServerNodeExecutor('http://localhost:3001');
-    globalExecutorRegistry.registerExecutor('server', serverExecutor);
   }
 
   /**
@@ -231,7 +226,7 @@ export class WorkflowExecutionService {
       return { success: false, error: 'Invalid node configuration' };
     }
 
-    const executor = this.getExecutorForNode(nodeConfig);
+    const executor = this.getExecutorForNode();
     if (!executor) {
       return { success: false, error: `No executor found for node type: ${nodeConfig.nodeType}` };
     }
@@ -463,13 +458,9 @@ export class WorkflowExecutionService {
   /**
    * Get appropriate executor for node type
    */
-  private getExecutorForNode(nodeConfig: NodeConfig) {
-    const serverExecutor = globalExecutorRegistry.getExecutor('server');
-    const clientExecutor = globalExecutorRegistry.getExecutor('client');
-
-    return serverExecutor?.canExecute({ addInfo: { nodeConfig } } as NodeModel)
-      ? serverExecutor
-      : clientExecutor;
+  private getExecutorForNode() {
+    // In client-only mode always use the registered client executor
+    return globalExecutorRegistry.getExecutor('client');
   }
 
   /**

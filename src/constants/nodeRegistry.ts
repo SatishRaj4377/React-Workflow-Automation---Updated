@@ -4,7 +4,6 @@ export interface NodeRegistryEntry {
   type: NodeType;
   category: NodeCategories;
   paletteCategory: PaletteCategoryLabel;
-  isServerExecuted: boolean;
   label: string;
   description: string;
   iconId?: string;
@@ -16,7 +15,6 @@ export const NODE_REGISTRY: Partial<Record<NodeType, NodeRegistryEntry>> = {
     type: 'Form',
     category: 'trigger',
     paletteCategory: 'Triggers',
-    isServerExecuted: false,
     label: 'Form',
     description: 'Trigger workflow on form submission.',
     iconId: 'FormIcon',
@@ -26,7 +24,6 @@ export const NODE_REGISTRY: Partial<Record<NodeType, NodeRegistryEntry>> = {
     type: 'Manual Click',
     category: 'trigger',
     paletteCategory: 'Triggers',
-    isServerExecuted: false,
     label: 'Manual Click',
     description: 'Trigger workflow manually',
     iconId: 'ManualClickIcon',
@@ -36,7 +33,6 @@ export const NODE_REGISTRY: Partial<Record<NodeType, NodeRegistryEntry>> = {
     type: 'Chat',
     category: 'trigger',
     paletteCategory: 'Triggers',
-    isServerExecuted: false,
     label: 'Chat Trigger',
     description: 'Trigger workflow from chat',
     iconId: 'ChatIcon',
@@ -46,7 +42,6 @@ export const NODE_REGISTRY: Partial<Record<NodeType, NodeRegistryEntry>> = {
     type: 'HTTP Request',
     category: 'action',
     paletteCategory: 'Core',
-    isServerExecuted: false,
     label: 'HTTP Request',
     description: 'Make HTTP request',
     iconId: 'HttpRequestIcon',
@@ -55,7 +50,6 @@ export const NODE_REGISTRY: Partial<Record<NodeType, NodeRegistryEntry>> = {
     type: 'EmailJS',
     category: 'action',
     paletteCategory: 'Core',
-    isServerExecuted: false,
     label: 'EmailJS',
     description: 'EmailJS integration',
     iconId: 'EmailJSIcon',
@@ -64,7 +58,6 @@ export const NODE_REGISTRY: Partial<Record<NodeType, NodeRegistryEntry>> = {
     type: 'Word',
     category: 'action',
     paletteCategory: 'Core',
-    isServerExecuted: false,
     label: 'Word',
     description: 'Word document integration',
     iconId: 'WordIcon',
@@ -73,7 +66,6 @@ export const NODE_REGISTRY: Partial<Record<NodeType, NodeRegistryEntry>> = {
     type: 'Excel',
     category: 'action',
     paletteCategory: 'Core',
-    isServerExecuted: false,
     label: 'Excel',
     description: 'Excel document integration',
     iconId: 'ExcelIcon',
@@ -82,7 +74,6 @@ export const NODE_REGISTRY: Partial<Record<NodeType, NodeRegistryEntry>> = {
     type: 'If Condition',
     category: 'condition',
     paletteCategory: 'Flow',
-    isServerExecuted: false,
     label: 'If Condition',
     description: 'Branch based on condition',
     iconId: 'IfConditionIcon',
@@ -92,7 +83,6 @@ export const NODE_REGISTRY: Partial<Record<NodeType, NodeRegistryEntry>> = {
     type: 'Switch Case',
     category: 'condition',
     paletteCategory: 'Flow',
-    isServerExecuted: false,
     label: 'Switch Case',
     description: 'Multiple path branching',
     iconId: 'SwitchConditionIcon',
@@ -103,7 +93,6 @@ export const NODE_REGISTRY: Partial<Record<NodeType, NodeRegistryEntry>> = {
     type: 'Filter',
     category: 'condition',
     paletteCategory: 'Flow',
-    isServerExecuted: false,
     label: 'Filter',
     description: 'Filter array items',
     iconId: 'FilterIcon',
@@ -113,7 +102,6 @@ export const NODE_REGISTRY: Partial<Record<NodeType, NodeRegistryEntry>> = {
     type: 'Loop',
     category: 'condition',
     paletteCategory: 'Flow',
-    isServerExecuted: false,
     label: 'Loop',
     description: 'Loop over array items',
     iconId: 'LoopIcon',
@@ -123,7 +111,6 @@ export const NODE_REGISTRY: Partial<Record<NodeType, NodeRegistryEntry>> = {
     type: 'Stop',
     category: 'condition',
     paletteCategory: 'Flow',
-    isServerExecuted: false,
     label: 'Do Nothing',
     description: 'No operation, ends the workflow.',
     iconId: 'StopIcon',
@@ -133,7 +120,6 @@ export const NODE_REGISTRY: Partial<Record<NodeType, NodeRegistryEntry>> = {
     type: 'Notify',
     category: 'action',
     paletteCategory: 'Core',
-    isServerExecuted: false,
     label: 'Notify',
     description: 'Show a toast notification',
     iconId: 'BellIcon',
@@ -145,15 +131,6 @@ export const NODE_REGISTRY: Partial<Record<NodeType, NodeRegistryEntry>> = {
 export const getNodesByPaletteCategory = (paletteCategory: PaletteCategoryLabel): NodeRegistryEntry[] => 
   Object.values(NODE_REGISTRY).filter(node => node.paletteCategory === paletteCategory);
 
-export const getServerExecutedNodes = (): NodeType[] =>
-  Object.values(NODE_REGISTRY)
-    .filter(node => node.isServerExecuted)
-    .map(node => node.type);
-
 export const getClientExecutedNodes = (): NodeType[] =>
   Object.values(NODE_REGISTRY)
-    .filter(node => !node.isServerExecuted)
     .map(node => node.type);
-
-export const getCategoryNodes = (categories: NodeCategories[]): NodeRegistryEntry[] =>
-  Object.values(NODE_REGISTRY).filter(node => categories.includes(node.category));
