@@ -1,18 +1,8 @@
-import AiAgentIcon from '../assets/images/svg-icons/ai-agent.svg';
-import AzureModelIcon from '../assets/images/svg-icons/azure-model.svg';
 import ChatIcon from '../assets/images/svg-icons/chat.svg';
 import FilterIcon from '../assets/images/svg-icons/filter.svg';
-import GmailIcon from '../assets/images/svg-icons/gmail.svg';
-import GoogleDocsIcon from '../assets/images/svg-icons/google-docs.svg';
-import GoogleCalendarIcon from '../assets/images/svg-icons/google-calendar.svg';
-import GoogleSheetIcon from '../assets/images/svg-icons/google-sheet.svg';
 import HttpRequestIcon from '../assets/images/svg-icons/http-request.svg';
 import IfConditionIcon from '../assets/images/svg-icons/if-condition.svg';
-import ScheduleIcon from '../assets/images/svg-icons/schedule.svg';
 import SwitchConditionIcon from '../assets/images/svg-icons/switch-condition.svg';
-import TelegramIcon from '../assets/images/svg-icons/telegram.svg';
-import TwilioIcon from '../assets/images/svg-icons/twilio.svg';
-import WebhookIcon from '../assets/images/svg-icons/webhook.svg';
 import FormIcon from '../assets/images/svg-icons/form.svg';
 import ManualClickIcon from '../assets/images/svg-icons/manual-click.svg';
 import EmailJSIcon from '../assets/images/svg-icons/email-js.svg';
@@ -46,23 +36,13 @@ export const IconRegistry: { [key: string]: string | React.ElementType } = {
   WorkflowFolder,
   WorkflowFolderSearch,
   NodeSearch,
-  AiAgentIcon,
-  AzureModelIcon,
   ChatIcon,
   FilterIcon,
-  GmailIcon,
   WordIcon,
   ExcelIcon,
-  GoogleDocsIcon,
-  GoogleCalendarIcon,
-  GoogleSheetIcon,
   HttpRequestIcon,
   IfConditionIcon,
-  ScheduleIcon,
   SwitchConditionIcon,
-  TelegramIcon,
-  TwilioIcon,
-  WebhookIcon,
   FormIcon,
   ManualClickIcon,
   EmailJSIcon,
