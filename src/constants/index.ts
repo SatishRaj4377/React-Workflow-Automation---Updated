@@ -107,95 +107,17 @@ export const PORT_POSITIONS = {
     BOTTOM_RIGHT: { x: 0.85, y: 1 },
 };
 
-export const HTTP_METHODS = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'];
-export const TIMEZONES = ['UTC', 'Asia/Kolkata', 'America/New_York', 'Europe/London', 'Asia/Tokyo'];
 export const AUTH_NODE_TYPES: NodeType[] = [
-  'Gmail',
-  'Gmail Tool',
-  'Google Sheets',
-  'Google Sheets Tool',
-  'Google Calendar',
-  'Google Docs',
-  'Telegram',
-  'Twilio',
-  'Azure Chat Model Tool',
   'EmailJS',
-  'EmailJS Tool',
 ];
 
-// ---- operator sets by kind (includes Exists / Doesn't exist everywhere)
-export const STRING_COMPARATORS: ConditionComparator[] = [
-  'exists', 'does not exist',
-  'is empty', 'is not empty',
-  'is equal to', 'is not equal to',
-  'contains', 'does not contain',
-  'starts with', 'ends with',
-  'matches regex',
-];
-
-export const NUMBER_COMPARATORS: ConditionComparator[] = [
-  'exists', 'does not exist',
-  'is equal to', 'is not equal to',
-  'greater than', 'greater than or equal to',
-  'less than', 'less than or equal to',
-  'is between', 'is not between',
-];
-
-export const BOOLEAN_COMPARATORS: ConditionComparator[] = [
-  'exists', 'does not exist',
-  'is true', 'is false',
-  'is equal to', 'is not equal to', // keep equality for consistency
-];
-
-export const DATE_COMPARATORS: ConditionComparator[] = [
-  'exists', 'does not exist',
-  'is equal to', 'is not equal to',
-  'before', 'after',
-  'on or before', 'on or after',
-  'is between', 'is not between',
-];
-
-// Time uses the same comparator values as Date
-export const TIME_COMPARATORS: ConditionComparator[] = [
-  'exists', 'does not exist',
-  'is equal to', 'is not equal to',
-  'before', 'after',
-  'on or before', 'on or after',
-  'is between', 'is not between',
-];
-
-export const ARRAY_COMPARATORS: ConditionComparator[] = [
-  'exists', 'does not exist',
-  'is empty', 'is not empty',
-  'contains value',
-  'length greater than', 'length less than',
-];
-
-export const OBJECT_COMPARATORS: ConditionComparator[] = [
-  'exists', 'does not exist',
-  'is empty', 'is not empty',
-  'has key', 'has property',
-];
-
-export function getComparatorsFor(kind: ConditionValueKind): ConditionComparator[] {
-  switch (kind) {
-    case 'number': return NUMBER_COMPARATORS;
-    case 'boolean': return BOOLEAN_COMPARATORS;
-    case 'date': return DATE_COMPARATORS;
-    case 'time': return TIME_COMPARATORS;
-    case 'array': return ARRAY_COMPARATORS;
-    case 'object': return OBJECT_COMPARATORS;
-    default: return STRING_COMPARATORS;
-  }
-}
-
-// ---- UI data for grouped DropDownList (kept compact "most used" ops)
+// ---- Condition operation types
 export type OpKind = 'String' | 'Number' | 'Boolean' | 'Date' | 'Time' | 'Array' | 'Object';
 
 export interface OpOption {
   group: OpKind;                 // group header
   text: string;                  // display text
-  value: ConditionComparator;           // canonical comparator
+  value: ConditionComparator;    // canonical comparator
   [key: string]: unknown;        // satisfy Syncfusion { [k:string]:Object }[] signature
 }
 
