@@ -6,7 +6,7 @@ const path = require("path");
 
 module.exports = {
   entry: {
-    index: glob.sync("./src/**/**/*.tsx")
+    main: ["./src/index.css", "./src/index.tsx"]
   },
   target: "web",
   module: {
@@ -23,16 +23,22 @@ module.exports = {
           {
             loader: 'css-loader',
             options: {
+              importLoaders: 1,
               url: {
-                filter: (url) => {
-                  return !url.startsWith('/');
-                },
+                filter: (url) => !url.startsWith('/'), // keep public URLs untouched
+              },
+            },
+          },
+          {
+            loader: 'postcss-loader',
+            options: {
+              postcssOptions: {
+                plugins: ['autoprefixer'],
               },
             },
           },
         ],
       },
-
       {
         test: /\.svg$/,
         use: ['@svgr/webpack', 'file-loader']
@@ -60,7 +66,7 @@ module.exports = {
       favicon: "./public/favicon.ico"  // Ensure favicon path matches the public folder
     }),
     new MiniCssExtractPlugin({
-      filename: "index.css",
+      filename: "main.css",
     }),
   ],
   resolve: {
