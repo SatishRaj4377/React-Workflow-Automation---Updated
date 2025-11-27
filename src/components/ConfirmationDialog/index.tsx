@@ -2,6 +2,7 @@ import React from 'react';
 import { DialogComponent, ButtonPropsModel } from '@syncfusion/ej2-react-popups';
 import './ConfirmationDialog.css';
 
+// Props interface for ConfirmationDialog component
 interface ConfirmationDialogProps {
   isOpen: boolean;
   onClose: () => void;
@@ -16,6 +17,7 @@ interface ConfirmationDialogProps {
   variant?: 'danger' | 'primary';
 }
 
+// Confirmation dialog component for user actions
 const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
   isOpen,
   onClose,
@@ -29,7 +31,7 @@ const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
   title = "Are you sure?",
   variant = 'danger'
 }) => {
-
+  // Configure dialog action buttons with cancel and confirm actions
   const dialogButtons: ButtonPropsModel[] = [
     {
       click: onClose,
@@ -48,12 +50,11 @@ const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
     },
   ];
 
-  
+  // Handle dismiss event by calling onDismiss callback or falling back to onClose
   const handleDismiss = () => {
     if (onDismiss) onDismiss();
     else onClose();
   };
-
 
   return (
     <DialogComponent
@@ -70,6 +71,7 @@ const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
       cssClass="confirm-dialog-container"
       animationSettings={{ effect: 'None' }}
     >
+      {/* Dialog content message */}
       <div className="delete-dialog-content">
         <p>{content}</p>
       </div>
