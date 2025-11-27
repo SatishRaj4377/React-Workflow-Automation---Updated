@@ -12,6 +12,7 @@ export * from './soundUtils';
 export * from './stagger';
 export * from './stickyNoteUtils';
 export * from './thumbnailUtils';
+export * from './userhandleUtils';
 export * from './variablePickerUtils';
 export * from './wordExecutionUtils';
 export * from './workflowExecution';

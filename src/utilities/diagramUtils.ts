@@ -1,6 +1,7 @@
 import { DiagramComponent, NodeConstraints, NodeModel, SnapConstraints } from "@syncfusion/ej2-react-diagrams";
 import { DiagramSettings } from "../types";
 import { getNodeConfig, isStickyNote } from "./nodeUtils";
+import { applyStaggerMetadata, getNextStaggeredOffset } from "./stagger";
 
 // Returns the first selected node in the diagram
 export function getFirstSelectedNode(diagram: DiagramComponent | null | undefined): NodeModel | undefined {
@@ -187,3 +188,30 @@ export const  getAllTargetsBySourcePortIncludingTools = (
     .map(c => diagram.getObject(c.targetID))
     .filter(Boolean);
 }
+
+// Position new nodes with stagger effect to avoid overlap
+export const updateNodePosition = (obj: NodeModel, diagramRef: React.RefObject<DiagramComponent | null>) => {
+  if (obj.offsetX && obj.offsetX !== 0 && obj.offsetY && obj.offsetY !== 0) {
+    return; // Already positioned
+  }
+
+  const diagram = diagramRef.current as DiagramComponent;
+  if (!diagram) return;
+
+  const baseX = diagram?.scrollSettings?.viewPortWidth ? diagram.scrollSettings.viewPortWidth / 3 : 300;
+  const baseY = diagram?.scrollSettings?.viewPortHeight ? diagram.scrollSettings.viewPortHeight / 4 : 200;
+
+  // Calculate staggered position
+  const { x, y, index } = getNextStaggeredOffset(diagram, baseX, baseY, {
+    group: 'paletteNode',
+    strategy: 'grid',
+    stepX: 80 * 2,
+    stepY: 80 * 2,
+    cols: 4,
+    usePersistentIndex: true,
+  });
+
+  obj.offsetX = x;
+  obj.offsetY = y;
+  applyStaggerMetadata(obj, 'paletteNode', index);
+};

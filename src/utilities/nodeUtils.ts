@@ -2,6 +2,9 @@ import { NodeModel } from "@syncfusion/ej2-react-diagrams";
 import { NodeConfig, NodeDimensions, NodeTemplate } from "../types";
 import { getPortsForNode } from "./portUtils";
 import { NODE_DIMENSIONS } from "../constants";
+import { SelectorConstraints } from "@syncfusion/ej2-react-diagrams";
+import { buildNodeHtml, attachNodeTemplateEvents } from "../utilities/nodeTemplateUtils";
+import { initializeStickyNote } from "./stickyNoteUtils";
 
 // Creates a new node model from a node template
 export const createNodeFromTemplate = (
@@ -286,3 +289,56 @@ export const isSwitchNode = (nodeConfig: NodeConfig): boolean =>
 // Check if node is a loop node
 export const isLoopNode = (nodeConfig: NodeConfig): boolean =>
   nodeConfig?.nodeType === 'Loop';
+
+// Apply appropriate template based on node type
+export const updateNodeTemplates = (node: NodeModel, diagramRef: React.RefObject<any>) => {
+  const nodeConfig = (node.addInfo as any)?.nodeConfig as NodeConfig;
+
+  if (nodeConfig && isStickyNote(nodeConfig)) {
+    // Sticky note with markdown editor; uses the annotation template
+    initializeStickyNote(node, diagramRef);
+  } else {
+    // Regular node with HTML template
+    node.shape = {
+      type: 'HTML',
+      content: buildNodeHtml(node),
+    };
+
+    // Attach node action toolbar event handlers after DOM render
+    setTimeout(() => attachNodeTemplateEvents(node), 0);
+  }
+};
+
+// Update custom node selection styling
+export const updateNodeSelection = (nodeIds: string[] | null) => {
+  // Remove existing selection styles
+  const allNodeTemplates = document.querySelectorAll('.node-template, .sticky-note-container');
+  allNodeTemplates.forEach((template) => {
+    template.classList.remove('selected');
+  });
+
+  // Add selection to specified nodes
+  if (nodeIds && nodeIds.length > 0) {
+    nodeIds.forEach((nodeId) => {
+      const selectedTemplate = document.querySelector(`[data-node-id="${nodeId}"]`);
+      if (selectedTemplate) {
+        selectedTemplate.classList.add('selected');
+      }
+    });
+  }
+};
+
+// Control resize handle visibility based on selection
+export const updateResizeHandleVisibility = (nodeIds: string[], diagramRef: React.RefObject<any>) => {
+  const diagram = diagramRef?.current;
+  if (!diagram) return;
+
+  // Show resize for sticky notes only
+  if (nodeIds.length === 1 && nodeIds[0].startsWith('sticky-')) {
+    diagram.selectedItems.constraints = SelectorConstraints.All & ~SelectorConstraints.ToolTip;
+  } else {
+    // Hide resize for multi-selection
+    diagram.selectedItems.constraints =
+      SelectorConstraints.All & ~SelectorConstraints.ToolTip & ~SelectorConstraints.ResizeAll;
+  }
+};
