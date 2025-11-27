@@ -1,5 +1,6 @@
 export * from './conditionUtils';
 export * from './connectorUtils';
+export * from './contextMenuUtils';
 export * from './diagramUtils';
 export * from './expression';
 export * from './keyboardShortcuts';

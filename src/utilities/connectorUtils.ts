@@ -1,4 +1,4 @@
-import { ConnectorModel, UserHandleModel } from "@syncfusion/ej2-react-diagrams";
+import { ConnectorModel, UserHandleModel, ConnectorConstraints } from "@syncfusion/ej2-react-diagrams";
 import { getNodeConfig } from "./nodeUtils";
 
 // Creates a connector between two nodes
@@ -86,4 +86,106 @@ export const adjustUserHandlesForConnectorLength = (
     if (h.name === 'deleteConnector') return { ...h, offset: deleteOffset, size: length < 100 ? 21 : h.size } as UserHandleModel;
     return h;
   });
+};
+
+// --- Connector styling and validation utilities
+const GRAY_COLOR = '#9193a2ff';
+const CONNECTOR_STROKEDASH_ARR = '5 3';
+
+// Apply visual style to connector after successful connection
+export const finalizeConnectorStyle = (
+  connector: ConnectorModel,
+  diagramRef: any
+): void => {
+  const isBetweenAIAgentAndTool = isConnectorBetweenAgentAndTool(connector, diagramRef);
+
+  if (!isBetweenAIAgentAndTool) {
+    // Update to solid style when fully connected
+    setTimeout(() => {
+      connector.style = {
+        ...connector.style,
+        strokeDashArray: '',
+        opacity: 1,
+      };
+      connector.constraints =
+        (ConnectorConstraints.Default | ConnectorConstraints.ReadOnly) &
+        ~ConnectorConstraints.DragSourceEnd &
+        ~ConnectorConstraints.DragTargetEnd &
+        ~ConnectorConstraints.Drag;
+    });
+  } else {
+    // Hide target decorator for AI Agent to Tool connections
+    connector.targetDecorator = {
+      shape: 'None',
+      ...connector.targetDecorator,
+      style: {
+        ...connector.targetDecorator?.style,
+        fill: GRAY_COLOR,
+        strokeColor: GRAY_COLOR,
+      },
+    };
+  }
+};
+
+// Apply disconnected style to incomplete connectors
+export const applyDisconnectedConnectorStyle = (connector: ConnectorModel): void => {
+  connector.style = {
+    strokeColor: GRAY_COLOR,
+    strokeDashArray: CONNECTOR_STROKEDASH_ARR,
+    strokeWidth: 2,
+  };
+};
+
+// Validate and remove disconnected connectors
+export const removeDisconnectedConnectorIfInvalid = (connector: ConnectorModel, diagramRef: any): boolean => {
+  const isDisconnected =
+    !connector.sourceID ||
+    connector.sourceID.toString().trim() === '' ||
+    !connector.targetID ||
+    connector.targetID.toString().trim() === '';
+
+  if (isDisconnected && diagramRef?.current) {
+    setTimeout(() => {
+      try {
+        (diagramRef.current as any).remove(connector);
+      } catch (error) {
+        console.error('Failed to remove disconnected connector:', error);
+      }
+    }, 0);
+    return true;
+  }
+
+  return false;
+};
+
+// Update connector hover styling
+export const applyConnectorHoverStyle = (connector: any, hoverColor: string): void => {
+  connector.style = {
+    ...connector.style,
+    strokeColor: hoverColor,
+  };
+  connector.targetDecorator = {
+    ...connector.targetDecorator,
+    style: {
+      ...connector.targetDecorator?.style,
+      fill: hoverColor,
+      strokeColor: hoverColor,
+    },
+  };
+};
+
+// Reset connector to default styling
+export const resetConnectorToDefaultStyle = (connector: any): void => {
+  connector.style = {
+    ...connector.style,
+    strokeColor: GRAY_COLOR,
+  };
+  connector.targetDecorator = {
+    ...connector.targetDecorator,
+    style: {
+      ...connector.targetDecorator?.style,
+      fill: GRAY_COLOR,
+      strokeColor: GRAY_COLOR,
+    },
+  };
 };
