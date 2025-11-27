@@ -51,7 +51,7 @@
   padding: 0.2rem;
   border-radius: 8px;
   transition: all 0.3s ease;
-  max-width: 300px;
+  max-width: 750px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -91,7 +91,8 @@
   color: var(--text-primary);
   outline: none;
   min-width: 200px;
-  max-width: 300px;
+  max-width: 500px;
+  width: 500px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -233,7 +234,12 @@
   
   .project-name {
     font-size: 1.1rem;
-    max-width: 200px;
+    max-width: 400px;
+  }
+  
+  .project-name-input {
+    max-width: 300px;
+    width: 300px;
   }
 
   .settings-grid::before {
