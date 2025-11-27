@@ -5,7 +5,7 @@ import { showErrorToast, showToast } from '../../components/Toast';
 import { resolveTemplate } from '../../helper/expression';
 import { createDocxFromHtml, appendHtmlToDocx, downloadBlob } from '../../helper/wordExecutionUtils';
 
-export async function executeActionOrToolCategory(
+export async function executeActionCategory(
   _node: NodeModel,
   nodeConfig: NodeConfig,
   context: ExecutionContext

@@ -4,7 +4,7 @@ import { ExecutionContext, NodeConfig, NodeExecutionResult } from '../types';
 import { NodeModel } from '@syncfusion/ej2-react-diagrams';
 import { executeTriggerCategory } from './categories/triggerNodesExecutor';
 import { executeConditionCategory } from './categories/conditionNodesExecutor';
-import { executeActionOrToolCategory } from './categories/actionOrToolNodesExecutor';
+import { executeActionCategory } from './categories/actionNodesExecutor';
 
 export class ClientSideNodeExecutor extends BaseNodeExecutor {
   executeNode(node: NodeModel, context: ExecutionContext): Promise<NodeExecutionResult> {
@@ -37,7 +37,7 @@ export class ClientSideNodeExecutor extends BaseNodeExecutor {
         return executeConditionCategory(node, nodeConfig, context);
       case 'action':
       case 'tool':
-        return executeActionOrToolCategory(node, nodeConfig, context);
+        return executeActionCategory(node, nodeConfig, context);
       default:
         return Promise.reject({ success: false, error: `Unsupported node category: ${nodeConfig.category}` });
     }
