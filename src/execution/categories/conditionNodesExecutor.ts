@@ -1,6 +1,6 @@
 import { ExecutionContext, NodeConfig, NodeExecutionResult } from '../../types';
 import { showErrorToast } from '../../components/Toast';
-import { evaluateExpression, resolveTemplate } from '../../helper/expression'
+import { evaluateExpression, resolveTemplate } from '../../utilities/expression'
 import {
   UNARY_COMPARATORS,
   NUMERIC_RIGHT_COMPARATORS,
@@ -11,7 +11,7 @@ import {
   parsePairValues,
   compareValues,
   toTimestamp
-} from '../../helper/conditionUtils';
+} from '../../utilities/conditionUtils';
 import { NodeModel } from '@syncfusion/ej2-react-diagrams';
 
 export async function executeConditionCategory(

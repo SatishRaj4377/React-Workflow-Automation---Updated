@@ -12,14 +12,10 @@ import { useTheme } from '../../contexts/ThemeContext';
 import ConfirmationDialog from '../ConfirmationDialog';
 import { ProjectData, NodeConfig, NodeTemplate, DiagramSettings, StickyNotePosition, ToolbarAction, ExecutionContext, NodeToolbarAction, PaletteFilterContext, WorkflowData } from '../../types';
 import WorkflowProjectService from '../../services/WorkflowProjectService';
-import { applyStaggerMetadata, getNextStaggeredOffset } from '../../helper/stagger';
-import { calculateNewNodePosition, createConnector, createNodeFromTemplate, generateOptimizedThumbnail, getDefaultDiagramSettings, getNodeConfig, getNodePortById, isAiAgentNode, findAiAgentBottomConnectedNodes, getAiAgentBottomNodePosition, isAgentBottomToToolConnector, getNodeCenter, findFirstPortId, adjustNodesSpacing } from '../../helper/utilities';
-import { diagramHasChatTrigger, resetExecutionStates } from '../../helper/workflowExecution';
-import { handleEditorKeyDown } from '../../helper/keyboardShortcuts';
+import { calculateNewNodePosition, createConnector, createNodeFromTemplate, generateOptimizedThumbnail, getDefaultDiagramSettings, getNodeConfig, getNodePortById, isAiAgentNode, findAiAgentBottomConnectedNodes, getAiAgentBottomNodePosition, isAgentBottomToToolConnector, getNodeCenter, findFirstPortId, adjustNodesSpacing, handleEditorKeyDown, refreshNodeTemplate, setGlobalNodeToolbarHandler, applyStaggerMetadata, getNextStaggeredOffset, resetExecutionStates, diagramHasChatTrigger } from '../../utilities';
 import { WorkflowExecutionService } from '../../execution/WorkflowExecutionService';
 import { ChatPopup } from '../ChatPopup';
 import { MessageComponent } from '@syncfusion/ej2-react-notifications';
-import { refreshNodeTemplate, setGlobalNodeToolbarHandler } from '../../helper/utilities/nodeTemplateUtils';
 import { createSpinner, showSpinner, hideSpinner } from '@syncfusion/ej2-popups';
 import { ensureGlobalFormPopupHost } from '../FormPopup';
 

@@ -2,7 +2,7 @@ import { DiagramComponent } from '@syncfusion/ej2-react-diagrams';
 import { NodeModel } from '@syncfusion/ej2-diagrams';
 import { ExecutionContext, NodeConfig, NodeExecutionResult, NodeStatus } from '../types';
 import { IconRegistry } from '../assets/icons';
-import { getNodeConfig, isToolNode, isTriggerNode } from './utilities';
+import { getNodeConfig, isTriggerNode } from '../utilities';
 
 /**
  * Find all trigger nodes in the workflow

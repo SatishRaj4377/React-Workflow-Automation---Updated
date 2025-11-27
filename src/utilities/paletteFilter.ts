@@ -1,4 +1,4 @@
-import { PaletteCategory, PaletteCategoryLabel, PaletteFilterContext, PaletteFilterMode } from "../../types";
+import { PaletteCategory, PaletteCategoryLabel, PaletteFilterContext, PaletteFilterMode } from "../types";
 
 // Resolve the allowed sections for each palette mode
 export function getAllowedSectionsByMode(mode: PaletteFilterMode): Set<PaletteCategoryLabel> {

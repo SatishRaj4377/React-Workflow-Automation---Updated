@@ -1,16 +1,11 @@
 import React, { useEffect, useRef, useState, useMemo } from "react";
-import {
-  SidebarComponent,
-  AccordionComponent,
-  AccordionItemDirective,
-  AccordionItemsDirective,
-} from "@syncfusion/ej2-react-navigations";
+import { SidebarComponent, AccordionComponent, AccordionItemDirective, AccordionItemsDirective } from "@syncfusion/ej2-react-navigations";
 import { ButtonComponent } from "@syncfusion/ej2-react-buttons";
 import { TextBoxComponent } from "@syncfusion/ej2-react-inputs";
 import type { NodeTemplate, PaletteCategory, PaletteFilterContext } from "../../types";
 import { getNodesByPaletteCategory } from "../../constants/nodeRegistry";
 import { IconRegistry } from "../../assets/icons";
-import { getFilteredCategories } from "../../helper/utilities/paletteFilter";
+import { getFilteredCategories } from "../../utilities";
 import "./NodePaletteSidebar.css";
 
 interface SidebarProps {

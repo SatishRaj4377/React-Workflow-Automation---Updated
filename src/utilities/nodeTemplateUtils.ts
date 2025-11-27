@@ -1,8 +1,8 @@
 import { DiagramComponent, NodeModel } from '@syncfusion/ej2-react-diagrams';
-import { NodeConfig, NodeToolbarAction } from '../../types';
+import { NodeConfig, NodeToolbarAction } from '../types';
 import { getNodePortConfiguration } from './portUtils';
 import { isAiAgentNode, isSwitchNode, isLoopNode } from './nodeUtils';
-import { IconRegistry } from '../../assets/icons';
+import { IconRegistry } from '../assets/icons';
 
 // Global handler used when a local callback isn't provided
 let GLOBAL_NODE_TOOLBAR_HANDLER: ((id: string, action: NodeToolbarAction) => void) | undefined;

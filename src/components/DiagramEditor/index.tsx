@@ -1,11 +1,9 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { DiagramComponent, SnapSettingsModel, OverviewComponent, GridlinesModel, Inject, ConnectorModel, NodeModel, DiagramTools, UndoRedo, DataBinding, DiagramContextMenu, NodeConstraints, Keys, KeyModifiers, CommandManagerModel, UserHandleModel, UserHandleEventsArgs, SelectorConstraints, ConnectorConstraints, Snapping, DiagramConstraints, DiagramModel, Connector, ComplexHierarchicalTree, LayoutModel } from '@syncfusion/ej2-react-diagrams';
-import { DiagramSettings, NodeConfig, NodePortDirection, NodeToolbarAction } from '../../types';
-import { applyStaggerMetadata, getNextStaggeredOffset } from '../../helper/stagger';
-import { bringConnectorsToFront, convertMarkdownToHtml, getConnectorCornerRadius, getConnectorType, getFirstSelectedNode, getGridColor, getGridType, getNodeConfig, getPortOffset, getPortSide, getSnapConstraints, getStickyNoteTemplate, initializeNodeDimensions, isConnectorBetweenAgentAndTool, isNodeOutOfViewport, isStickyNote, prepareUserHandlePortData, updateNodeConstraints, shouldShowUserHandleForPort } from '../../helper/utilities';
-import { isAgentBottomToToolConnector, computeConnectorLength, adjustUserHandlesForConnectorLength } from '../../helper/utilities/connectorUtils';
+import { DiagramSettings, NodeConfig, NodePortDirection } from '../../types';
+import { applyStaggerMetadata, getNextStaggeredOffset } from '../../utilities/stagger';
+import { bringConnectorsToFront, convertMarkdownToHtml, getConnectorCornerRadius, getConnectorType, getFirstSelectedNode, getGridColor, getGridType, getNodeConfig, getPortOffset, getPortSide, getSnapConstraints, getStickyNoteTemplate, initializeNodeDimensions, isConnectorBetweenAgentAndTool, isNodeOutOfViewport, isStickyNote, prepareUserHandlePortData, updateNodeConstraints, shouldShowUserHandleForPort, isAgentBottomToToolConnector, computeConnectorLength, adjustUserHandlesForConnectorLength, buildNodeHtml, attachNodeTemplateEvents } from '../../utilities';
 import { DIAGRAM_MENU, NODE_MENU } from '../../constants';
-import { buildNodeHtml, attachNodeTemplateEvents } from '../../helper/utilities/nodeTemplateUtils';
 import './DiagramEditor.css';
 
 interface DiagramEditorProps {

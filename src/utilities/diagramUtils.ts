@@ -1,5 +1,5 @@
 import { DiagramComponent, NodeConstraints, NodeModel, SnapConstraints } from "@syncfusion/ej2-react-diagrams";
-import { DiagramSettings } from "../../types";
+import { DiagramSettings } from "../types";
 import { getNodeConfig, isStickyNote } from "./nodeUtils";
 
 // Returns the first selected node in the diagram

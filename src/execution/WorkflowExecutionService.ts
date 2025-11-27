@@ -1,11 +1,10 @@
 import { DiagramComponent } from '@syncfusion/ej2-react-diagrams';
 import { NodeModel } from '@syncfusion/ej2-diagrams';
-import { ExecutionContext, NodeConfig, NodeExecutionResult, WorkflowExecutionOptions, WorkflowExecutionStatus } from '../types';
-import { findTriggerNodes, findConnectedNodes, updateNodeStatus, resetExecutionStates, getTargetsByPort } from '../helper/workflowExecution';
+import { ExecutionContext, NodeExecutionResult, WorkflowExecutionOptions, WorkflowExecutionStatus } from '../types';
+import { findTriggerNodes, findConnectedNodes, updateNodeStatus, resetExecutionStates, getTargetsByPort, getNodeConfig, isIfConditionNode, isLoopNode, isSwitchNode } from '../utilities';
 import { showErrorToast, showSuccessToast } from '../components/Toast';
 import { globalExecutorRegistry } from './ExecutorRegistry';
 import { ClientSideNodeExecutor } from './ClientSideNodeExecutor';
-import { getNodeConfig, isIfConditionNode, isLoopNode, isSwitchNode } from '../helper/utilities';
 
 /**
  * Service for managing workflow execution with support for both client-side

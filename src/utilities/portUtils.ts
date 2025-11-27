@@ -1,9 +1,9 @@
 import { NodeModel, Point, PointPortModel, PortConstraints, PortModel, PortVisibility, Diagram, ConnectorModel } from "@syncfusion/ej2-react-diagrams";
-import { NodeCategories, NodeConfig, NodePortDirection, NodeType, PortConfiguration, PortSide } from "../../types";
-import { PORT_POSITIONS } from "../../constants";
-import { NODE_REGISTRY } from "../../constants/nodeRegistry";
-import { getNodeConfig, isAiAgentNode } from "./nodeUtils";
+import { NodeCategories, NodeConfig, NodePortDirection, NodeType, PortConfiguration, PortSide } from "../types";
+import { PORT_POSITIONS } from "../constants";
+import { NODE_REGISTRY } from "../constants/nodeRegistry";
 import { refreshNodeTemplate } from "./nodeTemplateUtils";
+import { getNodeConfig, isAiAgentNode } from "./nodeUtils";
 
 // Helper to find first IN/OUT port id on a node
 export const findFirstPortId = (node: NodeModel, wantOut: boolean): string => {

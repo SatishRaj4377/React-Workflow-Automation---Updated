@@ -5,7 +5,7 @@ import { TooltipComponent } from '@syncfusion/ej2-react-popups';
 import { UploaderComponent, SelectedEventArgs } from '@syncfusion/ej2-react-inputs';
 import { RichTextEditorComponent, Inject, HtmlEditor, Toolbar, Image, Link, QuickToolbar, Table, PasteCleanup, ImportExport, Resize } from '@syncfusion/ej2-react-richtexteditor';
 import { VariablePickerTextBox, VariablePickerPopup } from './VariablePickerTextBox';
-import { insertAtCaret } from '../../helper/variablePickerUtils';
+import { insertAtCaret } from '../../utilities/variablePickerUtils';
 import './NodeConfigSidebar.css';
 
 export type WordNodeOperation = 'Write' | 'Read' | 'Update (Mapper)';

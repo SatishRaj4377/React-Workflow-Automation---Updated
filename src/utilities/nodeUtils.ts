@@ -1,7 +1,7 @@
 import { NodeModel } from "@syncfusion/ej2-react-diagrams";
-import { NodeConfig, NodeDimensions, NodeTemplate } from "../../types";
+import { NodeConfig, NodeDimensions, NodeTemplate } from "../types";
 import { getPortsForNode } from "./portUtils";
-import { NODE_DIMENSIONS } from "../../constants";
+import { NODE_DIMENSIONS } from "../constants";
 
 // Creates a new node model from a node template
 export const createNodeFromTemplate = (

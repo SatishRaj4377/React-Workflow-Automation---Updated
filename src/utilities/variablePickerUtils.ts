@@ -1,6 +1,6 @@
 import { Diagram } from '@syncfusion/ej2-react-diagrams';
 import { ExecutionContext, Variable, VariableGroup } from '../types';
-import { getNodeConfig } from './utilities';
+import { getNodeConfig } from '../utilities';
 
 // ------ VARIBALE PICKER DATA UTILS ------
 

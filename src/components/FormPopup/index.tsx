@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { createRoot, Root } from 'react-dom/client';
 import { Draggable } from '@syncfusion/ej2-base';
-import { ensurePortalRoot } from '../../helper/variablePickerUtils';
+import { ensurePortalRoot } from '../../utilities/variablePickerUtils';
 import { ButtonComponent } from '@syncfusion/ej2-react-buttons';
 import { DatePickerComponent, TimePickerComponent } from '@syncfusion/ej2-react-calendars';
 import './FormPopup.css';

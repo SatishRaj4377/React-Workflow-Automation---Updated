@@ -2,8 +2,8 @@ import emailjs from '@emailjs/browser';
 import { ExecutionContext, NodeConfig, NodeExecutionResult } from '../../types';
 import { NodeModel } from '@syncfusion/ej2-react-diagrams';
 import { showErrorToast, showToast } from '../../components/Toast';
-import { resolveTemplate } from '../../helper/expression';
-import { createDocxFromHtml, appendHtmlToDocx, downloadBlob } from '../../helper/wordExecutionUtils';
+import { resolveTemplate } from '../../utilities/expression';
+import { createDocxFromHtml, appendHtmlToDocx, downloadBlob } from '../../utilities/wordExecutionUtils';
 
 export async function executeActionCategory(
   _node: NodeModel,
@@ -367,7 +367,7 @@ async function executeNotifyNode(nodeConfig: NodeConfig, context: ExecutionConte
   showToast({ id: `notify-${Date.now()}`, title, content, type: rawType, variant: 'notification' });
 
   // Sound cue
-  const { playNotificationSound } = await import('../../helper/soundUtils');
+  const { playNotificationSound } = await import('../../utilities/soundUtils');
   playNotificationSound(rawType);
 
   const out: NodeExecutionResult = { success: true, data: { shown: true, title, content, type: rawType, variant: 'notification' } };

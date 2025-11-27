@@ -3,7 +3,7 @@ import ReactDOMServer from 'react-dom/server';
 import { createPortal } from 'react-dom';
 import { Draggable, getRandomId } from '@syncfusion/ej2-base';
 import { AIAssistViewComponent  } from '@syncfusion/ej2-react-interactive-chat';
-import { ensurePortalRoot } from '../../helper/variablePickerUtils';
+import { ensurePortalRoot } from '../../utilities/variablePickerUtils';
 import { ButtonComponent } from '@syncfusion/ej2-react-buttons';
 import { IconRegistry } from '../../assets/icons';
 import './ChatPopup.css';
