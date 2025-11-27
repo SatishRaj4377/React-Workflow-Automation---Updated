@@ -15,7 +15,7 @@ npm install
 
 ## To Run the application
 
-Run `npm start` for a dev server. Navigate to `http://localhost:8080/`.
+Run `npm start` for a dev server. Navigate to `http://localhost:3000/`.
 
 ## Live Demo
 

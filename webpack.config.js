@@ -75,7 +75,16 @@ module.exports = {
   output: {
     filename: "[name].js",
     path: path.resolve(__dirname, "dist"),
-    clean: true, // Cleans output folder before each build (optional, but good to add)
+    clean: true,
+    publicPath: "/",
+  },
+  devServer: {
+    static: {
+      directory: path.join(__dirname, "public"),
+    },
+    historyApiFallback: true,
+    port: 3000,
+    open: true,
   },
   optimization: {
     minimize: true,
