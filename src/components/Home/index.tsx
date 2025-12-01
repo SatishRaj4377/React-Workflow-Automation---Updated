@@ -26,7 +26,6 @@ interface HomeProps {
   onMultipleDeleteProjects: (projectIds: string[]) => void;
   onBookmarkToggle?: (projectId: string) => void;
   onSaveProject: (project: ProjectData) => void;
-  bookmarkedProjects?: string[];
 }
 
 const Home: React.FC<HomeProps> = ({
@@ -36,8 +35,7 @@ const Home: React.FC<HomeProps> = ({
   onDeleteProject,
   onMultipleDeleteProjects,
   onBookmarkToggle,
-  onSaveProject,
-  bookmarkedProjects = []
+  onSaveProject
 }) => {
   const searchRef = useRef<TextBoxComponent>(null);
   const sidebarRef = useRef<ListViewComponent>(null);
@@ -89,8 +87,6 @@ const Home: React.FC<HomeProps> = ({
     event.preventDefault();
     event.stopPropagation();
     
-    // Use setTimeout to ensure the UI update happens after the current event cycle
-    // This prevents conflicts with other UI elements like dropdowns
     setTimeout(() => {
       if (onBookmarkToggle) {
         onBookmarkToggle(projectId);
@@ -159,7 +155,8 @@ const Home: React.FC<HomeProps> = ({
   };
 
 
-  const isBookmarked = useCallback((projectId: string) => bookmarkedProjects.includes(projectId), [bookmarkedProjects]);
+  const bookmarkedIds = useMemo(() => WorkflowProjectService.getBookmarkedProjectIds(), [projects]);
+  const isBookmarked = useCallback((projectId: string) => bookmarkedIds.includes(projectId), [bookmarkedIds]);
 
   // Generate stable keys that don't cause unnecessary re-renders
   const getProjectKey = useCallback((project: ProjectData, index: number, prefix: string = '') => {

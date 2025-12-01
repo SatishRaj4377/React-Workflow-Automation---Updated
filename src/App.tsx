@@ -24,7 +24,6 @@ enableRipple(true);
 
 type AppOutletContext = {
   projects: ProjectData[];
-  bookmarkedProjects: string[];
   handleCreateNew: () => void;
   handleOpenProject: (project: ProjectData) => void;
   handleDeleteProject: (projectId: string) => void;
@@ -74,14 +73,11 @@ const AppContent: React.FC = () => {
     navigate(`/workflow/${project.id}`);
   };
 
-  const bookmarkedProjects = WorkflowProjectService.getBookmarkedProjectIds();
-
   return (
     <div className="app-container" data-theme={theme}>
       <Outlet
         context={{
           projects,
-          bookmarkedProjects,
           handleCreateNew,
           handleOpenProject,
           handleDeleteProject,
@@ -102,7 +98,6 @@ function useAppOutlet() {
 const HomeRoute: React.FC = () => {
   const {
     projects,
-    bookmarkedProjects,
     handleCreateNew,
     handleOpenProject,
     handleDeleteProject,
@@ -114,7 +109,6 @@ const HomeRoute: React.FC = () => {
   return (
     <Home
       projects={projects}
-      bookmarkedProjects={bookmarkedProjects}
       onCreateNew={handleCreateNew}
       onOpenProject={handleOpenProject}
       onDeleteProject={handleDeleteProject}
