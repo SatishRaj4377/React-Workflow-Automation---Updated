@@ -477,7 +477,7 @@ background-color: var(--background-color);
 
 /* Responsive Design */
 @media (max-width: 768px) {
-  .e-sidebar.custom-config-panel:not(.maximized) {
+  .e-sidebar {
     width: 300px !important;
   }
   

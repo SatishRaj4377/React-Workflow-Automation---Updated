@@ -7,10 +7,6 @@ import { handleStickyNoteEditMode } from '../../utilities/stickyNoteUtils';
 import { filterContextMenuItems, getAvailableContextMenuIds } from '../../utilities/contextMenuUtils';
 import './DiagramEditor.css';
 
-// ============================================================================
-// Type Definitions
-// ============================================================================
-
 interface DiagramEditorProps {
   onAddNode?: () => void;
   onNodeDoubleClick: (nodeId: string) => void;
