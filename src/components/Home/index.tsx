@@ -423,14 +423,13 @@ const Home: React.FC<HomeProps> = ({
                 )}
               </div>
 
-              {/* Displaying an empty state when there are no projects */}
+              {/* Displaying an empty state when there are No workflowprojects */}
               {filteredAndSortedProjects.length === 0 ? (
-                // When no projects found using search action
-                searchTerm && projects.length > 0 ? (
-                  <EmptyState type="search" />
-                ) : (
-                // When no projects are created yet
+                // If no workflows exist at all, show create new; otherwise show "no results"
+                projects.length === 0 ? (
                   <EmptyState type="empty" onCreateNew={onCreateNew} />
+                ) : (
+                  <EmptyState type="search" />
                 )
               ) : (
                 // Display the projects
