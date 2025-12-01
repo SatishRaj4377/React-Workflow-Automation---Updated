@@ -30,9 +30,10 @@ interface FormPopupProps {
   description?: string;
   fields: FormField[];
   onSubmit?: (payload: { values: string[]; fields: FormField[] }) => void;
-  showPreviewBadge?: boolean; // text is generic ("Form")
+  showPreviewBadge?: boolean;
 }
 
+// Helper to provide an initial empty value for form fields
 const emptyValFor = () => '';
 
 const FormPopup: React.FC<FormPopupProps> = ({
@@ -44,18 +45,30 @@ const FormPopup: React.FC<FormPopupProps> = ({
   onSubmit: onSubmitExternal,
   showPreviewBadge,
 }) => {
+  // -----------------------------------------------------------------------
+  // Refs
+  // -----------------------------------------------------------------------
   const popupRef = useRef<HTMLDivElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
   const popupHeightRef = useRef('0px');
   const dragRef = useRef<Draggable | null>(null);
+
+  // -----------------------------------------------------------------------
+  // Local UI state
+  // -----------------------------------------------------------------------
   const [isMinimized, setIsMinimized] = useState(false);
   const [errors, setErrors] = useState<string[]>(fields.map(() => ''));
   const [submitted, setSubmitted] = useState(false);
-  
+
+  // Field values derived from `fields` prop
   const initialValues = useMemo(() => fields.map(() => emptyValFor()), [fields]);
   const [values, setValues] = useState<string[]>(initialValues);
 
-  // Reset when fields change or popup reopens
+  // -----------------------------------------------------------------------
+  // Effects
+  // - reset values when popup opens or fields change
+  // - enable dragging for the popup when visible
+  // -----------------------------------------------------------------------
   useEffect(() => {
     if (open) {
       setValues(fields.map(() => emptyValFor()));
@@ -79,6 +92,7 @@ const FormPopup: React.FC<FormPopupProps> = ({
     };
   }, [open]);
 
+  // Toggle minimize / restore popup height
   const toggleMinimize = () => {
     if (!popupRef.current) return;
     if (popupRef.current.style.height === '0px') {
@@ -126,15 +140,16 @@ const FormPopup: React.FC<FormPopupProps> = ({
     return nextErrors;
   };
 
+  // Update a single field value and clear its error if present
   const onInputChange = (idx: number, val: string) => {
     const next = values.slice();
     next[idx] = val;
     setValues(next);
 
-    // Optimistically clear error when user provides a value
     if (val && errors[idx]) setFieldError(idx, '');
   };
 
+  // Render a single form field based on its type
   const renderField = (f: FormField, idx: number) => {
     const id = `form-field-${idx}`;
     const name = `field_${f.type}_${idx}`; // kept for consistency; not required for custom validation
@@ -253,6 +268,7 @@ const FormPopup: React.FC<FormPopupProps> = ({
     }
   };
 
+  // Form submit handler: validate, focus first invalid and forward payload
   const onSubmit = (e?: any) => {
     e?.preventDefault?.();
     const nextErrors = validateForm();
