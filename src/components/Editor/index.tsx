@@ -261,7 +261,7 @@ const Editor: React.FC<EditorProps> = ({project, onSaveProject, onBackToHome, })
     try {
       const res = await svc.executeSingleNode(nodeId);
       if (res?.success) {
-        showSuccessToast('Node executed', "View results in the node's Configuration Panel Output tab");
+        showSuccessToast('Node executed', "Results available in the node Configuration Panel Output tab.");
         return;
       }
     } catch (err) {}

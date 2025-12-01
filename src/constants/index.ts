@@ -107,10 +107,6 @@ export const PORT_POSITIONS = {
     BOTTOM_RIGHT: { x: 0.85, y: 1 },
 };
 
-export const AUTH_NODE_TYPES: NodeType[] = [
-  'EmailJS',
-];
-
 // ---- Condition operation types
 export type OpKind = 'String' | 'Number' | 'Boolean' | 'Date' | 'Time' | 'Array' | 'Object';
 

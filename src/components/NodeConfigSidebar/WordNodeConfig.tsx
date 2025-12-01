@@ -2,10 +2,11 @@ import React, { useEffect, useMemo, useRef, useState, useCallback } from 'react'
 import { DropDownListComponent } from '@syncfusion/ej2-react-dropdowns';
 import { ButtonComponent } from '@syncfusion/ej2-react-buttons';
 import { TooltipComponent } from '@syncfusion/ej2-react-popups';
-import { UploaderComponent, SelectedEventArgs } from '@syncfusion/ej2-react-inputs';
+import { UploaderComponent } from '@syncfusion/ej2-react-inputs';
 import { RichTextEditorComponent, Inject, HtmlEditor, Toolbar, Image, Link, QuickToolbar, Table, PasteCleanup, ImportExport, Resize } from '@syncfusion/ej2-react-richtexteditor';
 import { VariablePickerTextBox, VariablePickerPopup } from './VariablePickerTextBox';
 import { insertAtCaret } from '../../utilities/variablePickerUtils';
+import { createUploadHandler, createRemovalHandler, createPreviewHandler, buildUploaderFiles } from '../../utilities/fileManagementUtils';
 import './NodeConfigSidebar.css';
 
 export type WordNodeOperation = 'Write' | 'Read' | 'Update (Mapper)';
@@ -14,20 +15,17 @@ type Props = {
   settings: any;
   onPatch: (patch: Record<string, any>) => void;
   variableGroups: any[];
-  variablesLoading: boolean;
 };
 
 // Build default files list dynamically from /data/Word Files/*.docx at bundle time (webpack)
 function loadDefaultWordFiles(): Array<{ key: string; name: string; url: string }> {
   try {
-    // Require all .docx files under the folder
     const ctx = (require as any).context('../../data/Word Files', false, /\.docx?$/i);
     const keys = ctx.keys();
     return keys.map((k: string) => {
       const url: string = ctx(k)?.default || ctx(k);
       const file = k.split('/').pop() || k;
-      const base = file.replace(/\.(docx?|DOCX?)$/, '');
-      // Humanized name: replace underscores/dashes with spaces
+      const base = file.replace(/\.[^.]+$/, '');
       const name = base.replace(/[\-_]+/g, ' ').trim();
       const key = base.toLowerCase().replace(/[^a-z0-9]+/g, '-');
       return { key, name, url };
@@ -36,11 +34,11 @@ function loadDefaultWordFiles(): Array<{ key: string; name: string; url: string 
     return [];
   }
 }
-const DEFAULT_WORD_FILES: Array<{ key: string; name: string; url: string }> = loadDefaultWordFiles();
+const DEFAULT_WORD_FILES = loadDefaultWordFiles();
 
 const OPERATIONS: WordNodeOperation[] = ['Write', 'Read', 'Update (Mapper)'];
 
-const WordNodeConfig: React.FC<Props> = ({ settings, onPatch, variableGroups, variablesLoading }) => {
+const WordNodeConfig: React.FC<Props> = ({ settings, onPatch, variableGroups }) => {
   const [localFile, setLocalFile] = useState<File | null>(null);
   const [localFileUrl, setLocalFileUrl] = useState<string>('');
   const [previewError, setPreviewError] = useState<string>('');
@@ -96,63 +94,82 @@ const WordNodeConfig: React.FC<Props> = ({ settings, onPatch, variableGroups, va
 
   const patch = (p: Record<string, any>) => onPatch(p);
 
-  // Uploader handlers - Fixed to prevent document disappearing
-  const onUploaderSelected = useCallback((args: SelectedEventArgs) => {
-    const raw = (args as any)?.filesData?.[0];
-    const file: File | undefined = (raw && (raw as any).rawFile) || (args as any)?.event?.target?.files?.[0];
-    if (!file) return;
-    
-    const valid = /\.(docx?|DOCX?)$/i.test(file.name);
-    if (!valid) {
-      setPreviewError('Please select a .doc or .docx file.');
-      return;
-    }
-    
-    // Revoke old URL if exists (from settings or local)
-    if (settings?.deviceFileUrl) URL.revokeObjectURL(settings.deviceFileUrl);
-    if (localFileUrl) URL.revokeObjectURL(localFileUrl);
+  // File upload handler
+  const onUploaderSelected = useCallback(
+    createUploadHandler({
+      validExtensions: ['.doc', '.docx'],
+      onFileSelected: (file, url) => {
+        setLocalFile(file);
+        setLocalFileUrl(url);
+        patch({
+          defaultFileKey: undefined,
+          fileSource: 'device',
+          fileName: file.name,
+          deviceFileUrl: url,
+          deviceFileMeta: { name: file.name, size: file.size, type: file.type },
+        });
+      },
+      onError: setPreviewError,
+      settings,
+      setPreviewError,
+    }),
+    [settings]
+  );
 
-    // Create new blob URL and persist it
-    const url = URL.createObjectURL(file);
-    setLocalFile(file);
-    setLocalFileUrl(url);
-    setPreviewError('');
+  // File removal handler
+  const onUploaderRemoving = useCallback(
+    createRemovalHandler({
+      onFileRemoved: () => {
+        setLocalFile(null);
+        setLocalFileUrl('');
+        patch({
+          fileSource: undefined,
+          fileName: undefined,
+          defaultFileKey: undefined,
+          deviceFileUrl: undefined,
+          deviceFileMeta: undefined,
+        });
+      },
+      settings,
+      localFileUrl,
+    }),
+    [settings, localFileUrl]
+  );
 
-    // Persist in node settings so it survives re-renders/mounts
-    patch({ 
-      defaultFileKey: undefined, 
-      fileSource: 'device', 
-      fileName: file.name,
-      deviceFileUrl: url,
-      deviceFileMeta: { name: file.name, size: file.size, type: file.type }
-    });
-    
-    // Uploader file list is controlled via the `files` prop; no imperative clear required
-  }, [settings?.deviceFileUrl, localFileUrl]);
+  const onRemoveChosen = useCallback(
+    createRemovalHandler({
+      onFileRemoved: () => {
+        setLocalFile(null);
+        setLocalFileUrl('');
+        patch({
+          fileSource: undefined,
+          fileName: undefined,
+          defaultFileKey: undefined,
+          deviceFileUrl: undefined,
+          deviceFileMeta: undefined,
+        });
+      },
+      settings,
+      localFileUrl,
+    }),
+    [settings, localFileUrl]
+  );
 
-  const onUploaderRemoving = useCallback(() => {
-    // Sync local state when user removes from the uploader list
-    if (settings?.deviceFileUrl) URL.revokeObjectURL(settings.deviceFileUrl);
-    if (localFileUrl) URL.revokeObjectURL(localFileUrl);
-    setLocalFile(null);
-    setLocalFileUrl('');
-    patch({ fileSource: undefined, fileName: undefined, defaultFileKey: undefined, deviceFileUrl: undefined, deviceFileMeta: undefined });
-  }, [settings?.deviceFileUrl, localFileUrl]);
-
-  const onRemoveChosen = useCallback(() => {
-    if (settings?.deviceFileUrl) URL.revokeObjectURL(settings.deviceFileUrl);
-    if (localFileUrl) URL.revokeObjectURL(localFileUrl);
-    setLocalFile(null);
-    setLocalFileUrl('');
-    // Clear any default selection too
-    patch({ fileSource: undefined, fileName: undefined, defaultFileKey: undefined, deviceFileUrl: undefined, deviceFileMeta: undefined });
-  }, [settings?.deviceFileUrl, localFileUrl]);
+  // File preview handler
+  const onPreview = useCallback(
+    createPreviewHandler({
+      chosenUrl,
+      localFile,
+      localFileUrl,
+      onError: setPreviewError,
+    }),
+    [chosenUrl, localFile, localFileUrl]
+  );
 
   const onSelectDefault = (e: any) => {
     if (!e?.value) return;
     const sel = DEFAULT_WORD_FILES.find((d) => d.key === e.value);
     if (sel) {
-      // Clear any local-file and persist default selection
       if (localFileUrl) URL.revokeObjectURL(localFileUrl);
       setLocalFile(null);
       setLocalFileUrl('');
@@ -164,40 +181,6 @@ const WordNodeConfig: React.FC<Props> = ({ settings, onPatch, variableGroups, va
       });
     }
   };
-
-  // Simple preview - just open the file in system
-  const onPreview = useCallback(() => {
-    setPreviewError('');
-    if (!chosenUrl && !localFile) {
-      setPreviewError('No file selected.');
-      return;
-    }
-    
-    try {
-      // For local files, open the blob URL
-      if (localFile && localFileUrl) {
-        window.open(localFileUrl, '_blank');
-        return;
-      }
-      
-      // For default templates, fetch and open
-      if (chosenUrl) {
-        fetch(chosenUrl)
-          .then(res => res.blob())
-          .then(blob => {
-            const blobUrl = URL.createObjectURL(blob);
-            window.open(blobUrl, '_blank');
-            // Note: blobUrl will be cleaned up when tab is closed
-          })
-          .catch(() => {
-            setPreviewError('Unable to open file.');
-          });
-      }
-    } catch (err) {
-      console.error('Error opening file:', err);
-      setPreviewError('Unable to open file.');
-    }
-  }, [chosenUrl, localFile, localFileUrl]);
 
   // --- Placeholder detection (for Update Mapper) ---
   const extractPlaceholders = async () => {
@@ -270,11 +253,7 @@ const WordNodeConfig: React.FC<Props> = ({ settings, onPatch, variableGroups, va
           dropArea=".config-panel-content"
           showFileList={true}
           cssClass="word-uploader"
-          files={
-            settings?.fileSource === 'device' && settings?.deviceFileMeta
-              ? ([{ name: settings.deviceFileMeta.name, size: settings.deviceFileMeta.size, type: settings.deviceFileMeta.type }] as any)
-              : (localFile ? ([{ name: localFile.name, size: localFile.size, type: localFile.type }] as any) : ([] as any))
-          }
+          files={buildUploaderFiles({ settings, localFile }) as any}
         />
       )}
 
@@ -414,7 +393,6 @@ const WordNodeConfig: React.FC<Props> = ({ settings, onPatch, variableGroups, va
           onClose={() => setRteVarPickerOpen(false)}
           onPick={handleRteVariablePick}
           variableGroups={variableGroups}
-          loading={variablesLoading}
           zIndex={1000020}
         />
       </div>
@@ -460,7 +438,6 @@ const WordNodeConfig: React.FC<Props> = ({ settings, onPatch, variableGroups, va
                     placeholder="Value"
                     cssClass="config-input"
                     variableGroups={variableGroups}
-                    variablesLoading={variablesLoading}
                   />
                 </div>
               ))}
@@ -479,13 +456,13 @@ const WordNodeConfig: React.FC<Props> = ({ settings, onPatch, variableGroups, va
             <TooltipComponent content="Returns the specified value as the chat response, if chat trigger is attached.">
               <span className="e-icons e-circle-info help-icon"></span>
             </TooltipComponent>
-          </div>        <VariablePickerTextBox
+          </div>
+        <VariablePickerTextBox
           value={settings.chatResponse ?? ''}
           onChange={(val) => patch({ chatResponse: val })}
           placeholder="Type a message or use variables"
           cssClass="config-input"
           variableGroups={variableGroups}
-          variablesLoading={variablesLoading}
         />
       </div>
     )

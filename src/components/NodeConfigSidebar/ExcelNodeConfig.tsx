@@ -3,15 +3,15 @@ import { DropDownListComponent } from '@syncfusion/ej2-react-dropdowns';
 import { TextBoxComponent, NumericTextBoxComponent } from '@syncfusion/ej2-react-inputs';
 import { ButtonComponent } from '@syncfusion/ej2-react-buttons';
 import { TooltipComponent } from '@syncfusion/ej2-react-popups';
-import { UploaderComponent, SelectedEventArgs } from '@syncfusion/ej2-react-inputs';
+import { UploaderComponent } from '@syncfusion/ej2-react-inputs';
 import { VariablePickerTextBox } from './VariablePickerTextBox';
+import { createUploadHandler, createRemovalHandler, createPreviewHandler, buildUploaderFiles } from '../../utilities/fileManagementUtils';
 import './NodeConfigSidebar.css';
 
 type Props = {
   settings: any; // selectedNode.settings.general
   onPatch: (patch: Record<string, any>) => void; // merges into settings.general
   variableGroups: any[];
-  variablesLoading: boolean;
 };
 
 const OPERATIONS = [
@@ -31,7 +31,7 @@ function loadDefaultExcelFiles(): Array<{ key: string; name: string; url: string
     return keys.map((k: string) => {
       const url: string = ctx(k)?.default || ctx(k);
       const file = k.split('/').pop() || k;
-      const base = file.replace(/\.(xlsx?|XLSX?)$/, '');
+      const base = file.replace(/\.[^.]+$/, '');
       const name = base.replace(/[\-_]+/g, ' ').trim();
       const key = base.toLowerCase().replace(/[^a-z0-9]+/g, '-');
       return { key, name, url };
@@ -40,14 +40,14 @@ function loadDefaultExcelFiles(): Array<{ key: string; name: string; url: string
     return [];
   }
 }
-const DEFAULT_EXCEL_FILES: Array<{ key: string; name: string; url: string }> = loadDefaultExcelFiles();
+const DEFAULT_EXCEL_FILES = loadDefaultExcelFiles();
 
 const COMBINE_FILTERS = [
   { text: 'AND (match all)', value: 'AND' },
   { text: 'OR (match any)', value: 'OR' },
 ];
 
-const ExcelNodeConfig: React.FC<Props> = ({ settings, onPatch, variableGroups, variablesLoading }) => {
+const ExcelNodeConfig: React.FC<Props> = ({ settings, onPatch, variableGroups }) => {
   // File state
   const [localFile, setLocalFile] = useState<File | null>(null);
   const [localFileUrl, setLocalFileUrl] = useState<string>('');
@@ -80,7 +80,6 @@ const ExcelNodeConfig: React.FC<Props> = ({ settings, onPatch, variableGroups, v
 
   const patch = (p: Record<string, any>) => onPatch(p);
 
-  // Helpers: column letter/index conversions (for delete row/column UI)
   const colLetterToIndex = (s: string): number => {
     if (!s) return 0;
     let n = 0;
@@ -104,51 +103,68 @@ const ExcelNodeConfig: React.FC<Props> = ({ settings, onPatch, variableGroups, v
   };
 
   // Uploader handlers
-  const onUploaderSelected = useCallback((args: SelectedEventArgs) => {
-    const raw = (args as any)?.filesData?.[0];
-    const file: File | undefined = (raw && (raw as any).rawFile) || (args as any)?.event?.target?.files?.[0];
-    if (!file) return;
-    const valid = /\.(xlsx?|XLSX?)$/i.test(file.name);
-    if (!valid) {
-      setPreviewError('Please select a .xls or .xlsx file.');
-      return;
-    }
-    if (settings?.deviceFileUrl) URL.revokeObjectURL(settings.deviceFileUrl);
-    if (localFileUrl) URL.revokeObjectURL(localFileUrl);
+  const onUploaderSelected = useCallback(
+    createUploadHandler({
+      validExtensions: ['.xls', '.xlsx'],
+      onFileSelected: (file, url) => {
+        setLocalFile(file);
+        setLocalFileUrl(url);
+        patch({
+          defaultFileKey: undefined,
+          fileSource: 'device',
+          fileName: file.name,
+          deviceFileUrl: url,
+          deviceFileMeta: { name: file.name, size: file.size, type: file.type },
+        });
+      },
+      onError: setPreviewError,
+      settings,
+      setPreviewError,
+    }),
+    [settings]
+  );
 
-    const url = URL.createObjectURL(file);
-    setLocalFile(file);
-    setLocalFileUrl(url);
-    setPreviewError('');
+  const onUploaderRemoving = useCallback(
+    createRemovalHandler({
+      onFileRemoved: () => {
+        setLocalFile(null);
+        setLocalFileUrl('');
+        setSheetNames([]);
+        setHeadersBySheet({});
+        patch({
+          fileSource: undefined,
+          fileName: undefined,
+          defaultFileKey: undefined,
+          deviceFileUrl: undefined,
+          deviceFileMeta: undefined,
+        });
+      },
+      settings,
+      localFileUrl,
+    }),
+    [settings, localFileUrl]
+  );
 
-    patch({
-      defaultFileKey: undefined,
-      fileSource: 'device',
-      fileName: file.name,
-      deviceFileUrl: url,
-      deviceFileMeta: { name: file.name, size: file.size, type: file.type },
-    });
-  }, [settings?.deviceFileUrl, localFileUrl]);
-
-  const onUploaderRemoving = useCallback(() => {
-    if (settings?.deviceFileUrl) URL.revokeObjectURL(settings.deviceFileUrl);
-    if (localFileUrl) URL.revokeObjectURL(localFileUrl);
-    setLocalFile(null);
-    setLocalFileUrl('');
-    setSheetNames([]);
-    setHeadersBySheet({});
-    patch({ fileSource: undefined, fileName: undefined, defaultFileKey: undefined, deviceFileUrl: undefined, deviceFileMeta: undefined });
-  }, [settings?.deviceFileUrl, localFileUrl]);
-
-  const onRemoveChosen = useCallback(() => {
-    if (settings?.deviceFileUrl) URL.revokeObjectURL(settings.deviceFileUrl);
-    if (localFileUrl) URL.revokeObjectURL(localFileUrl);
-    setLocalFile(null);
-    setLocalFileUrl('');
-    setSheetNames([]);
-    setHeadersBySheet({});
-    patch({ fileSource: undefined, fileName: undefined, defaultFileKey: undefined, deviceFileUrl: undefined, deviceFileMeta: undefined });
-  }, [settings?.deviceFileUrl, localFileUrl]);
+  const onRemoveChosen = useCallback(
+    createRemovalHandler({
+      onFileRemoved: () => {
+        setLocalFile(null);
+        setLocalFileUrl('');
+        setSheetNames([]);
+        setHeadersBySheet({});
+        patch({
+          fileSource: undefined,
+          fileName: undefined,
+          defaultFileKey: undefined,
+          deviceFileUrl: undefined,
+          deviceFileMeta: undefined,
+        });
+      },
+      settings,
+      localFileUrl,
+    }),
+    [settings, localFileUrl]
+  );
 
   const onSelectDefault = (e: any) => {
     if (!e?.value) return;
@@ -165,30 +181,15 @@ const ExcelNodeConfig: React.FC<Props> = ({ settings, onPatch, variableGroups, v
   };
 
   // Preview (open/download)
-  const onPreview = useCallback(() => {
-    setPreviewError('');
-    if (!chosenUrl && !localFile) {
-      setPreviewError('No file selected.');
-      return;
-    }
-    try {
-      if (localFile && localFileUrl) {
-        window.open(localFileUrl, '_blank');
-        return;
-      }
-      if (chosenUrl) {
-        fetch(chosenUrl)
-          .then((res) => res.blob())
-          .then((blob) => {
-            const blobUrl = URL.createObjectURL(blob);
-            window.open(blobUrl, '_blank');
-          })
-          .catch(() => setPreviewError('Unable to open file.'));
-      }
-    } catch (err) {
-      setPreviewError('Unable to open file.');
-    }
-  }, [chosenUrl, localFile, localFileUrl]);
+  const onPreview = useCallback(
+    createPreviewHandler({
+      chosenUrl,
+      localFile,
+      localFileUrl,
+      onError: setPreviewError,
+    }),
+    [chosenUrl, localFile, localFileUrl]
+  );
 
   // Inspect workbook: list sheets and headers
   const inspectWorkbook = useCallback(async () => {
@@ -266,11 +267,7 @@ const ExcelNodeConfig: React.FC<Props> = ({ settings, onPatch, variableGroups, v
           dropArea=".config-panel-content"
           showFileList={true}
           cssClass="word-uploader"
-          files={
-            settings?.fileSource === 'device' && settings?.deviceFileMeta
-              ? ([{ name: settings.deviceFileMeta.name, size: settings.deviceFileMeta.size, type: settings.deviceFileMeta.type }] as any)
-              : (localFile ? ([{ name: localFile.name, size: localFile.size, type: localFile.type }] as any) : ([] as any))
-          }
+          files={buildUploaderFiles({ settings, localFile }) as any}
         />
       )}
 
@@ -479,7 +476,6 @@ const ExcelNodeConfig: React.FC<Props> = ({ settings, onPatch, variableGroups, v
                     placeholder="Value"
                     cssClass="config-input"
                     variableGroups={variableGroups}
-                    variablesLoading={variablesLoading}
                   />
                 </div>
               ))}
@@ -538,7 +534,6 @@ const ExcelNodeConfig: React.FC<Props> = ({ settings, onPatch, variableGroups, v
                     placeholder="New value"
                     cssClass="config-input"
                     variableGroups={variableGroups}
-                    variablesLoading={variablesLoading}
                   />
                 </div>
               ))}
@@ -669,7 +664,6 @@ const ExcelNodeConfig: React.FC<Props> = ({ settings, onPatch, variableGroups, v
                 placeholder="Value"
                 cssClass="config-input"
                 variableGroups={variableGroups}
-                variablesLoading={variablesLoading}
               />
               <ButtonComponent
                 cssClass="flat-btn e-flat"

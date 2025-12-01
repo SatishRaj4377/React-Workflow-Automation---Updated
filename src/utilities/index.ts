@@ -7,6 +7,7 @@ export * from './keyboardShortcuts';
 export * from './nodeTemplateUtils';
 export * from './nodeUtils';
 export * from './editorUtils';
+export * from './fileManagementUtils';
 export * from './paletteFilter';
 export * from './portUtils';
 export * from './soundUtils';

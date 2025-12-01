@@ -17,7 +17,6 @@ type PickerPopupProps = {
   onClose: () => void;              // close handler
   onPick: (variable: Variable) => void; // called when a JSON key is picked
   variableGroups: VariableGroup[];  // available groups
-  loading: boolean;                 // loading state
   zIndex?: number;                  // stacking
 };
 
@@ -27,7 +26,6 @@ export const VariablePickerPopup: React.FC<PickerPopupProps> = ({
   onClose,
   onPick,
   variableGroups,
-  loading,
   zIndex = 1000010,
 }) => {
   const popupRef = useRef<HTMLDivElement>(null);
@@ -182,21 +180,14 @@ export const VariablePickerPopup: React.FC<PickerPopupProps> = ({
         className="vp-body"
         style={{ flex: '1 1 auto', overflow: 'auto', padding: '.35rem .5rem .6rem' }}
       >
-        {loading && (
-          <div className="vp-loading" style={{ padding: '.75rem', fontSize: '.85rem' }}>
-            Loading available variables…
-          </div>
-        )}
-
-        {!loading && variableGroups.length === 0 && (
+        {!variableGroups.length && (
           <div className="vp-empty" style={{ padding: '.75rem', fontSize: '.85rem' }}>
             No variables available from previous steps.
           </div>
         )}
 
         {/* Render only JsonVisualizer per group */}
-        {!loading &&
-          variableGroups.map((g) => (
+        {variableGroups.map((g) => (
             <div key={g.nodeId} className="vp-group" style={{ paddingBottom: '.5rem' }}>
               <div
                 className="vp-group-title"
@@ -278,7 +269,6 @@ type VariablePickerTextBoxProps = {
   multiline?: boolean;
   cssClass?: string;
   variableGroups: VariableGroup[];
-  variablesLoading: boolean;
   tokenFormatter?: (v: Variable) => string; // default: {{ <path> }}
   ej2Props?: Partial<TextBoxComponent>;
   // Insert mode: 'value' inserts a {{ $.node#id.path }} token; 'itemField' inserts $.item.<field>
@@ -294,7 +284,6 @@ export const VariablePickerTextBox: React.FC<VariablePickerTextBoxProps> = ({
   multiline,
   cssClass,
   variableGroups,
-  variablesLoading,
   tokenFormatter = (v) => `{{ ${v.path} }}`,
   ej2Props = {},
   mode = 'value',
@@ -409,7 +398,6 @@ export const VariablePickerTextBox: React.FC<VariablePickerTextBoxProps> = ({
         onClose={() => setOpen(false)}
         onPick={handlePick}
         variableGroups={variableGroups}
-        loading={variablesLoading}
       />
     </div>
   );

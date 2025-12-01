@@ -187,6 +187,32 @@ export const parsePairValues = (v: any): [any, any] => {
   return [v, v];
 };
 
+// Infer value kind from raw text (heuristic used at config-time for operator selection)
+export const inferKindFromText = (raw: string): ConditionValueKind => {
+  if (!raw || typeof raw !== 'string') return 'string';
+  const s = raw.trim().replace(/:{2,}/g, ':');
+  if (s.startsWith('[') && s.endsWith(']')) return 'array';
+  if (s.startsWith('{') && s.endsWith('}')) return 'object';
+  if (/^(true|false)$/i.test(s)) return 'boolean';
+  if (!isNaN(Number(s)) && s !== '') return 'number';
+  if (/^\d{1,2}:\d{2}(?::\d{2})?$/.test(s)) return 'time';
+  if (ISO_DATE_REGEX.test(s)) return 'date';
+  return 'string';
+};
+
+// Map value kind to preferred operator group for dropdown filtering
+export const getPreferredOperatorGroup = (kind: ConditionValueKind): string => {
+  switch (kind) {
+    case 'number': return 'Number';
+    case 'boolean': return 'Boolean';
+    case 'date': return 'Date';
+    case 'time': return 'Time';
+    case 'array': return 'Array';
+    case 'object': return 'Object';
+    default: return 'String';
+  }
+};
+
 export const compareValues = (left: any, comparator: string, right: any): boolean => {
   // Unary ops first (existence/emptiness/boolean checks)
   if (comparator === 'exists') return typeof left !== 'undefined';

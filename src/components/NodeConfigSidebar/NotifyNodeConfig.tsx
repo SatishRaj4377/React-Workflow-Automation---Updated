@@ -8,12 +8,11 @@ type Props = {
   settings: any;
   onPatch: (patch: Record<string, any>) => void;
   variableGroups: any[];
-  variablesLoading: boolean;
 };
 
 const TYPES = ['success', 'error', 'info', 'warning'] as const;
 
-const NotifyNodeConfig: React.FC<Props> = ({ settings, onPatch, variableGroups, variablesLoading }) => {
+const NotifyNodeConfig: React.FC<Props> = ({ settings, onPatch, variableGroups }) => {
   const type = (settings.type as typeof TYPES[number]) || 'info';
   const title = settings.title ?? 'Notification';
   const message = settings.message ?? '';
@@ -38,7 +37,6 @@ const NotifyNodeConfig: React.FC<Props> = ({ settings, onPatch, variableGroups, 
           placeholder="Notification title"
           cssClass="config-input"
           variableGroups={variableGroups}
-          variablesLoading={variablesLoading}
         />
       </div>
       <div className="config-section">
@@ -50,7 +48,6 @@ const NotifyNodeConfig: React.FC<Props> = ({ settings, onPatch, variableGroups, 
           cssClass="config-textarea"
           multiline
           variableGroups={variableGroups}
-          variablesLoading={variablesLoading}
         />
       </div>
 
@@ -67,7 +64,6 @@ const NotifyNodeConfig: React.FC<Props> = ({ settings, onPatch, variableGroups, 
           placeholder="Type a message or use variables"
           cssClass="config-input"
           variableGroups={variableGroups}
-          variablesLoading={variablesLoading}
         />
       </div>
     </>

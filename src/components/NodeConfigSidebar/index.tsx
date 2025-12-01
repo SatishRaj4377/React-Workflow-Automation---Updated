@@ -5,12 +5,11 @@ import { DropDownListComponent } from '@syncfusion/ej2-react-dropdowns';
 import { ButtonComponent } from '@syncfusion/ej2-react-buttons';
 import { TooltipComponent } from '@syncfusion/ej2-react-popups';
 import { IconRegistry } from '../../assets/icons';
-import { EmailJSVariableType, ExecutionContext, NodeConfig, NodeType } from '../../types';
+import { ExecutionContext, NodeConfig, NodeType } from '../../types';
 import { Diagram } from '@syncfusion/ej2-diagrams';
 import { VariablePickerTextBox } from './VariablePickerTextBox';
 import JsonVisualizer from './JsonVisualizer';
 import ValuePeekPanel, { PeekInfo } from './ValuePeekPanel';
-import { AUTH_NODE_TYPES } from '../../constants';
 import { updateSwitchPorts, getAvailableVariablesForNode, getNodeOutputAsVariableGroup, buildJsonFromVariables } from '../../utilities';
 import WordNodeConfig from './WordNodeConfig';
 import ExcelNodeConfig from './ExcelNodeConfig';
@@ -43,59 +42,57 @@ const NodeConfigSidebar: React.FC<ConfigPanelProps> = ({
   isChatOpen,
   setChatOpen,
 }) => {
-  const [activeTab, setActiveTab] = useState(0);
-  const [availableVariables, setAvailableVariables] = useState<any[]>([]);
-  const [nodeOutput, setNodeOutput] = useState<any>(null);
-  const [variablesLoading, setVariablesLoading] = useState(true);
-  const [peek, setPeek] = useState<PeekInfo>(null);
-  const [formPreviewOpen, setFormPreviewOpen] = useState(false);
-  const [formPreviewError, setFormPreviewError] = useState<string>('');
+  // ========================================================================
+  // State Management - UI & Data
+  // ========================================================================
+  const [activeTab, setActiveTab] = useState(0); // Current tab index 
+  const [availableVariables, setAvailableVariables] = useState<any[]>([]); // Variables from previous executed nodes
+  const [nodeOutput, setNodeOutput] = useState<any>(null); // Execution output of selected node
+  const [peek, setPeek] = useState<PeekInfo>(null); // JSON value peek info for visualization
+  const [formPreviewOpen, setFormPreviewOpen] = useState(false); // Form preview modal state
+  const [formPreviewError, setFormPreviewError] = useState<string>(''); // Form preview validation error
 
-  const nodeIconSrc = selectedNode?.icon ? IconRegistry[selectedNode.icon] : null;
-  const MessageIcon = IconRegistry['Message'];
+  // ========================================================================
+  // Derived State & Icons
+  // ========================================================================
+  const nodeIconSrc = selectedNode?.icon ? IconRegistry[selectedNode.icon] : null; // Node type icon
+  const MessageIcon = IconRegistry['Message']; // Chat trigger icon
 
-  // Fetch available variables and node output whenever the selected node or diagram changes.
+  // ========================================================================
+  // Effects - Data Fetching & Sync
+  // ========================================================================
+
+  // Fetch available variables and node output when node/diagram changes; sync Switch Case ports
   useEffect(() => {
-    // Define an async function to fetch both available variables and node output
     const fetchData = async () => {
-      // If there's no selected node or diagram, reset the state and stop loading
+      // Reset state if no node or diagram
       if (!selectedNode || !diagram) {
         setAvailableVariables([]);
         setNodeOutput(null);
-        setVariablesLoading(false);
         return;
       }
 
-      // Start loading
-      setVariablesLoading(true);
-
-      // Fetch available variables for the selected node
+      // Fetch upstream variables available to this node
       const vars = await getAvailableVariablesForNode(
         selectedNode.id,
         diagram,
         executionContext
       );
 
-      // Get the output of the selected node
+      // Get the output produced by this node after execution
       const output = getNodeOutputAsVariableGroup(
         selectedNode.id,
         diagram,
         executionContext
       );
 
-      // Update state with fetched data
       setAvailableVariables(vars);
       setNodeOutput(output);
-
-      // Stop loading
-      setVariablesLoading(false);
     };
 
-    // Call the async function
     fetchData();
 
-    // Initialize/Sync dynamic ports for Switch Case nodes when opening.
-    // Only update if desired case count differs from existing
+    // Sync dynamic ports for Switch Case nodes (update port count if cases change)
     if (selectedNode && diagram && selectedNode.nodeType === 'Switch Case') {
       const general = (selectedNode?.settings?.general as any) ?? {};
       const rules = general?.rules as any[] | undefined;
@@ -111,10 +108,16 @@ const NodeConfigSidebar: React.FC<ConfigPanelProps> = ({
     }
   }, [selectedNode?.id, diagram, executionContext]);
 
+  // ========================================================================
+  // Event Handlers - Config Changes & Validation
+  // ========================================================================
+
+  // Update a config field or section; skip if no actual change detected
+  // Update config field or section; skip if no actual change detected to optimize re-renders
   const handleConfigChange = (
     fieldOrPatch: string | Record<string, any>,
     value?: any,
-    section: 'general' | 'authentication' | 'advanced' = 'general'
+    section: 'general' = 'general'
   ) => {
     if (!selectedNode) return;
     const prevSection = (selectedNode.settings && (selectedNode.settings as any)[section]) ?? {};
@@ -123,7 +126,7 @@ const NodeConfigSidebar: React.FC<ConfigPanelProps> = ({
         ? { ...prevSection, ...fieldOrPatch }
         : { ...prevSection, [fieldOrPatch as any]: value };
 
-    // Only propagate if something actually changed
+    // Only propagate if something actually changed (optimization)
     let same = true;
     for (const k of Object.keys(nextSection)) {
       if (prevSection[k] !== nextSection[k]) { same = false; break; }
@@ -139,363 +142,298 @@ const NodeConfigSidebar: React.FC<ConfigPanelProps> = ({
     };
     onNodeConfigChange(selectedNode.id, updatedConfig);
 
+    // Close form preview if form settings changed
     if (selectedNode.nodeType === 'Form' && formPreviewOpen) {
       setFormPreviewOpen(false);
     }
   };
 
+  // Update the node's display name
   const handleNameChange = (value: string) => {
     if (!selectedNode) return;
     const updatedConfig: NodeConfig = { ...selectedNode, displayName: value };
     onNodeConfigChange(selectedNode.id, updatedConfig);
   };
 
-  /** Node-specific fields inside the General tab */
-  const renderNodeSpecificFields = (type: NodeType, settings: any) => {
-    switch (type) {
-      case 'Form': {
-        const fields = (settings.formFields ?? [
-          { label: '', type: 'text', placeholder: '', required: false },
-        ]) as any[];
+  // ========================================================================
+  // Node-Specific Config Renderers
+  // ========================================================================
+  // These handle type-specific configuration fields displayed in the General tab
 
-        const onPreview = () => {
-          setFormPreviewError('');
-          const title = settings.formTitle?.trim?.() || '';
-          if (!title) {
-            setFormPreviewError('Please enter Form Title before preview.');
-            return;
-          }
-          // Validate fields
-          const invalid = fields.some((f: any) => {
-            if (!f || !f.type) return true;
-            if (!f.label || String(f.label).trim() === '') return true;
-            if (f.type === 'dropdown') {
-              const opts = Array.isArray(f.options) ? f.options.filter((o: any) => String(o).trim() !== '') : [];
-              if (opts.length === 0) return true;
-            }
-            return false;
-          });
-          if (invalid) {
-            setFormPreviewError('Please complete all fields. Ensure each field has a label and dropdowns have options.');
-            return;
-          }
-          setFormPreviewOpen(true);
-        };
+  /** Form node: fields editor + preview button */
+  const renderFormNodeConfig = (settings: any) => {
+    const fields = (settings.formFields ?? [
+      { label: '', type: 'text', placeholder: '', required: false },
+    ]) as any[];
 
-        return (
-          <>
-            <div className="config-section" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 8 }}>
-              <ButtonComponent cssClass="e-flat flat-btn" iconCss="e-icons e-eye" onClick={onPreview}>Show Form Preview</ButtonComponent>
-              {formPreviewError && <div style={{ color: 'var(--danger-color)' }}>{formPreviewError}</div>}
-            </div>
-
-            <FormNodeConfig
-              title={settings.formTitle ?? ''}
-              description={settings.formDescription ?? ''}
-              value={fields}
-              onChange={(next) => handleConfigChange('formFields', next)}
-              onMetaChange={(patch) => handleConfigChange(patch)}
-            />
-
-            <FormPopup
-              open={formPreviewOpen}
-              onClose={() => setFormPreviewOpen(false)}
-              title={settings.formTitle ?? ''}
-              description={settings.formDescription ?? ''}
-              fields={fields}
-              showPreviewBadge={true}
-            />
-          </>
-        );
+    const onPreview = () => {
+      setFormPreviewError('');
+      const title = settings.formTitle?.trim?.() || '';
+      if (!title) {
+        setFormPreviewError('Please enter Form Title before preview.');
+        return;
       }
-
-      case 'Chat': {
-        const promptSuggestions: string[] = settings.promptSuggestions ?? [];
-        const header: string = settings.promptSuggestionsHeader ?? '';
-
-        const addSuggestion = () => {
-          const next = [...promptSuggestions, ''];
-          handleConfigChange({ promptSuggestions: next }); // general
-        };
-
-        const updateSuggestion = (i: number, val: string) => {
-          const next = promptSuggestions.slice();
-          next[i] = val;
-          handleConfigChange({ promptSuggestions: next });
-        };
-
-        const removeSuggestion = (i: number) => {
-          const next = promptSuggestions.filter((_, idx) => idx !== i);
-          handleConfigChange({ promptSuggestions: next });
-        };
-
-        return (
-          <>
-            {/* --- Show/Hide Chat Button --- */}
-            <div className="config-section">
-              <ButtonComponent
-                onClick={() => setChatOpen(prev => !prev)}
-                className='show-chat-button'
-              >
-                <MessageIcon className='msg-svg-icon'/>
-                <span className='show-chat-btn-text'>
-                  {isChatOpen ? 'Hide Chat' : ' Open Chat'}
-                </span>
-              </ButtonComponent>
-            </div>
-
-            {/* --- Prompt suggestions --- */}
-            <div className="config-section">
-              <div className="config-row" style={{ alignItems: 'center', gap: 8 }}>
-                <label className="config-label">Prompt suggestions (optional)</label>
-                <TooltipComponent content="Add quick prompts that appear in the chat popup. Click a suggestion to auto-fill and send.">
-                  <span className="e-icons e-circle-info help-icon"></span>
-                </TooltipComponent>
-              </div>
-
-              {(promptSuggestions ?? []).map((s, i) => (
-                <div key={i} style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 10 }}>
-                  {/* Use your VariablePickerTextBox to allow {{variables}} if needed */}
-                  <VariablePickerTextBox
-                    value={s}
-                    onChange={(val) => updateSuggestion(i, val)}
-                    placeholder="Type a suggestion…"
-                    cssClass="config-input"
-                    variableGroups={availableVariables}
-                    variablesLoading={variablesLoading}
-                  />
-                  <ButtonComponent
-                    cssClass="flat-btn e-flat"
-                    iconCss="e-icons e-trash"
-                    onClick={() => removeSuggestion(i)}
-                    title="Remove"
-                  />
-                </div>
-              ))}
-
-              <ButtonComponent style={{border: '.1rem solid var(--scrollbar-thumb)', opacity: .8, color: 'var(--text-secondary)'}} className="e-flat add-field-btn" iconCss="e-icons e-plus" onClick={addSuggestion}>
-                Add suggestion
-              </ButtonComponent>
-            </div>
-          </>
-        );
+      // Validate all fields are complete
+      const invalid = fields.some((f: any) => {
+        if (!f || !f.type) return true;
+        if (!f.label || String(f.label).trim() === '') return true;
+        if (f.type === 'dropdown') {
+          const opts = Array.isArray(f.options) ? f.options.filter((o: any) => String(o).trim() !== '') : [];
+          if (opts.length === 0) return true;
+        }
+        return false;
+      });
+      if (invalid) {
+        setFormPreviewError('Please complete all fields. Ensure each field has a label and dropdowns have options.');
+        return;
       }
+      setFormPreviewOpen(true);
+    };
 
-      case 'HTTP Request': {
-        // Ensure defaults for GET-only implementation
-        const method = 'GET';
-        const queryParams: Array<{ key: string; value: string }> =
-          Array.isArray(settings.queryParams) && settings.queryParams.length
-            ? settings.queryParams
-            : [{ key: '', value: '' }];
+    return (
+      <>
+        <div className="config-section" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 8 }}>
+          <ButtonComponent cssClass="e-flat flat-btn" iconCss="e-icons e-eye" onClick={onPreview}>
+            Show Form Preview
+          </ButtonComponent>
+          {formPreviewError && <div style={{ color: 'var(--danger-color)' }}>{formPreviewError}</div>}
+        </div>
 
-        const addQueryParam = () => {
-          const next = [...queryParams, { key: '', value: '' }];
-          handleConfigChange({ queryParams: next, method });
-        };
-        const updateQueryParam = (i: number, field: 'key' | 'value', val: string) => {
-          const next = queryParams.slice();
-          next[i] = { ...next[i], [field]: val };
-          handleConfigChange({ queryParams: next, method });
-        };
-        const removeQueryParam = (i: number) => {
-          const next = queryParams.filter((_, idx) => idx !== i);
-          handleConfigChange({ queryParams: next.length ? next : [{ key: '', value: '' }], method });
-        };
+        <FormNodeConfig
+          title={settings.formTitle ?? ''}
+          description={settings.formDescription ?? ''}
+          value={fields}
+          onChange={(next) => handleConfigChange('formFields', next)}
+          onMetaChange={(patch) => handleConfigChange(patch)}
+        />
 
-        return (
-          <>
-            <div className="config-section">
-              <label className="config-label">URL</label>
+        <FormPopup
+          open={formPreviewOpen}
+          onClose={() => setFormPreviewOpen(false)}
+          title={settings.formTitle ?? ''}
+          description={settings.formDescription ?? ''}
+          fields={fields}
+          showPreviewBadge={true}
+        />
+      </>
+    );
+  };
+
+  /** Chat node: chat button toggle + prompt suggestions list */
+  const renderChatNodeConfig = (settings: any) => {
+    const promptSuggestions: string[] = settings.promptSuggestions ?? [];
+
+    const addSuggestion = () => {
+      const next = [...promptSuggestions, ''];
+      handleConfigChange({ promptSuggestions: next });
+    };
+
+    const updateSuggestion = (i: number, val: string) => {
+      const next = promptSuggestions.slice();
+      next[i] = val;
+      handleConfigChange({ promptSuggestions: next });
+    };
+
+    const removeSuggestion = (i: number) => {
+      const next = promptSuggestions.filter((_, idx) => idx !== i);
+      handleConfigChange({ promptSuggestions: next });
+    };
+
+    return (
+      <>
+        {/* Chat visibility toggle */}
+        <div className="config-section">
+          <ButtonComponent
+            onClick={() => setChatOpen(prev => !prev)}
+            className='show-chat-button'
+          >
+            <MessageIcon className='msg-svg-icon' />
+            <span className='show-chat-btn-text'>
+              {isChatOpen ? 'Hide Chat' : ' Open Chat'}
+            </span>
+          </ButtonComponent>
+        </div>
+
+        {/* Prompt suggestions list */}
+        <div className="config-section">
+          <div className="config-row" style={{ alignItems: 'center', gap: 8 }}>
+            <label className="config-label">Prompt suggestions (optional)</label>
+            <TooltipComponent content="Add quick prompts that appear in the chat popup. Click a suggestion to auto-fill and send.">
+              <span className="e-icons e-circle-info help-icon"></span>
+            </TooltipComponent>
+          </div>
+
+          {(promptSuggestions ?? []).map((s, i) => (
+            <div key={i} style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 10 }}>
               <VariablePickerTextBox
-                value={settings.url ?? ''}
-                placeholder="https://api.example.com/resource"
-                onChange={(val) => handleConfigChange('url', val)}
+                value={s}
+                onChange={(val) => updateSuggestion(i, val)}
+                placeholder="Type a suggestion…"
                 cssClass="config-input"
                 variableGroups={availableVariables}
-                variablesLoading={variablesLoading}
+              />
+              <ButtonComponent
+                cssClass="flat-btn e-flat"
+                iconCss="e-icons e-trash"
+                onClick={() => removeSuggestion(i)}
+                title="Remove"
               />
             </div>
+          ))}
 
-            <div className="config-section">
-              <label className="config-label">Method</label>
-              <DropDownListComponent
-                value={method}
-                dataSource={["GET"]}
-                placeholder="GET"
-                enabled={false}
-                popupHeight="200px"
-                zIndex={1000000}
+          <ButtonComponent
+            style={{ border: '.1rem solid var(--scrollbar-thumb)', opacity: .8, color: 'var(--text-secondary)' }}
+            className="e-flat add-field-btn"
+            iconCss="e-icons e-plus"
+            onClick={addSuggestion}
+          >
+            Add suggestion
+          </ButtonComponent>
+        </div>
+      </>
+    );
+  };
+
+  /** HTTP Request node: URL + method + query params + headers */
+  const renderHttpRequestNodeConfig = (settings: any) => {
+    const method = 'GET'; // Locked to GET
+    const queryParams: Array<{ key: string; value: string }> =
+      Array.isArray(settings.queryParams) && settings.queryParams.length
+        ? settings.queryParams
+        : [{ key: '', value: '' }];
+
+    const addQueryParam = () => {
+      const next = [...queryParams, { key: '', value: '' }];
+      handleConfigChange({ queryParams: next, method });
+    };
+
+    const updateQueryParam = (i: number, field: 'key' | 'value', val: string) => {
+      const next = queryParams.slice();
+      next[i] = { ...next[i], [field]: val };
+      handleConfigChange({ queryParams: next, method });
+    };
+
+    const removeQueryParam = (i: number) => {
+      const next = queryParams.filter((_, idx) => idx !== i);
+      handleConfigChange({ queryParams: next.length ? next : [{ key: '', value: '' }], method });
+    };
+
+    return (
+      <>
+        {/* URL input */}
+        <div className="config-section">
+          <label className="config-label">URL</label>
+          <VariablePickerTextBox
+            value={settings.url ?? ''}
+            placeholder="https://api.example.com/resource"
+            onChange={(val) => handleConfigChange('url', val)}
+            cssClass="config-input"
+            variableGroups={availableVariables}
+          />
+        </div>
+
+        {/* Method (read-only) */}
+        <div className="config-section">
+          <label className="config-label">Method</label>
+          <DropDownListComponent
+            value={method}
+            dataSource={["GET"]}
+            placeholder="GET"
+            enabled={false}
+            popupHeight="200px"
+            zIndex={1000000}
+          />
+        </div>
+
+        {/* Query parameters table */}
+        <div className="config-section">
+          <div className="config-row" style={{ alignItems: 'center', gap: 8 }}>
+            <label className="config-label">Query Parameters</label>
+            <TooltipComponent content="Add query params as name/value pairs. Values support variables using the picker.">
+              <span className="e-icons e-circle-info help-icon"></span>
+            </TooltipComponent>
+          </div>
+
+          {queryParams.map((row, i) => (
+            <div key={i} style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 10 }}>
+              <VariablePickerTextBox
+                value={row.key}
+                placeholder="name"
+                onChange={(val) => updateQueryParam(i, 'key', val)}
+                cssClass="config-input"
+                variableGroups={availableVariables}
+              />
+              <VariablePickerTextBox
+                value={row.value}
+                placeholder="value"
+                onChange={(val) => updateQueryParam(i, 'value', val)}
+                cssClass="config-input"
+                variableGroups={availableVariables}
+              />
+              <ButtonComponent
+                cssClass="flat-btn e-flat"
+                iconCss="e-icons e-trash"
+                onClick={() => removeQueryParam(i)}
+                title="Remove"
               />
             </div>
+          ))}
 
-            <div className="config-section">
-              <div className="config-row" style={{ alignItems: 'center', gap: 8 }}>
-                <label className="config-label">Query Parameters</label>
-                <TooltipComponent content="Add query params as name/value pairs. Values support variables using the picker.">
-                  <span className="e-icons e-circle-info help-icon"></span>
-                </TooltipComponent>
-              </div>
+          <ButtonComponent className="add-field-btn" iconCss="e-icons e-plus" onClick={addQueryParam}>
+            Add Query
+          </ButtonComponent>
+        </div>
 
-              {queryParams.map((row, i) => (
-                <div key={i} style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 10 }}>
-                  {/* Name */}
-                  <VariablePickerTextBox
-                    value={row.key}
-                    placeholder="name"
-                    onChange={(val) => updateQueryParam(i, 'key', val)}
-                    cssClass="config-input"
-                    variableGroups={availableVariables}
-                    variablesLoading={variablesLoading}
-                  />
+        {/* Headers (JSON) */}
+        <div className="config-section">
+          <label className="config-label">Headers (JSON)</label>
+          <TextBoxComponent
+            value={settings.headers ?? ''}
+            placeholder='{"Authorization":"Bearer {{token}}"}'
+            change={(e: any) => handleConfigChange('headers', e.value)}
+            cssClass="config-textarea"
+            multiline
+          />
+        </div>
+      </>
+    );
+  };
 
-                  {/* Value */}
-                  <VariablePickerTextBox
-                    value={row.value}
-                    placeholder="value"
-                    onChange={(val) => updateQueryParam(i, 'value', val)}
-                    cssClass="config-input"
-                    variableGroups={availableVariables}
-                    variablesLoading={variablesLoading}
-                  />
-
-                  <ButtonComponent
-                    cssClass="flat-btn e-flat"
-                    iconCss="e-icons e-trash"
-                    onClick={() => removeQueryParam(i)}
-                    title="Remove"
-                  />
-                </div>
-              ))}
-
-              <ButtonComponent className="add-field-btn" iconCss="e-icons e-plus" onClick={addQueryParam}>
-                Add Query
-              </ButtonComponent>
-            </div>
-
-            <div className="config-section">
-              <label className="config-label">Headers (JSON)</label>
-              <TextBoxComponent
-                value={settings.headers ?? ''}
-                placeholder='{"Authorization":"Bearer {{token}}"}'
-                change={(e: any) => handleConfigChange('headers', e.value)}
-                cssClass="config-textarea"
-                multiline
-              />
-            </div>
-          </>
-        );
-      }
-
-      case 'EmailJS':  {
-        const keyValues = (settings.emailjsVars ?? [{ key: '', value: '' }]) as EmailJSVariableType;
-
-        const addVariable = () => {
-          handleConfigChange('emailjsVars', [...keyValues, { key: '', value: '' }]);
-        };
-        const updateVariable = (i: number, field: 'key' | 'value', val: string) => {
-          const next = keyValues.slice();
-          next[i] = { ...next[i], [field]: val };
-          handleConfigChange('emailjsVars', next);
-        };
-        const removeVariable = (i: number) => {
-          const next = keyValues.filter((_, idx) => idx !== i);
-          handleConfigChange('emailjsVars', next);
-        };
-
-        return (
-          <>
-            <div className="config-section">
-              <div className="config-row" style={{ alignItems: 'center', gap: 8 }}>
-                <label className="config-label">Template Variables</label>
-                <TooltipComponent
-                    content={
-                    'Add key–value pairs where the key exactly matches your EmailJS template variable name (e.g., name, user_email). ' +
-                    'Do not include curly braces {{ }} when entering variables. ' +
-                    'See EmailJS docs for more info.'
-                  }
-                >
-                  <span className="e-icons e-circle-info help-icon"></span>
-                </TooltipComponent>
-              </div>
-
-              {keyValues.map((row, i) => (
-                <div key={i} style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 14 }}>
-                  {/* Variable name (must match {{...}} in EmailJS template) */}
-                  <TextBoxComponent
-                    value={row.key}
-                    width={'50%'}
-                    placeholder="Variable Name"
-                    change={(e: any) => updateVariable(i, 'key', e.value)}
-                    cssClass="config-input"
-                  />
-
-                  {/* Variable value */}
-                  <VariablePickerTextBox
-                    value={row.value ?? ''}
-                    placeholder="Value"
-                    onChange={(val) => updateVariable(i, 'value', val)}
-                    cssClass="config-input"
-                    variableGroups={availableVariables}
-                    variablesLoading={variablesLoading}
-                  />
-
-                  {/* Remove row */}
-                  <ButtonComponent 
-                    cssClass="flat-btn e-flat"
-                    iconCss="e-icons e-trash"
-                    onClick={() => removeVariable(i)}
-                    title="Remove variable"
-                  />
-                </div>
-              ))}
-
-              <ButtonComponent className="add-field-btn" iconCss="e-icons e-plus" onClick={addVariable}>
-                Add Variable
-              </ButtonComponent>
-
-              <div className="textbox-info">
-                <br></br>
-                <b>Tip:</b> Variable names must match the placeholders defined in your EmailJS template (e.g., <code>{`{{name}}`}</code>).  
-                You can map values from previous nodes using the picker.
-              </div>
-            </div>
-          </>
-        );
-      }
-
-      case 'Word': {
+  /** Render node-specific fields based on node type */
+  const renderNodeSpecificFields = (type: NodeType, settings: any) => {
+    switch (type) {
+      case 'Form':
+        return renderFormNodeConfig(settings);
+      case 'Chat':
+        return renderChatNodeConfig(settings);
+      case 'HTTP Request':
+        return renderHttpRequestNodeConfig(settings);
+      case 'Word':
         return (
           <WordNodeConfig
             settings={settings}
             onPatch={(patch) => handleConfigChange(patch, undefined, 'general')}
             variableGroups={availableVariables}
-            variablesLoading={variablesLoading}
           />
         );
-      }
 
-      case 'Excel': {
+      case 'Excel':
         return (
           <ExcelNodeConfig
             settings={settings}
             onPatch={(patch) => handleConfigChange(patch, undefined, 'general')}
             variableGroups={availableVariables}
-            variablesLoading={variablesLoading}
           />
         );
-      }
 
-      case 'Notify': {
+      case 'Notify':
         return (
-          <NotifyNodeConfig
+          <WordNodeConfig
             settings={settings}
             onPatch={(patch) => handleConfigChange(patch, undefined, 'general')}
             variableGroups={availableVariables}
-            variablesLoading={variablesLoading}
           />
         );
-      }
 
       case 'Stop': {
         return (
@@ -505,15 +443,15 @@ const NodeConfigSidebar: React.FC<ConfigPanelProps> = ({
               <TooltipComponent content="Returns the specified value as the chat response, if chat trigger is attached.">
                 <span className="e-icons e-circle-info help-icon"></span>
               </TooltipComponent>
-            </div>        <VariablePickerTextBox
-            value={settings.chatResponse ?? ''}
-            onChange={(val) => handleConfigChange('chatResponse', val)}
-            placeholder="Type a message or use variables"
-            cssClass="config-input"
-            variableGroups={availableVariables}
-            variablesLoading={variablesLoading}
-          />
-        </div>
+            </div>
+            <VariablePickerTextBox
+              value={settings.chatResponse ?? ''}
+              onChange={(val) => handleConfigChange('chatResponse', val)}
+              placeholder="Type a message or use variables"
+              cssClass="config-input"
+              variableGroups={availableVariables}
+            />
+          </div>
         );
       }
 
@@ -527,7 +465,6 @@ const NodeConfigSidebar: React.FC<ConfigPanelProps> = ({
             value={conditions}
             onChange={(next) => handleConfigChange('conditions', next)}
             variableGroups={availableVariables}
-            variablesLoading={variablesLoading}
             label="Conditions"
           />
         );
@@ -535,7 +472,6 @@ const NodeConfigSidebar: React.FC<ConfigPanelProps> = ({
 
       case 'Switch Case': {
         const rules = (settings.rules ?? [{ left: '', comparator: 'is equal to', right: '', name: '' }]) as Array<{ left: string; comparator: string; right: string; name?: string }>;
-
         const rows = rules.map(r => ({ left: r.left, comparator: r.comparator, right: r.right, name: r.name ?? '' }));
 
         const onRowsChange = (nextRows: any[]) => {
@@ -548,41 +484,23 @@ const NodeConfigSidebar: React.FC<ConfigPanelProps> = ({
         };
 
         return (
-          <>
-            <ConditionNodeConfig
-              value={rows as any}
-              onChange={onRowsChange}
-              variableGroups={availableVariables}
-              variablesLoading={variablesLoading}
-              label="Cases"
-              showJoiners={false} // <-- hide AND/OR for Switch Case
-            />
-
-            {/* Enable default port */}
-            {/* <div className="config-section" style={{ marginTop: 8 }}>
-              <label className="config-label">Default Port</label>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <input
-                  type="checkbox"
-                  checked={enableDefault}
-                  onChange={(e) => onToggleDefault(e.currentTarget.checked)}
-                  id="switch-default-port"
-                />
-                <label htmlFor="switch-default-port">Enable default port (executes if no case matches)</label>
-              </div>
-            </div> */}
-          </>
+          <ConditionNodeConfig
+            value={rows as any}
+            onChange={onRowsChange}
+            variableGroups={availableVariables}
+            label="Cases"
+            showJoiners={false}
+          />
         );
       }
 
-      case 'Filter':{
+      case 'Filter': {
         const conditions = (settings.conditions ?? [
           { left: '', comparator: 'is equal to', right: '' },
         ]) as any[];
 
         return (
           <>
-            {/* Items (list) input expression */}
             <div className="config-section">
               <div className="config-row" style={{ alignItems: 'center', gap: 8 }}>
                 <label className="config-label">Items (list) to filter</label>
@@ -596,18 +514,15 @@ const NodeConfigSidebar: React.FC<ConfigPanelProps> = ({
                 onChange={(val) => handleConfigChange('input', val)}
                 cssClass="config-input"
                 variableGroups={availableVariables}
-                variablesLoading={variablesLoading}
               />
             </div>
 
             <ConditionNodeConfig
-              value={conditions}
-              onChange={(next) => handleConfigChange('conditions', next)}
-              variableGroups={availableVariables}
-              variablesLoading={variablesLoading}
-              label="Conditions"
-              // Make left operands item-relative using the Items expression
-              leftMode={'itemField'}
+            value={conditions}
+            onChange={(next) => handleConfigChange('conditions', next)}
+            variableGroups={availableVariables}
+            label="Conditions"
+            leftMode={'itemField'}
               leftBaseListExpr={settings.input ?? ''}
             />
           </>
@@ -616,24 +531,21 @@ const NodeConfigSidebar: React.FC<ConfigPanelProps> = ({
 
       case 'Loop': {
         return (
-          <>
-            <div className="config-section">
-              <div className="config-row" style={{ alignItems: 'center', gap: 8 }}>
-                <label className="config-label">Items (list) to iterate</label>
-                <TooltipComponent content="Choose an array from previous nodes (e.g., $.Google_Sheets#123.rows). Each downstream node will run once per item as $.item.">
-                  <span className="e-icons e-circle-info help-icon"></span>
-                </TooltipComponent>
-              </div>
-              <VariablePickerTextBox
-                value={settings.input ?? ''}
-                placeholder="$.previousNode.items"
-                onChange={(val) => handleConfigChange('input', val)}
-                cssClass="config-input"
-                variableGroups={availableVariables}
-                variablesLoading={variablesLoading}
-              />
+          <div className="config-section">
+            <div className="config-row" style={{ alignItems: 'center', gap: 8 }}>
+              <label className="config-label">Items (list) to iterate</label>
+              <TooltipComponent content="Choose an array from previous nodes (e.g., $.Google_Sheets#123.rows). Each downstream node will run once per item as $.item.">
+                <span className="e-icons e-circle-info help-icon"></span>
+              </TooltipComponent>
             </div>
-          </>
+            <VariablePickerTextBox
+              value={settings.input ?? ''}
+              placeholder="$.previousNode.items"
+              onChange={(val) => handleConfigChange('input', val)}
+              cssClass="config-input"
+              variableGroups={availableVariables}
+            />
+          </div>
         );
       }
 
@@ -642,7 +554,11 @@ const NodeConfigSidebar: React.FC<ConfigPanelProps> = ({
     }
   };
 
-  /** General tab */
+  // ========================================================================
+  // Tab Renderers - General / Authentication / Output
+  // ========================================================================
+
+  // General tab: node name + type-specific config
   const renderGeneralTab = useCallback(() => {
     const settings = (selectedNode?.settings && (selectedNode.settings as any).general) || {};
     return (
@@ -656,13 +572,12 @@ const NodeConfigSidebar: React.FC<ConfigPanelProps> = ({
             cssClass="config-input"
           />
         </div>
-
         {renderNodeSpecificFields(selectedNode!.nodeType, settings)}
       </div>
     );
   }, [selectedNode, availableVariables, isChatOpen, formPreviewOpen, formPreviewError]);
 
-  /** Output tab (shows when a node is executed) */
+  // Output tab: execution results (JSON visualizer + value peek)
   const renderOutputTab = useCallback(() => {
     if (!nodeOutput) {
       return (
@@ -698,152 +613,11 @@ const NodeConfigSidebar: React.FC<ConfigPanelProps> = ({
         </div>
       </div>
     );
-  }, [ nodeOutput, peek ]);
+  }, [nodeOutput, peek]);
 
-  /** Authentication tab */
-  const renderAuthenticationTab = useCallback(() => {
-    if (!selectedNode) return <div></div>;
-
-    const authSettings = (selectedNode?.settings && (selectedNode.settings as any).authentication) || {};
-
-    // Render Azure Chat Model node specific authentication fields
-    switch (selectedNode.nodeType) {
-        case 'EmailJS':
-          return (
-            <div className="config-tab-content">
-              {/* Public Key */}
-              <div className="config-section">
-                <div className="config-row">
-                  <label className="config-label">Public Key</label>
-                  <TooltipComponent
-                    content={'EmailJS Public Key (Account → Integration).'}
-                  >
-                    <span className="e-icons e-circle-info help-icon"></span>
-                  </TooltipComponent>
-                </div>
-                <TextBoxComponent
-                  value={authSettings.publicKey ?? ''}
-                  placeholder="e.g., xxxxxxxxPUBLICxxxxxxxx"
-                  change={(e: any) => handleConfigChange('publicKey', e.value, 'authentication')}
-                  cssClass="config-input"
-                />
-              </div>
-
-              {/* Service ID */}
-              <div className="config-section">
-                <div className="config-row">
-                  <label className="config-label">Service ID</label>
-                  <TooltipComponent
-                    content={'EmailJS Service ID (from Services).'}
-                  >
-                    <span className="e-icons e-circle-info help-icon"></span>
-                  </TooltipComponent>
-                </div>
-                <TextBoxComponent
-                  value={authSettings.serviceId ?? ''}
-                  placeholder="e.g., service_abc123"
-                  change={(e: any) => handleConfigChange('serviceId', e.value, 'authentication')}
-                  cssClass="config-input"
-                />
-              </div>
-
-              {/* Template ID */}
-              <div className="config-section">
-                <div className="config-row">
-                  <label className="config-label">Template ID</label>
-                  <TooltipComponent
-                    content={'EmailJS Template ID (from Templates).'}
-                  >
-                    <span className="e-icons e-circle-info help-icon"></span>
-                  </TooltipComponent>
-                </div>
-                <TextBoxComponent
-                  value={authSettings.templateId ?? ''}
-                  placeholder="e.g., template_xyz789"
-                  change={(e: any) => handleConfigChange('templateId', e.value, 'authentication')}
-                  cssClass="config-input"
-                />
-              </div>
-            </div>
-          );
-          // For all other auth-required nodes (e.g., Gmail, Telegram)
-          const typeVal = authSettings.type ?? '';
-          return (
-            <div className="config-tab-content">
-              <div className="config-section">
-                <label className="config-label">Authentication Type</label>
-                <DropDownListComponent
-                  value={typeVal}
-                  dataSource={['Basic Auth', 'Bearer Token', 'OAuth2']}
-                  placeholder="Select authentication"
-                  change={(e: any) => handleConfigChange('type', e.value, 'authentication')}
-                  popupHeight="240px"
-                  zIndex={1000000}
-                />
-              </div>
-              {typeVal === 'Basic Auth' && (
-                <>
-                  <div className="config-section">
-                    <label className="config-label">Username</label>
-                    <TextBoxComponent
-                      value={authSettings.username ?? ''}
-                      change={(e: any) => handleConfigChange('username', e.value, 'authentication')}
-                      cssClass="config-input"
-                    />
-                  </div>
-                  <div className="config-section">
-                    <label className="config-label">Password</label>
-                    <TextBoxComponent
-                      type="password"
-                      value={authSettings.password ?? ''}
-                      change={(e: any) => handleConfigChange('password', e.value, 'authentication')}
-                      cssClass="config-input"
-                    />
-                  </div>
-                </>
-              )}
-              {typeVal === 'Bearer Token' && (
-                <div className="config-section">
-                  <label className="config-label">Bearer Token</label>
-                  <TextBoxComponent
-                    value={authSettings.token ?? ''}
-                    change={(e: any) => handleConfigChange('token', e.value, 'authentication')}
-                    cssClass="config-input"
-                  />
-                </div>
-              )}
-              {typeVal === 'OAuth2' && (
-                <>
-                  <div className="config-section">
-                    <label className="config-label">Account</label>
-                    <DropDownListComponent
-                      value={authSettings.account ?? ''}
-                      dataSource={['Connect new…']}
-                      placeholder="Choose or connect account"
-                      change={(e: any) => handleConfigChange('account', e.value, 'authentication')}
-                      popupHeight="240px"
-                      zIndex={1000000}
-                    />
-                  </div>
-                  <div className="config-section">
-                    <label className="config-label">Scopes</label>
-                    <TextBoxComponent
-                      value={authSettings.scopes ?? ''}
-                      placeholder="space-separated scopes"
-                      change={(e: any) => handleConfigChange('scopes', e.value, 'authentication')}
-                      cssClass="config-textarea"
-                      multiline
-                    />
-                  </div>
-                </>
-              )}
-            </div>
-          );
-    }
-  }, [selectedNode]);
-
-
-  const requiresAuthTab = !!selectedNode && AUTH_NODE_TYPES.includes(selectedNode.nodeType);
+  // ========================================================================
+  // Render
+  // ========================================================================
 
   return (
     <SidebarComponent
@@ -858,6 +632,7 @@ const NodeConfigSidebar: React.FC<ConfigPanelProps> = ({
       target=".editor-content"
     >
       {!selectedNode ? (
+        // Empty state: no node selected
         <div className="config-panel-empty">
           <div className="empty-state-icon">⚙️</div>
           <h3>No Node Selected</h3>
@@ -865,15 +640,12 @@ const NodeConfigSidebar: React.FC<ConfigPanelProps> = ({
         </div>
       ) : (
         <>
-          {/* === Header (kept exactly as you requested) === */}
+          {/* -------- Header: node type + delete/close buttons -------- */}
           <div className="config-panel-header">
             <div className="config-panel-title">
               <span className="node-icon">
                 {typeof nodeIconSrc === 'string' && (
-                  <img
-                    src={nodeIconSrc}
-                    draggable={false}
-                  />
+                  <img src={nodeIconSrc} draggable={false} />
                 )}
               </span>
               <TooltipComponent content={`${selectedNode?.nodeType || 'Node'} Configuration`}>
@@ -898,8 +670,8 @@ const NodeConfigSidebar: React.FC<ConfigPanelProps> = ({
               />
             </div>
           </div>
-          
-          {/* === Body === */}
+
+          {/* -------- Body: tabs with General / Auth / Output -------- */}
           <div className="config-panel-content">
             <TabComponent
               heightAdjustMode="None"
@@ -908,10 +680,10 @@ const NodeConfigSidebar: React.FC<ConfigPanelProps> = ({
               cssClass="config-tabs"
             >
               <TabItemsDirective>
+                {/* General tab: always shown */}
                 <TabItemDirective header={{ text: 'General' }} content={renderGeneralTab} />
-                {requiresAuthTab && (
-                  <TabItemDirective header={{ text: 'Authentication' }} content={renderAuthenticationTab} />
-                )}
+
+                {/* Output tab: shown when node has been executed and produced output */}
                 {nodeOutput && (
                   <TabItemDirective header={{ text: 'Output' }} content={renderOutputTab} />
                 )}
