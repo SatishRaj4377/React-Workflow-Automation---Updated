@@ -210,70 +210,6 @@ export class WorkflowProjectService {
   }
 
   /**
-   * Duplicate an existing project
-   */
-  duplicateProject(projectId: string): ProjectData | null {
-    const sourceProject = this.getProjectById(projectId);
-    if (!sourceProject) return null;
-    
-    const now = new Date();
-    const id = `project-${Date.now()}`;
-    
-    const duplicatedProject: ProjectData = {
-      ...sourceProject,
-      id,
-      name: `${sourceProject.name} (Copy)`,
-      lastModified: now,
-      workflowData: {
-        ...sourceProject.workflowData,
-        metadata: {
-          ...sourceProject.workflowData.metadata,
-          id,
-          name: `${sourceProject.name} (Copy)`,
-          created: now,
-          modified: now,
-          version: 1
-        }
-      }
-    };
-    
-    return this.saveProject(duplicatedProject);
-  }
-
-  /**
-   * Update diagram string for a project
-   */
-  updateDiagramString(projectId: string, diagramString: string): ProjectData | null {
-    const project = this.getProjectById(projectId);
-    if (!project) return null;
-    
-    const updatedProject = {
-      ...project,
-      workflowData: {
-        ...project.workflowData,
-        diagramString: diagramString
-      }
-    };
-    
-    return this.saveProject(updatedProject);
-  }
-
-  /**
-   * Save the diagram as a thumbnail image (base64)
-   */
-  saveThumbnail(projectId: string, thumbnailBase64: string): ProjectData | null {
-    const project = this.getProjectById(projectId);
-    if (!project) return null;
-    
-    const updatedProject = {
-      ...project,
-      thumbnail: thumbnailBase64
-    };
-    
-    return this.saveProject(updatedProject);
-  }
-
-  /**
    * Toggle bookmark status for a project
    */
   toggleBookmark(projectId: string): ProjectData | null {
@@ -311,23 +247,6 @@ export class WorkflowProjectService {
    */
   getBookmarkedProjects(): ProjectData[] {
     return this.getProjects().filter(project => project.isBookmarked);
-  }
-
-  /**
-   * Import workflow from JSON file
-   */
-  importWorkflow(json: string): WorkflowData {
-    try {
-      const workflow = JSON.parse(json) as WorkflowData;
-      // Validate workflow structure
-      if (!workflow.metadata || !workflow.diagramString) {
-        throw new Error('Invalid workflow format');
-      }
-      return workflow;
-    } catch (error) {
-      console.error('Failed to import workflow:', error);
-      throw new Error('Failed to import workflow: Invalid format');
-    }
   }
 }
 

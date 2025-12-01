@@ -1,6 +1,6 @@
 import { ItemModel } from "@syncfusion/ej2-react-splitbuttons";
 import { templateImages } from "../assets/icons";
-import { ConditionComparator, ConditionValueKind, NodeType, TemplateProjectConfig } from "../types";
+import { ConditionComparator, TemplateProjectConfig } from "../types";
 
 export const NODE_MENU = ['editNode', 'delete'];
 export const DIAGRAM_MENU = ['addNode', 'addSticky', 'lockWorkflow', 'selectAll', 'autoAlign'];

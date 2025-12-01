@@ -2,7 +2,6 @@ import { NodeModel } from '@syncfusion/ej2-react-diagrams';
 import { ExecutionContext, NodeConfig, NodeExecutionResult } from '../../types';
 import { showErrorToast } from '../../components/Toast';
 
-// Trigger category executor handles nodes like Chat, Manual Click
 export async function executeTriggerCategory(
   _node: NodeModel,
   nodeConfig: NodeConfig,

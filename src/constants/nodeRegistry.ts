@@ -11,15 +11,6 @@ export interface NodeRegistryEntry {
 }
 
 export const NODE_REGISTRY: Partial<Record<NodeType, NodeRegistryEntry>> = {
-  'Form': {
-    type: 'Form',
-    category: 'trigger',
-    paletteCategory: 'Triggers',
-    label: 'Form',
-    description: 'Trigger workflow on form submission.',
-    iconId: 'FormIcon',
-    portConfig: { rightPort: true },
-  },
   'Manual Click': {
     type: 'Manual Click',
     category: 'trigger',
@@ -27,6 +18,15 @@ export const NODE_REGISTRY: Partial<Record<NodeType, NodeRegistryEntry>> = {
     label: 'Manual Click',
     description: 'Trigger workflow manually',
     iconId: 'ManualClickIcon',
+    portConfig: { rightPort: true },
+  },
+  'Form': {
+    type: 'Form',
+    category: 'trigger',
+    paletteCategory: 'Triggers',
+    label: 'Form',
+    description: 'Trigger workflow on form submission.',
+    iconId: 'FormIcon',
     portConfig: { rightPort: true },
   },
   'Chat': {
@@ -45,14 +45,6 @@ export const NODE_REGISTRY: Partial<Record<NodeType, NodeRegistryEntry>> = {
     label: 'HTTP Request',
     description: 'Make HTTP request',
     iconId: 'HttpRequestIcon',
-  },
-  'EmailJS': {
-    type: 'EmailJS',
-    category: 'action',
-    paletteCategory: 'Core',
-    label: 'EmailJS',
-    description: 'EmailJS integration',
-    iconId: 'EmailJSIcon',
   },
   'Word': {
     type: 'Word',

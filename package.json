@@ -5,7 +5,6 @@
   "author": "Syncfusion Inc.",
   "license": "SEE LICENSE IN license",
   "dependencies": {
-    "@emailjs/browser": "^4.4.1",
     "@syncfusion/ej2-base": "*",
     "@syncfusion/ej2-react-buttons": "*",
     "@syncfusion/ej2-react-calendars": "*",

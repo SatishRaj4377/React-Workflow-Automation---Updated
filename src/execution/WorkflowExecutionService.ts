@@ -6,10 +6,6 @@ import { showErrorToast, showSuccessToast } from '../components/Toast';
 import { globalExecutorRegistry } from './ExecutorRegistry';
 import { ClientSideNodeExecutor } from './ClientSideNodeExecutor';
 
-/**
- * Service for managing workflow execution with support for both client-side
- * and server-side node execution.
- */
 export class WorkflowExecutionService {
   private diagram: DiagramComponent;
   private executionStatus: WorkflowExecutionStatus;

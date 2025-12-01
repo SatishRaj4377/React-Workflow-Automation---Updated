@@ -71,17 +71,6 @@ const NodePaletteSidebar: React.FC<SidebarProps> = ({
         nodeType: node.type,
         description: node.description
       }))
-    },
-    {
-      name: "Tools",
-      nodes: getNodesByPaletteCategory('Tools').map(node => ({
-        id: node.type.toLowerCase().replace(/\s+/g, '-'),
-        name: node.label,
-        iconId: node.iconId,
-        category: node.category,
-        nodeType: node.type,
-        description: node.description
-      }))
     }
   ]), []);
 

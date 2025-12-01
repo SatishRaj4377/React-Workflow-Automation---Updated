@@ -74,9 +74,7 @@ const AppContent: React.FC = () => {
     navigate(`/workflow/${project.id}`);
   };
 
-  const bookmarkedProjects = projects
-    .filter((p) => p.isBookmarked)
-    .map((p) => p.id);
+  const bookmarkedProjects = WorkflowProjectService.getBookmarkedProjectIds();
 
   return (
     <div className="app-container" data-theme={theme}>

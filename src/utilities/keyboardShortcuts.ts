@@ -1,8 +1,5 @@
 import { ToolbarAction } from '../types';
 
-// Normalize and define shortcuts in a scalable way
-// Example normalized keys: "tab", "shift+s", "ctrl+0", "ctrl+1", "ctrl+enter"
-
 const normalizeShortcut = (e: KeyboardEvent): string => {
     const key = e.key.toLowerCase();
     const ctrl = e.ctrlKey || e.metaKey;
@@ -15,8 +12,6 @@ const normalizeShortcut = (e: KeyboardEvent): string => {
     return combo;
 };
 
-// Shortcut actions handled in a single, readable switch
-// Easy to add new shortcuts by extending the switch below
 type ShortcutContext = {
     onAction: (action: ToolbarAction) => void;
     isExecuting: boolean;
@@ -56,7 +51,7 @@ const performShortcutAction = async (e: KeyboardEvent, shortcut: string, ctx: Sh
                 onAction('cancel');
             } else {
                 if (isDirty) {
-                    try { await handleSave(); } catch { /* ignore save error here */ }
+                    try { await handleSave(); } catch { }
                 }
                 onAction('execute');
             }

@@ -1,4 +1,3 @@
-import emailjs from '@emailjs/browser';
 import { ExecutionContext, NodeConfig, NodeExecutionResult } from '../../types';
 import { NodeModel } from '@syncfusion/ej2-react-diagrams';
 import { showErrorToast, showToast } from '../../components/Toast';
@@ -11,8 +10,6 @@ export async function executeActionCategory(
   context: ExecutionContext
 ): Promise<NodeExecutionResult> {
   switch (nodeConfig.nodeType) {
-    case 'EmailJS':
-      return executeEmailJsNode(nodeConfig, context);
     case 'HTTP Request':
       return executeHttpRequestNode(nodeConfig, context);
     case 'Word':
@@ -24,86 +21,6 @@ export async function executeActionCategory(
 
     default:
       return { success: false, error: `Unsupported trigger node type: ${nodeConfig.nodeType}` };
-  }
-}
-
-// ---------------- EmailJS ----------------
-async function executeEmailJsNode(nodeConfig: NodeConfig, context: ExecutionContext): Promise<NodeExecutionResult> {
-  try {
-    // 1) Read minimal required config
-    const auth = nodeConfig.settings?.authentication ?? {};
-    const gen = nodeConfig.settings?.general ?? {};
-
-    const publicKey = (auth.publicKey ?? '').trim();
-    const serviceId = (auth.serviceId ?? '').trim();
-    const templateId = (auth.templateId ?? '').trim();
-
-    // 2) Validate required fields (toast + cancel)
-    const missing: string[] = [];
-    if (!publicKey) missing.push('Public Key');
-    if (!serviceId) missing.push('Service ID');
-    if (!templateId) missing.push('Template ID');
-
-    if (missing.length) {
-      const msg = `Please provide: ${missing.join(', ')}.`;
-      showErrorToast('EmailJS: Missing required fields', msg);
-      return { success: false, error: msg };
-    }
-
-    // 3) Collect and resolve template variables
-    const kvs = Array.isArray(gen.emailjsVars) ? gen.emailjsVars : [];
-    // Filter out rows without a key, but count how many we dropped to warn once.
-    const cleaned = kvs.filter((r: any) => (r?.key ?? '').toString().trim().length > 0);
-    const dropped = kvs.length - cleaned.length;
-    if (dropped > 0) {
-      // soft warning; do not fail execution
-      showErrorToast('EmailJS: Ignoring empty variable names',
-        `Ignored ${dropped} variable row(s) with empty key.`);
-    }
-
-    // Resolve every value through your templating system so expressions work:
-    // VariablePickerTextBox typically stores strings with {{ ... }} expressions.
-    const templateParams: Record<string, any> = {};
-    for (const row of cleaned) {
-      const k = row.key.toString().trim();
-      const raw = (row.value ?? '').toString();
-      const resolved = resolveTemplate(raw, { context }); // expands {{ ... }} using current run context
-      // Keep the raw empty string as valid; users may intentionally set ""
-      templateParams[k] = resolved;
-    }
-
-    // 4) Enforce EmailJS dynamic vars payload limit (~50 KB, exclude attachments)
-    const approxBytes = new Blob([JSON.stringify(templateParams)]).size;
-    if (approxBytes > 50_000) {
-      const msg = `Template variables exceed 50 KB (current ~${approxBytes} bytes). Reduce payload size.`;
-      showErrorToast('EmailJS: Payload too large', msg);
-      return { success: false, error: msg };
-    }
-
-    // 5) Send the email via EmailJS SDK.
-    // Passing { publicKey } here is supported; EmailJS also allows global init with the same key.
-    // Note: EmailJS rate-limits to ~1 request/second. Consider sequencing if users chain sends. [2](https://syncfusion-my.sharepoint.com/personal/satishraj_raju_syncfusion_com/Documents/Microsoft%20Copilot%20Chat%20Files/BaseExecutors.txt)
-    const response = await emailjs.send(
-      serviceId,
-      templateId,
-      templateParams,
-      { publicKey } // ensures we don't depend on a prior global init
-    );
-
-    // 6) Return success payload (also stored to context by base class)
-    return {
-      success: true,
-      data: {
-        status: response?.status,     // e.g., 200
-        text: response?.text,         // e.g., "OK"
-        templateParams
-      }
-    };
-  } catch (err: any) {
-    // 7) Surface a clean error to the user
-    const message = (err?.text || err?.message || `${err}`)?.toString();
-    showErrorToast('EmailJS Send Failed', message);
-    return { success: false, error: message };
   }
 }
 

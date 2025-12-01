@@ -1,17 +1,7 @@
 import { ExecutionContext, NodeConfig, NodeExecutionResult } from '../../types';
 import { showErrorToast } from '../../components/Toast';
 import { evaluateExpression, resolveTemplate } from '../../utilities/expression'
-import {
-  UNARY_COMPARATORS,
-  NUMERIC_RIGHT_COMPARATORS,
-  PAIR_COMPARATORS,
-  REGEX_COMPARATORS,
-  KEY_PROP_COMPARATORS,
-  resolveValue,
-  parsePairValues,
-  compareValues,
-  toTimestamp
-} from '../../utilities/conditionUtils';
+import { UNARY_COMPARATORS, NUMERIC_RIGHT_COMPARATORS, PAIR_COMPARATORS, REGEX_COMPARATORS, KEY_PROP_COMPARATORS, resolveValue, parsePairValues, compareValues, toTimestamp } from '../../utilities/conditionUtils';
 import { NodeModel } from '@syncfusion/ej2-react-diagrams';
 
 export async function executeConditionCategory(

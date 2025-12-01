@@ -1,5 +1,4 @@
 // Centralized evaluation for {{ ... }} tokens supporting $.a.b and $.a[0].b paths.
-
 import { ExecutionContext } from '../types';
 
 type EvalOptions = {

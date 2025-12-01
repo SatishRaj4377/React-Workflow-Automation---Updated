@@ -105,26 +105,7 @@ export const createPreviewHandler = (config: {
   };
 };
 
-/**
- * Get file metadata from settings or local state
- */
-export const getFileMetadata = (config: {
-  settings: any;
-  localFile: File | null;
-  fileSource: 'device' | 'default' | undefined;
-}): FileMetadata | null => {
-  if (config.fileSource === 'device' && config.settings?.deviceFileMeta) {
-    return config.settings.deviceFileMeta;
-  }
-  if (config.localFile) {
-    return {
-      name: config.localFile.name,
-      size: config.localFile.size,
-      type: config.localFile.type,
-    };
-  }
-  return null;
-};
+
 
 /**
  * Build file uploader props from settings or local state
@@ -141,13 +122,4 @@ export const buildUploaderFiles = (config: {
     return [{ name: config.localFile.name, size: config.localFile.size, type: config.localFile.type }];
   }
   return [];
-};
-
-/**
- * Default file discovery and grouping
- * Note: webpack require.context calls should be made in components, not utilities
- * This function is for processing already-loaded file arrays
- */
-export const processDefaultFiles = (fileArray: Array<{ key: string; name: string; url: string }>): Array<{ key: string; name: string; url: string }> => {
-  return fileArray;
 };
