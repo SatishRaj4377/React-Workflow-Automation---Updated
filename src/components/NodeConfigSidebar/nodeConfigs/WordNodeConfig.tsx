@@ -4,10 +4,9 @@ import { ButtonComponent } from '@syncfusion/ej2-react-buttons';
 import { TooltipComponent } from '@syncfusion/ej2-react-popups';
 import { UploaderComponent } from '@syncfusion/ej2-react-inputs';
 import { RichTextEditorComponent, Inject, HtmlEditor, Toolbar, Image, Link, QuickToolbar, Table, PasteCleanup, ImportExport, Resize } from '@syncfusion/ej2-react-richtexteditor';
-import { VariablePickerTextBox, VariablePickerPopup } from './VariablePickerTextBox';
-import { insertAtCaret } from '../../utilities/variablePickerUtils';
-import { createUploadHandler, createRemovalHandler, createPreviewHandler, buildUploaderFiles } from '../../utilities/fileManagementUtils';
-import './NodeConfigSidebar.css';
+import { VariablePickerTextBox, VariablePickerPopup } from '../components/VariablePickerTextBox';
+import { insertAtCaret } from '../../../utilities/variablePickerUtils';
+import { createUploadHandler, createRemovalHandler, createPreviewHandler, buildUploaderFiles } from '../../../utilities/fileManagementUtils';
 
 export type WordNodeOperation = 'Write' | 'Read' | 'Update (Mapper)';
 
@@ -20,7 +19,7 @@ type Props = {
 // Build default files list dynamically from /data/Word Files/*.docx at bundle time (webpack)
 function loadDefaultWordFiles(): Array<{ key: string; name: string; url: string }> {
   try {
-    const ctx = (require as any).context('../../data/Word Files', false, /\.docx?$/i);
+    const ctx = (require as any).context('../../../data/Word Files', false, /\.docx?$/i);
     const keys = ctx.keys();
     return keys.map((k: string) => {
       const url: string = ctx(k)?.default || ctx(k);

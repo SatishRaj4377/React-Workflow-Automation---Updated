@@ -4,9 +4,8 @@ import { TextBoxComponent, NumericTextBoxComponent } from '@syncfusion/ej2-react
 import { ButtonComponent } from '@syncfusion/ej2-react-buttons';
 import { TooltipComponent } from '@syncfusion/ej2-react-popups';
 import { UploaderComponent } from '@syncfusion/ej2-react-inputs';
-import { VariablePickerTextBox } from './VariablePickerTextBox';
-import { createUploadHandler, createRemovalHandler, createPreviewHandler, buildUploaderFiles } from '../../utilities/fileManagementUtils';
-import './NodeConfigSidebar.css';
+import { VariablePickerTextBox } from '../components/VariablePickerTextBox';
+import { createUploadHandler, createRemovalHandler, createPreviewHandler, buildUploaderFiles } from '../../../utilities/fileManagementUtils';
 
 type Props = {
   settings: any; // selectedNode.settings.general
@@ -26,7 +25,7 @@ const OPERATIONS = [
 // Discover default Excel files at build-time (webpack require.context)
 function loadDefaultExcelFiles(): Array<{ key: string; name: string; url: string }> {
   try {
-    const ctx = (require as any).context('../../data/Excel Files', false, /\.(xlsx?|XLSX?)$/i);
+    const ctx = (require as any).context('../../../data/Excel Files', false, /\.(xlsx?|XLSX?)$/i);
     const keys = ctx.keys();
     return keys.map((k: string) => {
       const url: string = ctx(k)?.default || ctx(k);

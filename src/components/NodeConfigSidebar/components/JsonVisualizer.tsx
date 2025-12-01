@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { IconRegistry } from '../../assets/icons';
+import { IconRegistry } from '../../../assets/icons';
 
 export interface JsonVisualizerProps {
   data: any;                          // JSON object or array

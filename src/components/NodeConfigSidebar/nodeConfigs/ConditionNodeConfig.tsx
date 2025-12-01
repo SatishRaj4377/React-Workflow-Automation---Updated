@@ -2,10 +2,10 @@ import React, { useMemo } from 'react';
 import { DropDownListComponent } from '@syncfusion/ej2-react-dropdowns';
 import { ButtonComponent } from '@syncfusion/ej2-react-buttons';
 import { TextBoxComponent } from '@syncfusion/ej2-react-inputs';
-import { VariablePickerTextBox } from './VariablePickerTextBox';
-import { ConditionComparator, ConditionJoiner, ConditionRow } from '../../types';
-import { OP_OPTIONS, orderByPreferredGroup, usesRightOperand } from '../../constants';
-import { inferKindFromText, getPreferredOperatorGroup } from '../../utilities/conditionUtils';
+import { VariablePickerTextBox } from '../components/VariablePickerTextBox';
+import { ConditionComparator, ConditionJoiner, ConditionRow } from '../../../types';
+import { OP_OPTIONS, orderByPreferredGroup, usesRightOperand } from '../../../constants';
+import { inferKindFromText, getPreferredOperatorGroup } from '../../../utilities/conditionUtils';
 
 export interface ConditionNodeConfigProps {
   value?: ConditionRow[];

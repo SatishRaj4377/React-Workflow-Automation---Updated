@@ -7,16 +7,16 @@ import { TooltipComponent } from '@syncfusion/ej2-react-popups';
 import { IconRegistry } from '../../assets/icons';
 import { ExecutionContext, NodeConfig, NodeType } from '../../types';
 import { Diagram } from '@syncfusion/ej2-diagrams';
-import { VariablePickerTextBox } from './VariablePickerTextBox';
-import JsonVisualizer from './JsonVisualizer';
-import ValuePeekPanel, { PeekInfo } from './ValuePeekPanel';
+import { VariablePickerTextBox } from './components/VariablePickerTextBox';
+import JsonVisualizer from './components/JsonVisualizer';
+import ValuePeekPanel, { PeekInfo } from './components/ValuePeekPanel';
 import { updateSwitchPorts, getAvailableVariablesForNode, getNodeOutputAsVariableGroup, buildJsonFromVariables } from '../../utilities';
-import WordNodeConfig from './WordNodeConfig';
-import ExcelNodeConfig from './ExcelNodeConfig';
-import ConditionNodeConfig from './ConditionNodeConfig';
-import FormNodeConfig from './FormNodeConfig';
+import WordNodeConfig from './nodeConfigs/WordNodeConfig';
+import ExcelNodeConfig from './nodeConfigs/ExcelNodeConfig';
+import ConditionNodeConfig from './nodeConfigs/ConditionNodeConfig';
+import FormNodeConfig from './nodeConfigs/FormNodeConfig';
 import FormPopup from '../FormPopup';
-import NotifyNodeConfig from './NotifyNodeConfig';
+import NotifyNodeConfig from './nodeConfigs/NotifyNodeConfig';
 import './NodeConfigSidebar.css';
 
 interface ConfigPanelProps {
@@ -428,7 +428,7 @@ const NodeConfigSidebar: React.FC<ConfigPanelProps> = ({
 
       case 'Notify':
         return (
-          <WordNodeConfig
+          <NotifyNodeConfig
             settings={settings}
             onPatch={(patch) => handleConfigChange(patch, undefined, 'general')}
             variableGroups={availableVariables}

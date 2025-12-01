@@ -1,8 +1,7 @@
 import React from 'react';
 import { DropDownListComponent } from '@syncfusion/ej2-react-dropdowns';
-import { VariablePickerTextBox } from './VariablePickerTextBox';
+import { VariablePickerTextBox } from '../components/VariablePickerTextBox';
 import { TooltipComponent } from '@syncfusion/ej2-react-popups';
-import './NodeConfigSidebar.css';
 
 type Props = {
   settings: any;

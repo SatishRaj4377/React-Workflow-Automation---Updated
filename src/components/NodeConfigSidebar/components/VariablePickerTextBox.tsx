@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { TextBoxComponent } from '@syncfusion/ej2-react-inputs';
-import { Variable, VariableGroup } from '../../types';
-import { buildJsonFromVariables, ensurePortalRoot, findNativeInput, insertAtCaret } from '../../utilities';
+import { Variable, VariableGroup } from '../../../types';
+import { buildJsonFromVariables, ensurePortalRoot, findNativeInput, insertAtCaret } from '../../../utilities';
 import JsonVisualizer from './JsonVisualizer';
 import ValuePeekPanel, { PeekInfo } from './ValuePeekPanel';
 import { Draggable } from '@syncfusion/ej2-base';
