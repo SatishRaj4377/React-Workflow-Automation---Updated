@@ -420,7 +420,7 @@
 
 /* Locked state visuals */
 .workflow-locked #workflow-diagram {
-  background: var(--box-shadow) !important;
+  background: rgb(129 176 180 / 13%) !important;
 }
 .diagram-lock-indicator {
   position: absolute;

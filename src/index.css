@@ -47,6 +47,7 @@ body, .e-control, .e-card{
   --danger-accent: #c9302c; 
   --form-header-bg: #eff6ff;
   --form-body-bg: #ffffff;
+  --workflow-locked-bg: rgb(129 176 180 / 13%);
 
   /* Node Colors */
   --node-selector-outline: #ccd5e2ad;

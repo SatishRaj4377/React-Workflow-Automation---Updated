@@ -706,7 +706,7 @@ const DiagramEditor: React.FC<DiagramEditorProps> = ({
       {/* Lock indicator (visible when locked) */}
       {isWorkflowLocked && (
         <ButtonComponent
-          title='Workflow is locked. Click to unlock.'
+          title='Diagram is locked. Click to unlock.'
           className="diagram-lock-indicator"
           onClick={() => {
             setIsWorkflowLocked(false);
