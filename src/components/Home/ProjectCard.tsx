@@ -27,7 +27,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
       onClick={() => onOpenProject(project)}
     >
       <div className="e-card-image project-thumbnail">
-        <img src={project.thumbnail ?? '/assets/images/template-images/default-image.jpg'} alt={project.name} />
+        <img src={project.thumbnail ?? '/assets/images/template-images/default-image.png'} />
         <div className="project-card-overlay">
           <DropDownButtonComponent
             items={menuItems}

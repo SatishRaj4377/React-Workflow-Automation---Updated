@@ -544,14 +544,6 @@ const DiagramEditor: React.FC<DiagramEditorProps> = ({
   const handleDiagramLoaded = () => {
     // Hide showing plus button initially if saved diagram file is loaded
     onNodeAddedFirstTime?.();
-    // Apply lock state if present in project data
-    try {
-      const locked = project?.workflowData?.locked;
-      if (locked) {
-        setIsWorkflowLocked(true);
-        applyWorkflowLock(true);
-      }
-    } catch {}
   };
 
   // ========================================================================
@@ -644,6 +636,15 @@ const DiagramEditor: React.FC<DiagramEditorProps> = ({
         (diagramRef.current as any).reset();
         (diagramRef.current as any).fitToPage();
       }
+
+      // Apply lock state if present in project data
+      try {
+        const locked = project?.workflowData?.locked;
+        if (locked) {
+          setIsWorkflowLocked(true);
+          applyWorkflowLock(true);
+        }
+      } catch {}
     }
   }, [diagramRef.current, project?.workflowData?.diagramString]);
 

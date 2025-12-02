@@ -172,6 +172,7 @@
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 2rem;
   align-items: stretch;
+  justify-content: start;
 }
 .quick-access-card {
   cursor: pointer;
@@ -181,6 +182,9 @@
   background: var(--surface-color);
   border-radius: 16px;
   border: 1px solid var(--border-color);
+  width: 100%;
+  max-width: 360px;
+  justify-self: start;
 }
 .quick-access-card:hover {
   transform: translateY(-4px);
@@ -207,6 +211,7 @@
   width: 100%;
   height: 100%;
   opacity: .7;
+  object-fit: cover;
 }
 
 .quick-access-card .e-card-content {
@@ -730,7 +735,9 @@
   .quick-access-grid {
     grid-template-columns: 1fr;
     gap: 1.5rem;
+    justify-content: stretch;
   }
+  .quick-access-card { max-width: 100%; }
   .projects-container.card-view {
     grid-template-columns: 1fr;
     gap: 1.5rem;

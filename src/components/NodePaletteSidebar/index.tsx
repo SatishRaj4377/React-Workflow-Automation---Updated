@@ -105,7 +105,6 @@ const NodePaletteSidebar: React.FC<SidebarProps> = ({
                 {typeof nodeIconSrc === 'string' && (
                   <img
                     src={nodeIconSrc}
-                    alt={node.name}
                     className="node-icon-img"
                     draggable={false}
                   />
