@@ -36,7 +36,7 @@
 }
 
 .close-btn {
-  color: var(--text-primary) !important;
+  color: var(--text-secondary) !important;
   background-color: transparent !important;
   padding: 0.5rem;
   border-radius: 4px;
@@ -44,7 +44,7 @@
 
 .close-btn:hover{
   background-color: transparent !important;
-  color: var(--text-secondary) !important;
+  color: var(--text-primary) !important;
   box-shadow: none;
 }
 

@@ -25,7 +25,7 @@ interface ConfigPanelProps {
   selectedNode: NodeConfig | null;
   diagram: Diagram | null;
   executionContext: ExecutionContext;
-  onDeleteNode: (nodeId: string) => void;
+  onExecuteNode: (nodeId: string) => void;
   onNodeConfigChange: (nodeId: string, config: NodeConfig) => void;
   isChatOpen: boolean;
   setChatOpen: React.Dispatch<React.SetStateAction<boolean>>
@@ -34,7 +34,7 @@ interface ConfigPanelProps {
 const NodeConfigSidebar: React.FC<ConfigPanelProps> = ({
   isOpen,
   onClose,
-  onDeleteNode,
+  onExecuteNode,
   selectedNode,
   diagram,
   executionContext,
@@ -655,11 +655,11 @@ const NodeConfigSidebar: React.FC<ConfigPanelProps> = ({
             <div>
               <ButtonComponent
                 cssClass="close-btn"
-                iconCss="e-icons e-trash"
+                iconCss="e-icons e-play"
+                title='Execute Node'
                 onClick={() => {
-                  if (selectedNode && onDeleteNode) {
-                    onDeleteNode(selectedNode.id);
-                    onClose();
+                  if (selectedNode && onExecuteNode) {
+                    onExecuteNode(selectedNode.id);
                   }
                 }}
               />
