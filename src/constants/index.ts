@@ -1,5 +1,4 @@
 import { ItemModel } from "@syncfusion/ej2-react-splitbuttons";
-import { templateImages } from "../assets/icons";
 import { ConditionComparator, TemplateProjectConfig } from "../types";
 
 export const NODE_MENU = ['editNode', 'delete'];
@@ -37,39 +36,6 @@ export const SIDEBAR_ITEMS = [
     { text: "My Workflows", id: "workflows", icon: "e-icons e-folder" },
     { text: "Templates", id: "templates", icon: "e-icons e-landscape" },
     { text: "Documentation", id: "docs", icon: "e-icons e-file-document" }
-];
-
-export const TEMPLATE_PROJECTS: TemplateProjectConfig[] = [
-    {
-        id: 'offer-letter-generator',
-        title: 'Automated Offer Letter Generator Workflow',
-        description: 'Template for preparing and delivering professional offer letters.',
-        image: templateImages.OfferLetterGeneratorImage,
-    },
-    {
-        id: 'patient-appointment',
-        title: 'Patient Appointment Automation Workflow',
-        description: 'Template for managing patient appointment bookings.',
-        image: templateImages.PatientAppointmentImage,
-    },
-    {
-        id: 'wikipedia-article-summarizer',
-        title: 'Wikipedia Article Summarizer & Report Generator',
-        description: 'Template for fetching Wikipedia article summaries and generating a Word report.',
-        image: templateImages.WikipediaArticleSummarizerImage,
-    },
-    {
-        id: 'issue-submission-priortization',
-        title: 'Issue Submission & Prioritization Workflow',
-        description: 'Template for capturing product issues and handling them based on priority.',
-        image: templateImages.IssueSubmissionImage,
-    },
-    {
-        id: 'worklog-status-check',
-        title: 'Daily Worklog Status Check & Alert System',
-        description: 'Template for tracking worklogs and sending notifications.',
-        image: templateImages.WorklogTrackerImage,
-    }
 ];
 
 export const MENU_ITEMS = [

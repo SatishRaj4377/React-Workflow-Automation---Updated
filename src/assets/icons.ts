@@ -13,17 +13,7 @@ import NodeLoader from '../assets/images/svg-icons/node-loader.svg';
 import StopIcon from '../assets/images/svg-icons/stop.svg';
 import BellIcon from '../assets/images/svg-icons/bell.svg';
 
-import DefaultImage from '../assets/images/template-images/default-image.jpg';
-import GithubTemplateImage from '../assets/images/template-images/auto-notify-github-issues.png';
-import UseCaseGeneratorImage from '../assets/images/template-images/component-usecase-generator.png';
-import WorklogTrackerImage from '../assets/images/template-images/daily-worklog-tracker.png';
-import FormSubmissionPriorityImage from '../assets/images/template-images/user-form-submission-priority.png';
-import HRPolicyAssistantImage from '../assets/images/template-images/hr-policy-assistant.png';
-import OfferLetterGeneratorImage from '../assets/images/template-images/offer-letter-generator.png';
-import PatientAppointmentImage from '../assets/images/template-images/patient-appointment.png';
-import WikipediaArticleSummarizerImage from '../assets/images/template-images/wikipedia-article-summarizer.png';
-import IssueSubmissionImage from '../assets/images/template-images/issue-submission.png';
-
+// Exported as react components for runtime changes
 import {ReactComponent as WorkflowLogo} from '../assets/images/svg-icons/workflow-logo.svg';
 import {ReactComponent as WorkflowFolder} from '../assets/images/svg-icons/workflow-folder.svg';
 import {ReactComponent as WorkflowFolderSearch} from '../assets/images/svg-icons/workflow-folder-search.svg';
@@ -54,17 +44,4 @@ export const IconRegistry: { [key: string]: string | React.ElementType } = {
   LockIcon,
   ChevronDown,
   Message
-};
-
-export const templateImages = {
-  DefaultImageImage: DefaultImage,
-  HRPolicyAssistantImage,
-  GithubTemplateImage,
-  UseCaseGeneratorImage,
-  WorklogTrackerImage,
-  FormSubmissionPriorityImage,
-  OfferLetterGeneratorImage,
-  PatientAppointmentImage,
-  WikipediaArticleSummarizerImage,
-  IssueSubmissionImage
 };

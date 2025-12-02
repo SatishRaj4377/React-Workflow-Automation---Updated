@@ -2,7 +2,6 @@ import React from 'react';
 import { DropDownButtonComponent, MenuEventArgs } from '@syncfusion/ej2-react-splitbuttons';
 import { ButtonComponent } from '@syncfusion/ej2-react-buttons';
 import { ProjectData } from '../../types';
-import { templateImages } from '../../assets/icons';
 
 interface ProjectCardProps {
   project: ProjectData;
@@ -28,7 +27,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
       onClick={() => onOpenProject(project)}
     >
       <div className="e-card-image project-thumbnail">
-        <img src={project.thumbnail ?? templateImages.DefaultImageImage} alt={project.name} />
+        <img src={project.thumbnail ?? '/assets/images/template-images/default-image.jpg'} alt={project.name} />
         <div className="project-card-overlay">
           <DropDownButtonComponent
             items={menuItems}

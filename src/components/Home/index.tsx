@@ -14,8 +14,8 @@ import RecentProjectItem from './RecentProjectItem';
 import ProjectListItem from './ProjectListItem';
 import EmptyState from './EmptyState';
 import { ProjectData, TemplateProjectConfig } from '../../types';
-import { MENU_ITEMS, SIDEBAR_ITEMS, SORT_OPTIONS, TEMPLATE_PROJECTS } from '../../constants';
-import { TEMPLATE_PROJECT_DATA } from '../../data/template.data';
+import { MENU_ITEMS, SIDEBAR_ITEMS, SORT_OPTIONS } from '../../constants';
+import TemplateService from '../../services/TemplateService';
 import './Home.css';
 
 interface HomeProps {
@@ -52,7 +52,7 @@ const Home: React.FC<HomeProps> = ({
   const [selectedProjects, setSelectedProjects] = useState<string[]>([]);
   const [isMultiDeleteConfirmOpen, setMultiDeleteConfirmOpen] = useState(false);
 
-  const availableTemplates = useMemo(() => TEMPLATE_PROJECTS.filter(t => !!TEMPLATE_PROJECT_DATA[t.id]), []);
+  const availableTemplates = useMemo(() => TemplateService.getTemplateConfigs(), []);
 
   const handleSearchCreated = () => {
     setTimeout(() => {
@@ -147,7 +147,7 @@ const Home: React.FC<HomeProps> = ({
   };
   
   const handleOpenTemplateProject = (templateProject: TemplateProjectConfig) => {
-    const template = TEMPLATE_PROJECT_DATA[templateProject.id];
+    const template = TemplateService.getTemplateProjectById(templateProject.id);
     if (!template) {
       console.warn(`No project found for template "${templateProject.id}"`);
       return;
