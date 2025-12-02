@@ -154,6 +154,7 @@ const Editor: React.FC<EditorProps> = ({project, onSaveProject, onBackToHome, })
           workflowData: {
             ...(project.workflowData ?? {}),
             diagramString: diagramString,
+            locked: !!document.querySelector('.diagram-editor-container.workflow-locked')
           } as WorkflowData,
           diagramSettings: diagramSettings,
           thumbnail: thumbnailBase64 ?? project.thumbnail,
@@ -188,6 +189,7 @@ const Editor: React.FC<EditorProps> = ({project, onSaveProject, onBackToHome, })
         workflowData: {
           ...(project.workflowData ?? {}),
           diagramString,
+          locked: !!document.querySelector('.diagram-editor-container.workflow-locked')
         },
         diagramSettings,
       } as ProjectData;

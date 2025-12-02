@@ -340,6 +340,11 @@
   color: white;
 }
 
+.view-toggle-btn :focus {
+  background: transparent !important;
+  color: white;
+}
+
 .view-toggle-btn .e-icons {
   font-size: 1.2rem;
 }

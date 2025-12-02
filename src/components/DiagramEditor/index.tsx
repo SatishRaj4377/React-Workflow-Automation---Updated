@@ -5,7 +5,9 @@ import { getConnectorCornerRadius, getConnectorType, getFirstSelectedNode, getGr
 import { finalizeConnectorStyle, applyDisconnectedConnectorStyle, removeDisconnectedConnectorIfInvalid, applyConnectorHoverStyle, resetConnectorToDefaultStyle } from '../../utilities/connectorUtils';
 import { handleStickyNoteEditMode } from '../../utilities/stickyNoteUtils';
 import { filterContextMenuItems, getAvailableContextMenuIds } from '../../utilities/contextMenuUtils';
+import { IconRegistry } from '../../assets/icons';
 import './DiagramEditor.css';
+import { ButtonComponent } from '@syncfusion/ej2-react-buttons';
 
 interface DiagramEditorProps {
   onAddNode?: () => void;
@@ -542,6 +544,14 @@ const DiagramEditor: React.FC<DiagramEditorProps> = ({
   const handleDiagramLoaded = () => {
     // Hide showing plus button initially if saved diagram file is loaded
     onNodeAddedFirstTime?.();
+    // Apply lock state if present in project data
+    try {
+      const locked = project?.workflowData?.locked;
+      if (locked) {
+        setIsWorkflowLocked(true);
+        applyWorkflowLock(true);
+      }
+    } catch {}
   };
 
   // ========================================================================
@@ -682,7 +692,7 @@ const DiagramEditor: React.FC<DiagramEditorProps> = ({
   // ========================================================================
 
   return (
-    <div className="diagram-editor-container">
+    <div className={`diagram-editor-container${isWorkflowLocked ? ' workflow-locked' : ''}`}>
       {/* Initial add button overlay */}
       {showInitialAddButton && (
         <div className="center-initial-plus-btn">
@@ -691,6 +701,25 @@ const DiagramEditor: React.FC<DiagramEditorProps> = ({
           </button>
           <div className="initial-plus-label">Add a trigger</div>
         </div>
+      )}
+
+      {/* Lock indicator (visible when locked) */}
+      {isWorkflowLocked && (
+        <ButtonComponent
+          title='Workflow is locked. Click to unlock.'
+          className="diagram-lock-indicator"
+          onClick={() => {
+            setIsWorkflowLocked(false);
+            applyWorkflowLock(false);
+            try { if (project?.workflowData) project.workflowData.locked = false; } catch {}
+          }}
+          aria-label="Unlock diagram"
+        >
+          {(() => {
+            const LockIcon = IconRegistry['LockIcon'] as any;
+            return <LockIcon />;
+          })()}
+        </ButtonComponent>
       )}
 
       {/* Main diagram component */}

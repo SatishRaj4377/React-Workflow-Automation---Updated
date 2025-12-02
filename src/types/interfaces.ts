@@ -28,6 +28,7 @@ export interface WorkflowData {
     version: number;
   };
   diagramString: string;
+  locked?: boolean;
 }
 
 export interface TemplateProjectConfig {

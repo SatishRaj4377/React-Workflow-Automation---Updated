@@ -1,4 +1,4 @@
-import { ProjectData, WorkflowData } from "../types";
+import { ProjectData } from "../types";
 
 /**
  * Service for managing workflow data and operations
@@ -76,7 +76,9 @@ export class WorkflowProjectService {
             ...project.workflowData.metadata,
             modified: new Date(),
             version: project.workflowData.metadata.version + 1
-          }
+          },
+          // Persist current locked flag if present on the incoming project
+          locked: project.workflowData?.locked
         }
       };
       

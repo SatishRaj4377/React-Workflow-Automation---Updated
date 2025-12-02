@@ -30,6 +30,7 @@ import {ReactComponent as WorkflowFolderSearch} from '../assets/images/svg-icons
 import {ReactComponent as NodeSearch} from '../assets/images/svg-icons/node-search.svg';
 import {ReactComponent as ChevronDown} from '../assets/images/svg-icons/chevron-down.svg';
 import {ReactComponent as Message} from '../assets/images/svg-icons/message-icon.svg';
+import {ReactComponent as LockIcon} from '../assets/images/svg-icons/lock.svg';
 
 export const IconRegistry: { [key: string]: string | React.ElementType } = {
   WorkflowLogo,
@@ -50,6 +51,7 @@ export const IconRegistry: { [key: string]: string | React.ElementType } = {
   NodeLoader,
   StopIcon,
   BellIcon,
+  LockIcon,
   ChevronDown,
   Message
 };

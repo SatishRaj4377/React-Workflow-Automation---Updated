@@ -142,6 +142,13 @@
   transform: translateX(-50%);
   z-index: 1000;
 }
+
+/* When workflow is locked, do not show toolbar on hover */
+.workflow-locked .node-template-container :hover .node-hover-toolbar {
+  opacity: 0 !important;
+  z-index: -1000 !important;
+  pointer-events: none !important;
+}
 .node-toolbar-btn {
   height: 40px;
   cursor: pointer;
@@ -304,14 +311,13 @@
     opacity: 1;
     color: var(--scrollbar-thumb-hover);
     position: absolute;
-    right: -33px;
     top: 12px;
+    margin-left: 1.2rem;
     border-radius: 4px;
     background: var(--background-color);
     transform: translate(-50%, -100%) scale(1);
     font-size: .67rem;
     font-weight: 500;
-    width: 20px;
     text-align: left;
     transition: all 0.2s ease;
 }
@@ -412,6 +418,35 @@
   background: transparent !important;
 }
 
+/* Locked state visuals */
+.workflow-locked #workflow-diagram {
+  background: var(--box-shadow) !important;
+}
+.diagram-lock-indicator {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 1010;
+  background: var(--primary-color);
+  border: transparent;
+  border-radius: 6px;
+  padding: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
+}
+.diagram-lock-indicator:hover {
+  transform: translateY(-.8px);
+  box-shadow: 0 2px 8px var(--box-shadow2);
+}
+.diagram-lock-indicator svg {
+  width: 1.5rem;
+  height: 1.3rem;
+  display: block;
+}
+
 /* Context Menu Styles */
 .e-contextmenu .e-menu-item {
   color: var(--text-primary) !important;
@@ -490,6 +525,19 @@
 }
 .sticky-note-container:hover .sticky-note-delete-btn {
   opacity: 1;
+}
+/* When workflow is locked, keep sticky delete hidden and non-interactive */
+.workflow-locked .sticky-note-container:hover .sticky-note-delete-btn {
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* When workflow is locked, ensure cursor remains default over any toolbar/delete areas */
+.workflow-locked .node-hover-toolbar,
+.workflow-locked .node-toolbar-btn,
+.workflow-locked .sticky-note-delete-btn {
+  cursor: default !important;
+  pointer-events: none !important;
 }
 .sticky-note-delete-btn:hover {
   color: var(--accent-color);
