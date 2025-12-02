@@ -640,7 +640,7 @@ const DiagramEditor: React.FC<DiagramEditorProps> = ({
       }
 
       // Reset and fit template diagrams
-      if (project.id.startsWith('template')) {
+      if ((project as any).isTemplate) {
         (diagramRef.current as any).reset();
         (diagramRef.current as any).fitToPage();
       }

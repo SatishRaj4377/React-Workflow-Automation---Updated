@@ -12,7 +12,7 @@ export interface NodeConfig {
     authentication?: any;
     advanced?: any;
   };
-  status?: NodeStatus; // Added for execution tracking
+  status?: NodeStatus;
   executionTime?: {
     start?: Date;
     end?: Date;
@@ -46,6 +46,7 @@ export interface ProjectData {
   workflowData: WorkflowData;
   isBookmarked?: boolean;
   diagramSettings?: DiagramSettings;
+  isTemplate?: boolean;
 }
 
 export interface PaletteCategory {

@@ -70,6 +70,11 @@ const AppContent: React.FC = () => {
   };
 
   const handleOpenProject = (project: ProjectData) => {
+    // If this is a template-derived project not yet saved, pass it via navigation state
+    if ((project as any).isTemplate) {
+      navigate(`/workflow/${project.id}`, { state: { newProject: project } });
+      return;
+    }
     navigate(`/workflow/${project.id}`);
   };
 

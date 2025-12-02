@@ -69,6 +69,7 @@ export class WorkflowProjectService {
       // Update last modified date
       const updatedProject = {
         ...project,
+        isTemplate: false,
         lastModified: new Date(),
         workflowData: {
           ...project.workflowData,
@@ -208,6 +209,43 @@ export class WorkflowProjectService {
       }
     };
     
+    return newProject;
+  }
+
+  /**
+   * Create a new project instance from a template definition.
+   * - Clones the template content
+   * - Resets metadata and versioning
+   */
+  createProjectFromTemplate(template: ProjectData): ProjectData {
+    const now = new Date();
+
+    // Generate a fresh project id for instances created from templates
+    const preferredId = `project-${Date.now()}`;
+
+    // Ensure uniqueness
+    const uniqueId = this.getProjectById(preferredId) ? `project-${Date.now()}` : preferredId;
+
+    const newProject: ProjectData = {
+      ...template,
+      id: uniqueId,
+      name: template.name,
+      isBookmarked: false,
+      isTemplate: true, // mark as template-derived until first save
+      lastModified: now,
+      workflowData: {
+        ...template.workflowData,
+        metadata: {
+          ...(template.workflowData?.metadata ?? {}),
+          id: uniqueId,
+          name: template.workflowData?.metadata?.name || template.name,
+          created: now,
+          modified: now,
+          version: 1,
+        },
+      },
+    };
+
     return newProject;
   }
 

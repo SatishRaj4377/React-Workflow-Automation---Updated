@@ -52,6 +52,8 @@ const Home: React.FC<HomeProps> = ({
   const [selectedProjects, setSelectedProjects] = useState<string[]>([]);
   const [isMultiDeleteConfirmOpen, setMultiDeleteConfirmOpen] = useState(false);
 
+  const availableTemplates = useMemo(() => TEMPLATE_PROJECTS.filter(t => !!TEMPLATE_PROJECT_DATA[t.id]), []);
+
   const handleSearchCreated = () => {
     setTimeout(() => {
       if (searchRef.current) {
@@ -145,13 +147,15 @@ const Home: React.FC<HomeProps> = ({
   };
   
   const handleOpenTemplateProject = (templateProject: TemplateProjectConfig) => {
-    const project = TEMPLATE_PROJECT_DATA[templateProject.id];
-    if (!project) {
+    const template = TEMPLATE_PROJECT_DATA[templateProject.id];
+    if (!template) {
       console.warn(`No project found for template "${templateProject.id}"`);
       return;
     }
-    onSaveProject(project)
-    onOpenProject(project);
+
+    const newProject = WorkflowProjectService.createProjectFromTemplate(template as any);
+
+    onOpenProject(newProject);
   };
 
 
@@ -287,7 +291,7 @@ const Home: React.FC<HomeProps> = ({
                 <h2 className="section-title">Quick Start</h2>
                 <div className="quick-access-grid">
                   {/* Show only three tempaltes inthe quick access section */}
-                  {TEMPLATE_PROJECTS.slice(0, 3).map((template) => (
+                  {availableTemplates.slice(0, 3).map((template) => (
                     <TemplateCard
                       key={template.id}
                       template={template}
@@ -491,7 +495,7 @@ const Home: React.FC<HomeProps> = ({
             <section className="animate-fade-in-up">
               <h2 className="section-title">Templates</h2>
               <div className="quick-access-grid">
-                {TEMPLATE_PROJECTS.map((template) => (
+                {availableTemplates.map((template) => (
                     <TemplateCard
                       key={template.id}
                       template={template}

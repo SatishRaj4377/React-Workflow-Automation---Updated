@@ -2,7 +2,7 @@ import { ProjectData } from '../types';
 
 export const TEMPLATE_PROJECT_DATA: Record<string, ProjectData> = {
     'offer-letter-generator': {
-        id: "template-project-1763463076932",
+        id: "project-1763463076932",
         name: "Automated Offer Letter Generator",
         lastModified: new Date("2025-11-18T16:15:12.910Z"),
         workflowData: {
@@ -26,10 +26,11 @@ export const TEMPLATE_PROJECT_DATA: Record<string, ProjectData> = {
             },
             showOverview: false,
             showOverviewAlways: false
-        }
+        },
+        isTemplate: true,
     },
     'patient-appointment': {
-        id: "template-project-1763548475840",
+        id: "project-1763548475840",
         name: "Patient Appointment Automation Workflow",
         lastModified: new Date("2025-11-20T08:08:11.797Z"),
         workflowData: {
@@ -53,10 +54,11 @@ export const TEMPLATE_PROJECT_DATA: Record<string, ProjectData> = {
             },
             showOverview: false,
             showOverviewAlways: false
-        }
+        },
+        isTemplate: true,
     },
     'wikipedia-article-summarizer': {
-        id: "template-project-1763704473537",
+        id: "project-1763704473537",
         name: "Wikipedia Article Summarizer & Report Generator",
         lastModified: new Date("2025-11-21T07:19:05.679Z"),
         workflowData: {
@@ -80,10 +82,11 @@ export const TEMPLATE_PROJECT_DATA: Record<string, ProjectData> = {
             },
             showOverview: false,
             showOverviewAlways: false
-        }
+        },
+        isTemplate: true,
     },
     'issue-submission-priortization': {
-        id: "template-project-1763725833628",
+        id: "project-1763725833628",
         name: "Issue Submission & Prioritization Workflow",
         lastModified: new Date("2025-11-23T07:33:56.704Z"),
         workflowData: {
@@ -107,10 +110,11 @@ export const TEMPLATE_PROJECT_DATA: Record<string, ProjectData> = {
             },
             showOverview: false,
             showOverviewAlways: false
-        }
+        },
+        isTemplate: true,
     },
     'worklog-status-check': {
-        id: "template-project-1763891732437",
+        id: "project-1763891732437",
         name: "Daily Worklog Status Check & Alert System",
         lastModified: new Date("2025-11-23T10:29:26.582Z"),
         workflowData: {
@@ -134,6 +138,7 @@ export const TEMPLATE_PROJECT_DATA: Record<string, ProjectData> = {
             },
             showOverview: false,
             showOverviewAlways: false
-        }
+        },
+        isTemplate: true,
     }
 };
