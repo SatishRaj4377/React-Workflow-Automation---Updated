@@ -427,7 +427,6 @@
   top: 12px;
   right: 12px;
   z-index: 1010;
-  background: var(--primary-color);
   border: transparent;
   border-radius: 6px;
   padding: 6px;
@@ -440,6 +439,9 @@
 .diagram-lock-indicator:hover {
   transform: translateY(-.8px);
   box-shadow: 0 2px 8px var(--box-shadow2);
+}
+.diagram-lock-indicator:focus {
+  background-color: var(--secondary-color);
 }
 .diagram-lock-indicator svg {
   width: 1.5rem;

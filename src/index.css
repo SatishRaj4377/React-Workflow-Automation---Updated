@@ -220,7 +220,6 @@ a {
 }
 .e-btn:focus,
 .e-btn.e-primary:focus {
-  background: var(--secondary-color);
   outline: none;
   box-shadow: none !important;
 }
