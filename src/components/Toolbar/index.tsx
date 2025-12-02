@@ -152,7 +152,8 @@ const Toolbar: React.FC<ToolbarProps> = ({
         id="workflow-toolbar"
         cssClass="custom-toolbar"
         height="48px"
-        overflowMode="Popup"
+        width="100%"
+        overflowMode="Scrollable"
       >
         <ItemsDirective>
           {toolbarItems.map((item, index) => (

@@ -5,9 +5,6 @@
   border-radius: 12px;
   box-shadow: var(--shadow);
   backdrop-filter: blur(10px);
-  pointer-events: none;
-  user-select: none;
-
 }
 
 .custom-toolbar .e-toolbar-item {
@@ -141,65 +138,15 @@
 }
 
 /* Responsive Design */
-@media (max-width: 768px) {
-  .workflow-toolbar-container {
-    bottom: 10px;
-    left: 10px;
-    right: 10px;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: flex-end;
+@media (max-width: 660px) {
+  .editor-toolbar {
+    width: calc(100% - 20px);
+    bottom: 12px;
   }
-  
-  .main-toolbar {
-    flex: 1;
-    margin-right: 0.5rem;
+  .e-hscroll-bar {
+    overflow: hidden;
   }
-  
-  .custom-toolbar .e-toolbar-items {
-    justify-content: space-around;
-  }
-  
-  .custom-toolbar .e-toolbar-item {
-    margin: 0 1px;
-  }
-  
-  .custom-toolbar .e-toolbar-item .e-tbar-btn {
-    width: 32px;
-    height: 32px;
-    padding: 0.25rem;
-  }
-  
-  .execute-btn, .cancel-btn {
-    padding: 0.5rem 1rem;
-    font-size: 0.875rem;
-  }
-  
-  .execution-toolbar {
-    margin: 0.8rem;
-    padding: 0.25rem;
-    flex-shrink: 0;
-  }
-}
-
-@media (max-width: 480px) {
-  .custom-toolbar .e-toolbar-item .e-tbar-btn {
-    width: 28px;
-    height: 28px;
-  }
-  
-  .custom-toolbar .e-icons {
-    font-size: 14px;
-  }
-  
-  .execute-btn, .cancel-btn {
-    padding: 0.5rem 0.75rem;
-    font-size: 0.8rem;
-  }
-  
-  .execute-btn .e-btn-content,
-  .cancel-btn .e-btn-content {
-    display: none;
-  }
-  
+   .custom-toolbar .e-toolbar-item {
+    margin: 0;
+   }
 }

@@ -29,14 +29,11 @@
 /* Toolbar positioning */
 .editor-toolbar {
   position: fixed;
-  bottom: 24px;
+  bottom: 22px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 1000;
   padding: 0.5rem;
-  margin-top: 1rem;
-  pointer-events: none;
-  user-select: none;
 }
 
 /* Ej2 Message styling */
@@ -81,11 +78,3 @@
     transform: rotate(360deg);
   }
 }
-
-
-/* Responsive Design */
-@media (max-width: 1200px) {}
-
-@media (max-width: 768px) {}
-
-@media (max-width: 480px) {}
