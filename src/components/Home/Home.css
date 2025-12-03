@@ -169,10 +169,9 @@
 }
 .quick-access-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 352px));
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 2rem;
   align-items: stretch;
-  justify-content: start;
 }
 .quick-access-card {
   cursor: pointer;

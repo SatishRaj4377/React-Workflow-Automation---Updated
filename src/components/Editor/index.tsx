@@ -436,10 +436,10 @@ const Editor: React.FC<EditorProps> = ({project, onSaveProject, onBackToHome, })
         });
         break;
       case 'zoomIn':
-        diagramRef?.zoomTo({ type: 'ZoomIn', zoomFactor: 0.2 });
+        diagramRef?.zoomTo({ type: 'ZoomIn', zoomFactor: 0.1 });
         break;
       case 'zoomOut':
-        diagramRef?.zoomTo({ type: 'ZoomOut', zoomFactor: 0.2 });
+        diagramRef?.zoomTo({ type: 'ZoomOut', zoomFactor: 0.1 });
         break;
       case 'resetZoom':
         diagramRef?.reset();
