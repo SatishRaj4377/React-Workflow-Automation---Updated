@@ -141,20 +141,22 @@ const ConditionNodeConfig: React.FC<ConditionNodeConfigProps> = ({
                 )}
               </div>
               {/* Line 4: AND/OR between rows, only if a next row exists */}
-              {showJoiners && showJoinerBelow && (
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%', margin: '12px 0 6px' }}>
-                  <div style={{ flex: 1, height: 1, background: 'var(--scrollbar-thumb)', opacity: 0.6 }} />
-                  <DropDownListComponent
-                    value={(rows[i + 1]?.joiner ?? 'AND') as ConditionJoiner}
-                    dataSource={['AND', 'OR']}
-                    popupHeight="200px"
-                    zIndex={1000000}
-                    width={110}
-                    change={(e: any) => updateRow(i + 1, { joiner: e.value as ConditionJoiner })}
-                  />
-                  <div style={{ flex: 1, height: 1, background: 'var(--scrollbar-thumb)', opacity: 0.6 }} />
-                </div>
-              )}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%', margin: '12px 0 6px'}}>
+                {showJoiners && showJoinerBelow && (
+                  <>
+                    <div style={{ flex: 1, height: 1, background: 'var(--scrollbar-thumb)', opacity: 0.6 }} />
+                      <DropDownListComponent
+                        value={(rows[i + 1]?.joiner ?? 'AND') as ConditionJoiner}
+                        dataSource={['AND', 'OR']}
+                        popupHeight="200px"
+                        zIndex={1000000}
+                        width={'110px'}
+                        change={(e: any) => updateRow(i + 1, { joiner: e.value as ConditionJoiner })}
+                      />
+                    <div style={{ flex: 1, height: 1, background: 'var(--scrollbar-thumb)', opacity: 0.6 }} />
+                  </>
+                  )}
+              </div>
 
             </React.Fragment>
           );
