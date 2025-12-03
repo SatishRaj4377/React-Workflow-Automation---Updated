@@ -14,6 +14,7 @@ const TemplateCard: React.FC<TemplateCardProps> = ({ template, onOpenTemplate })
       </div>
       <div className="e-card-content">
         <h3>{template.title}</h3>
+        <p>{template.description}</p>
       </div>
     </div>
   );

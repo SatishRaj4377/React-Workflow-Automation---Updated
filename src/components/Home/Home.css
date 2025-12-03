@@ -169,7 +169,7 @@
 }
 .quick-access-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(300px, 360px));
   gap: 2rem;
   align-items: stretch;
   justify-content: start;
@@ -182,9 +182,7 @@
   background: var(--surface-color);
   border-radius: 16px;
   border: 1px solid var(--border-color);
-  width: 100%;
-  max-width: 360px;
-  justify-self: start;
+  width: 100%; /* fills the grid column (fixed via minmax) */
 }
 .quick-access-card:hover {
   transform: translateY(-4px);
@@ -737,7 +735,6 @@
     gap: 1.5rem;
     justify-content: stretch;
   }
-  .quick-access-card { max-width: 100%; }
   .projects-container.card-view {
     grid-template-columns: 1fr;
     gap: 1.5rem;
