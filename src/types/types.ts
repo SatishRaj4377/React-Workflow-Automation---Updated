@@ -44,7 +44,7 @@ export type NodeType =
   | 'Form'
   | 'Webhook'
   | 'Schedule'
-  | 'Manual Click'
+  | 'Manual Trigger'
   | 'Chat'
   | 'AI Agent'
   | 'HTTP Request'

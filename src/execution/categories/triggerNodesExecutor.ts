@@ -14,7 +14,7 @@ export async function executeTriggerCategory(
     case 'Form':
       return executeFormTriggerNode(nodeConfig);
 
-    case 'Manual Click':
+    case 'Manual Trigger':
       return {
         success: true,
         data: {

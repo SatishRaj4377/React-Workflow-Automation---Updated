@@ -11,11 +11,11 @@ export interface NodeRegistryEntry {
 }
 
 export const NODE_REGISTRY: Partial<Record<NodeType, NodeRegistryEntry>> = {
-  'Manual Click': {
-    type: 'Manual Click',
+  'Manual Trigger': {
+    type: 'Manual Trigger',
     category: 'trigger',
     paletteCategory: 'Triggers',
-    label: 'Manual Click',
+    label: 'Manual Trigger',
     description: 'Trigger workflow manually',
     iconId: 'ManualClickIcon',
     portConfig: { rightPort: true },
