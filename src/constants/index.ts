@@ -35,7 +35,6 @@ export const SIDEBAR_ITEMS = [
     { text: "Dashboard", id: "dashboard", icon: "e-icons e-home" },
     { text: "My Workflows", id: "workflows", icon: "e-icons e-folder" },
     { text: "Templates", id: "templates", icon: "e-icons e-landscape" },
-    { text: "Documentation", id: "docs", icon: "e-icons e-file-document" }
 ];
 
 export const MENU_ITEMS = [

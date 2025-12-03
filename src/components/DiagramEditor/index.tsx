@@ -6,8 +6,8 @@ import { finalizeConnectorStyle, applyDisconnectedConnectorStyle, removeDisconne
 import { handleStickyNoteEditMode } from '../../utilities/stickyNoteUtils';
 import { filterContextMenuItems, getAvailableContextMenuIds } from '../../utilities/contextMenuUtils';
 import { IconRegistry } from '../../assets/icons';
-import './DiagramEditor.css';
 import { ButtonComponent } from '@syncfusion/ej2-react-buttons';
+import './DiagramEditor.css';
 
 interface DiagramEditorProps {
   onAddNode?: () => void;
@@ -534,7 +534,6 @@ const DiagramEditor: React.FC<DiagramEditorProps> = ({
     } else {
       diagram.constraints = DiagramConstraints.Default;
     }
-    if (onDiagramChange) onDiagramChange();
   };
 
   // ========================================================================
