@@ -14,7 +14,7 @@ interface DiagramEditorProps {
   onNodeDoubleClick: (nodeId: string) => void;
   onDiagramRef?: (ref: any) => void;
   project?: any;
-  onDiagramChange?: (args: any) => void;
+  onDiagramChange?: () => void;
   onAddStickyNote?: (position: { x: number; y: number }) => void;
   onUserhandleAddNodeClick?: (node: NodeModel, portId: string) => void;
   onConnectorUserhandleAddNodeClick?: (connector: ConnectorModel) => void;
@@ -534,6 +534,7 @@ const DiagramEditor: React.FC<DiagramEditorProps> = ({
     } else {
       diagram.constraints = DiagramConstraints.Default;
     }
+    if (onDiagramChange) onDiagramChange();
   };
 
   // ========================================================================
