@@ -505,14 +505,6 @@ const Home: React.FC<HomeProps> = ({
               </div>
             </section>
           )}
-
-          {/* DOCS SECTION */}
-          {activeSection === 'docs' && (
-            <section className="animate-fade-in-up">
-              <h2 className="section-title">Documentation</h2>
-              <p>Learn how to create and manage workflows effectively.</p>
-            </section>
-          )}
         </div>
 
         {/* FILE DELETE CONFIRMATION DIALOG */}
