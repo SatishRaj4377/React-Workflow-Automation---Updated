@@ -3,7 +3,7 @@ import { DiagramComponent, SnapSettingsModel, OverviewComponent, GridlinesModel,
 import { DiagramSettings, NodeConfig } from '../../types';
 import { getConnectorCornerRadius, getConnectorType, getFirstSelectedNode, getGridColor, getGridType, getNodeConfig,  getSnapConstraints, initializeNodeDimensions, isConnectorBetweenAgentAndTool, isNodeOutOfViewport, isStickyNote, prepareUserHandlePortData, updateNodeConstraints, isAgentBottomToToolConnector, computeConnectorLength, adjustUserHandlesForConnectorLength, attachNodeTemplateEvents, buildUserHandles, generatePortBasedUserHandles, updateNodePosition, updateNodeTemplates, updateNodeSelection, updateResizeHandleVisibility } from '../../utilities';
 import { finalizeConnectorStyle, applyDisconnectedConnectorStyle, removeDisconnectedConnectorIfInvalid, applyConnectorHoverStyle, resetConnectorToDefaultStyle } from '../../utilities/connectorUtils';
-import { handleStickyNoteEditMode } from '../../utilities/stickyNoteUtils';
+import { handleStickyNoteEditMode, initializeStickyNote } from '../../utilities/stickyNoteUtils';
 import { filterContextMenuItems, getAvailableContextMenuIds } from '../../utilities/contextMenuUtils';
 import { IconRegistry } from '../../assets/icons';
 import { ButtonComponent } from '@syncfusion/ej2-react-buttons';
@@ -337,8 +337,14 @@ const DiagramEditor: React.FC<DiagramEditorProps> = ({
     const diagram = diagramRef.current;
     if (!diagram) return;
 
-    // Attach event handlers to node template
-    attachNodeTemplateEvents(node);
+    // Re-apply sticky note template on addition
+    const nodeConfig = getNodeConfig(node);
+    if (nodeConfig && isStickyNote(nodeConfig)) {
+      initializeStickyNote(node, diagramRef);
+    } else {
+      // Attach event handlers to non-sticky node templates
+      attachNodeTemplateEvents(node);
+    }
 
     const isOutOfView = isNodeOutOfViewport(diagram, node);
     const isFirstNode = !hasFirstNodeAdded && diagram.nodes?.length === 1;
@@ -427,7 +433,16 @@ const DiagramEditor: React.FC<DiagramEditorProps> = ({
   };
 
   // Handle selection change - update selected nodes for custom selection style
-  const handleSelectionChange = (args: any) => {
+ const handleSelectionChange = (args: any) => {
+    // Prevent any selection when workflow is locked
+    if (isWorkflowLocked) {
+      try { args.cancel = true; } catch {}
+      if (diagramRef.current) {
+        diagramRef.current.clearSelection();
+      }
+      return;
+    }
+
     if (args?.newValue && args.newValue.length > 0) {
       const selectedIds = args.newValue.map((item: any) => item.id);
       setSelectedNodeIds(selectedIds);
