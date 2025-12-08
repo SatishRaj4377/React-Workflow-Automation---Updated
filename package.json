@@ -31,7 +31,6 @@
   },
   "devDependencies": {
     "@svgr/webpack": "^8.1.0",
-    "@syncfusion/ej2-showcase-helper": "*",
     "@types/jest": "^27.5.1",
     "@types/node": "^20.4.1",
     "@types/react": "^18.2.14",
