@@ -35,7 +35,7 @@ export interface TemplateProjectConfig {
   id: string;
   title: string;
   description: string;
-  image?: string;
+  nodes: string[];
 }
 
 export interface ProjectData {

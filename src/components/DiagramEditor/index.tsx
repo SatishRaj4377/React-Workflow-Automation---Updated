@@ -86,6 +86,7 @@ const DiagramEditor: React.FC<DiagramEditorProps> = ({
   // Timeout refs for cleanup
   const overviewTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const zoomTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const [showLockHint, setShowLockHint] = useState(false);
 
   // ========================================================================
   // Diagram Configuration
@@ -551,6 +552,16 @@ const DiagramEditor: React.FC<DiagramEditorProps> = ({
     }
   };
 
+  // Subtle nudge to draw attention to the lock button when user interacts
+  const nudgeLockIndicator = () => {
+    if (!isWorkflowLocked) return;
+    // Restart animation on every interaction by toggling the class
+    setShowLockHint(false);
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => setShowLockHint(true));
+    });
+  };
+
   // ========================================================================
   // Diagram Loaded
   // ========================================================================
@@ -708,7 +719,12 @@ const DiagramEditor: React.FC<DiagramEditorProps> = ({
   // ========================================================================
 
   return (
-    <div className={`diagram-editor-container${isWorkflowLocked ? ' workflow-locked' : ''}`}>
+    <div
+      className={`diagram-editor-container${isWorkflowLocked ? ' workflow-locked' : ''}`}
+      onMouseDown={nudgeLockIndicator}
+      onWheel={nudgeLockIndicator}
+      onTouchStart={nudgeLockIndicator}
+    >
       {/* Initial add button overlay */}
       {showInitialAddButton && (
         <div className="center-initial-plus-btn">
@@ -723,7 +739,7 @@ const DiagramEditor: React.FC<DiagramEditorProps> = ({
       {isWorkflowLocked && (
         <ButtonComponent
           title='Diagram is locked. Click to unlock.'
-          className="diagram-lock-indicator"
+          className={`diagram-lock-indicator${showLockHint ? ' hint' : ''}`}
           onClick={() => {
             setIsWorkflowLocked(false);
             applyWorkflowLock(false);

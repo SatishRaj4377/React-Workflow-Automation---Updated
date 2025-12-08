@@ -181,17 +181,18 @@
   background: var(--surface-color);
   border-radius: 16px;
   border: 1px solid var(--border-color);
-  width: 100%; /* fills the grid column (fixed via minmax) */
+  width: 100%; 
 }
 .quick-access-card:hover {
   transform: translateY(-4px);
   box-shadow: var(--shadow-hover);
+  background: linear-gradient(180deg, var(--box-shadow) 0%, var(--list-hover-bg) 100%);
 }
 
-/* Template Image Styling */
-.template-image {
+/* Template Image/Icons Styling */
+.template-icons-band {
   flex: 1;
-  height: 160px;
+  height: 120px;
   width: 100%;
   position: relative;
   overflow: hidden;
@@ -201,14 +202,61 @@
   background: var(--list-selected-hover-bg);
   border-radius: 16px 16px 0 0;
 }
-.quick-access-card:hover .template-image {
-  background: var(--gradient-accent);
+
+.template-icons-band {
+  padding: 10px 14px;
 }
-.template-image img {
+.template-icons-band .icons-row.compact {
+  display: flex;
+  gap: 10px;
+  overflow: hidden;
   width: 100%;
-  height: 100%;
-  opacity: .7;
-  object-fit: cover;
+  padding: 2px;
+}
+.template-icons-band .node-icon {
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  min-height: 40px;
+  object-fit: contain;
+  background: var(--background-color);
+  border-radius: 10px;
+  padding: 6px;
+  box-shadow: 0 1px 4px var(--box-shadow);
+}
+
+/* On hover: show full grid of icons within the same header area without changing actual height */
+.template-icons-band .icons-grid-on-hover {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+  gap: 10px;
+  padding: 18px 20px;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 40ms ease-in, transform 100ms ease;
+  will-change: opacity, transform;
+}
+.quick-access-card:hover .template-icons-band .icons-grid-on-hover {
+  opacity: 1;
+  transform: translateY(0);
+}
+.quick-access-card:hover .template-icons-band .icons-row.compact {
+  opacity: 0;
+  transform: translateY(-6px);
+}
+
+/* If only one row of icons, center them vertically on hover too */
+.template-icons-band .icons-grid-on-hover.single-row {
+  align-content: center; /* centers grid content vertically within fixed header */
+}
+
+.template-icons-band,
+.template-icons-band .icons-row.compact,
+.template-icons-band .icons-grid-on-hover,
+.template-card {
+  transition: all 150ms ease-in-out;
 }
 
 .quick-access-card .e-card-content {
@@ -216,6 +264,7 @@
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
+  padding: 8px 16px 16px;
 }
 
 .quick-access-card h3 {
@@ -536,6 +585,7 @@
   position: relative;
   overflow: hidden;
   border: 1px solid transparent;
+  border-radius: 16px;
 }
 .project-card:hover {
   transform: translateY(-4px);
@@ -821,37 +871,6 @@
   .view-toggle-btn .e-icons {
     font-size: 1.1rem;
   }
-}
-
-
-/* Card styling */
-.modern-card {
-  background: var(--surface-color);
-  border-radius: 16px;
-  box-shadow: var(--shadow);
-  border: 1px solid var(--border-color);
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-  overflow: hidden;
-}
-.modern-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background: var(--box-shadow);
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-.modern-card:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-hover);
-  background-color: var(--surface-color);
-}
-.modern-card:hover::before {
-  opacity: 1;
 }
 
 /* Animation utilities */

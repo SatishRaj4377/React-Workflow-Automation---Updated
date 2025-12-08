@@ -33,7 +33,6 @@ function toProject(raw: any): ProjectData {
     lastModified,
     isBookmarked: false,
     isTemplate: true,
-    thumbnail: raw?.thumbnail,
     diagramSettings: raw?.diagramSettings,
     workflowData: {
       metadata: {
@@ -49,13 +48,6 @@ function toProject(raw: any): ProjectData {
   } as ProjectData;
 }
 
-function resolveImage(raw: any): string | undefined {
-  // 1) Use explicit URL if provided
-  if (raw?.thumbnail) return raw.thumbnail;
-  // 2) Use public assets path with provided filename (supports any extension)
-  const id: string | undefined = raw?.thumbnailId || raw?.thumbnailID || raw?.thumb || raw?.imageId;
-  return id ? `/assets/images/template-images/${id}` : undefined;
-}
 
 class TemplateService {
   private cache: Cache = null;
@@ -69,10 +61,9 @@ class TemplateService {
       project.id = id;
       project.isTemplate = true;
       projects[id] = project;
-      const image = resolveImage(raw);
       const title = project.name || id;
       const description = raw?.description || '';
-      return { id, title, description, image } as TemplateProjectConfig;
+      return { id, title, description, nodes: (raw?.nodes|| []) } as TemplateProjectConfig;
     });
     this.cache = { projects, configs };
   }
