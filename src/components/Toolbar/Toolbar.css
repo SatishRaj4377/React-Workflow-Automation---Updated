@@ -29,6 +29,23 @@
   align-items: center;
   justify-content: center;
 }
+/* Disabled toolbar button visuals */
+.custom-toolbar .e-toolbar-item.e-disabled,
+.custom-toolbar .e-toolbar-item .e-tbar-btn.e-disabled,
+.custom-toolbar .e-toolbar-item .e-btn.e-disabled,
+.custom-toolbar .e-toolbar-item.e-disabled .e-tbar-btn,
+.custom-toolbar .e-toolbar-item.e-disabled .e-btn {
+  opacity: 0.45 !important;
+  cursor: default !important;
+  pointer-events: none !important;
+}
+.custom-toolbar .e-disabled-btn .e-tbar-btn,
+.custom-toolbar .e-disabled-btn .e-btn,
+.custom-toolbar .e-disabled-btn .e-btn .e-btn-icon {
+  opacity: 0.55 !important;
+  cursor: default !important;
+}
+.custom-toolbar .e-disabled-btn .e-tbar-btn:hover { transform: none; background: transparent; }
 
 /* Execute button styling within toolbar */
 .custom-toolbar .e-toolbar-item .execute-btn {

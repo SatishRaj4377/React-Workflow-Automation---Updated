@@ -180,7 +180,7 @@
   overflow: hidden;
   background: var(--surface-color);
   border-radius: 16px;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--border-color) !important;
   width: 100%; 
 }
 .quick-access-card:hover {
@@ -584,7 +584,7 @@
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
-  border: 1px solid transparent;
+  border: 1px solid var(--border-color) !important;
   border-radius: 16px;
 }
 .project-card:hover {

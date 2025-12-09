@@ -89,6 +89,8 @@ const Editor: React.FC<EditorProps> = ({project, onSaveProject, onBackToHome, })
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   // Show leave confirmation dialog flag
   const [showLeaveDialog, setShowLeaveDialog] = useState(false);
+  // Workflow locked state
+  const [isWorkflowLocked, setIsWorkflowLocked] = useState(false);
 
   // ========================================================================
   // State Management - Node Addition & Connector Insertion
@@ -414,6 +416,10 @@ const Editor: React.FC<EditorProps> = ({project, onSaveProject, onBackToHome, })
 
   // Dispatch toolbar actions to editor behaviors
   const handleToolbarAction = (action: ToolbarAction) => {
+    if (isWorkflowLocked && (action === 'addNode' || action === 'addSticky' || action === 'autoAlign')) {
+      return;
+    }
+
     switch (action) {
       case 'addNode':
         setNodeConfigPanelOpen(false);
@@ -792,6 +798,13 @@ const Editor: React.FC<EditorProps> = ({project, onSaveProject, onBackToHome, })
     return () => window.removeEventListener('wf:chat:open', handler);
   }, []);
 
+  // Track workflow lock/unlock change
+  useEffect(() => {
+    const onLockChanged = (e: any) => setIsWorkflowLocked(!!e?.detail?.locked);
+    window.addEventListener('workflow-lock-changed', onLockChanged as any);
+    return () => window.removeEventListener('workflow-lock-changed', onLockChanged as any);
+  }, []);
+
   // ========================================================================
   // Render
   // ========================================================================
@@ -899,6 +912,7 @@ const Editor: React.FC<EditorProps> = ({project, onSaveProject, onBackToHome, })
             onAction={handleToolbarAction}
             isExecuting={isExecuting}
             isPanActive={isPanActive}
+            isLocked={isWorkflowLocked}
           />
         </div>
       </div>

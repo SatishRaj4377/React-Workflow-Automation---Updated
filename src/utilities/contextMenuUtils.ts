@@ -26,6 +26,12 @@ export const filterContextMenuItems = (
     lockItem.text = isWorkflowLocked ? 'Unlock Workflow' : 'Lock Workflow';
   }
 
+  // If workflow is locked, only show Lock/Unlock regardless of selection
+  if (isWorkflowLocked) {
+    hideAllExcept(availableIds.includes('lockWorkflow') ? ['lockWorkflow'] : []);
+    return;
+  }
+
   // Sticky note context menu
   if (isStickyNote) {
     hideAllExcept(availableIds.includes('delete') ? ['delete'] : []);

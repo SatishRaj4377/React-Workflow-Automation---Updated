@@ -9,12 +9,14 @@ interface ToolbarProps {
   onAction:(action: ToolbarAction) => void;
   isExecuting: boolean;
   isPanActive: boolean;
+  isLocked: boolean;
 }
 
 const Toolbar: React.FC<ToolbarProps> = ({
   onAction,
   isExecuting = false,
   isPanActive,
+  isLocked,
 }) => {
   // Template for execute button
   const executeButtonTemplate = () => {
@@ -32,30 +34,36 @@ const Toolbar: React.FC<ToolbarProps> = ({
   const toolbarItems = [
     {
       prefixIcon: 'e-icons e-plus',
-      tooltipText: 'Add Nodes',
+      tooltipText: isLocked ? '' : 'Add Nodes',
       id: 'add-nodes',
-      click: () => onAction('addNode'),
+      click: () => { if (!isLocked) onAction('addNode'); },
       overflow: 'Show',
+      disabled: isLocked,
+      cssClass: isLocked ? 'e-disabled-btn' : '',
     },
     {
       type: 'Separator',
     },
     {
       prefixIcon: 'e-icons e-add-notes',
-      tooltipText: 'Add Sticky Note',
+      tooltipText: isLocked ? '' : 'Add Sticky Note',
       id: 'add-sticky',
-      click: () => onAction('addSticky'),
+      click: () => { if (!isLocked) onAction('addSticky'); },
       overflow: 'Show',
+      disabled: isLocked,
+      cssClass: isLocked ? 'e-disabled-btn' : '',
     },
     {
       type: 'Separator',
     },
     {
       prefixIcon: 'e-icons e-ai-chat',
-      tooltipText: 'Auto Align Nodes',
+      tooltipText: isLocked ? '' : 'Auto Align Nodes',
       id: 'auto-align-tool',
-      click: () => onAction('autoAlign'),
+      click: () => { if (!isLocked) onAction('autoAlign'); },
       overflow: 'Show',
+      disabled: isLocked,
+      cssClass: isLocked ? 'e-disabled-btn' : '',
     },
     {
       type: 'Separator',
@@ -113,10 +121,18 @@ const Toolbar: React.FC<ToolbarProps> = ({
       enableHtmlParse: true,
       position: 'BottomCenter',
       beforeRender: (args) => {
-        const title = args.target.getAttribute('title');
-
-        if (!title) return;
-        
+        // Do not show tooltip for disabled items
+        const el = args.target as HTMLElement;
+        const isDisabled = !!el.closest('.e-disabled') || !!el.closest('.e-disabled-btn');
+        if (isDisabled) {
+          (args as any).cancel = true;
+          return;
+        }
+        const title = el.getAttribute('title');
+        if (!title) {
+          (args as any).cancel = true;
+          return;
+        }
         // Set custom HTML tooltip content
         const shortcutMap: any = {
           'Add Nodes': 'Open Node Palette <kbd>Tab</kbd>',
@@ -130,13 +146,12 @@ const Toolbar: React.FC<ToolbarProps> = ({
           'Execute Workflow': 'Execute <kbd>Ctrl</kbd> <kbd>Enter</kbd>',
           'Cancel Execution': 'Cancel <kbd>Ctrl</kbd> <kbd>Enter</kbd>',
         };
-        
         const content = shortcutMap[title];
         if (content) {
           // Remove native tooltip
-          args.target.removeAttribute('title');
+          el.removeAttribute('title');
           // Set custom HTML tooltip content
-          args.target.setAttribute('data-content', content);
+          el.setAttribute('data-content', content);
         }
       }
     });

@@ -550,6 +550,11 @@ const DiagramEditor: React.FC<DiagramEditorProps> = ({
     } else {
       diagram.constraints = DiagramConstraints.Default;
     }
+
+    // Broadcast lock state for other UI
+    try {
+      window.dispatchEvent(new CustomEvent('workflow-lock-changed', { detail: { locked } }));
+    } catch {}
   };
 
   // Subtle nudge to draw attention to the lock button when user interacts
@@ -669,6 +674,8 @@ const DiagramEditor: React.FC<DiagramEditorProps> = ({
         if (locked) {
           setIsWorkflowLocked(true);
           applyWorkflowLock(true);
+        } else {
+          try { window.dispatchEvent(new CustomEvent('workflow-lock-changed', { detail: { locked: false } })); } catch {}
         }
       } catch {}
     }
