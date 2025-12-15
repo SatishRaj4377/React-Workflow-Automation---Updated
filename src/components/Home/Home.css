@@ -609,7 +609,6 @@
   justify-content: center;
   overflow: hidden;
   position: relative;
-  border-radius: 12px 12px 0 0;
 }
 .project-thumbnail img {
   width: 100%;
