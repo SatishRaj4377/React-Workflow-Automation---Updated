@@ -9,17 +9,19 @@ import { IconRegistry } from '../../assets/icons';
 import './ChatPopup.css';
 
 // Props type definition for ChatPopup component
-type ChatPopupProps = {
-  open: boolean;
-  onClose: () => void;
-  promptSuggestions?: string[];
-};
+ type ChatPopupProps = {
+   open: boolean;
+   onClose: () => void;
+   promptSuggestions?: string[];
+   bannerTemplateText?: string;
+ };
 
 // ChatPopup component for AI assistant interaction
 export const ChatPopup: React.FC<ChatPopupProps> = ({
   open,
   onClose,
   promptSuggestions,
+  bannerTemplateText,
 }) => {
   // DOM references
   const popupRef = useRef<HTMLDivElement>(null);
@@ -29,42 +31,79 @@ export const ChatPopup: React.FC<ChatPopupProps> = ({
 
   // UI state
   const [isMinimized, setIsMinimized] = useState(false);
+  const [customBannerText, setCustomBannerText] = useState<string | null>(null);
 
   // Get message icon from registry
   const MessageIcon = IconRegistry['Message'];
 
+  // Render banner HTML
+  const renderBannerHtml = (text?: string | null) =>
+    ReactDOMServer.renderToStaticMarkup(
+      <div className="banner-content">
+        <MessageIcon />
+        <span>{(text && text.trim()) || 'Send a message below to trigger the chat workflow'}</span>
+      </div>
+    );
+
+  // Sync prop-driven banner text
+  useEffect(() => {
+    setCustomBannerText(bannerTemplateText ?? null);
+  }, [bannerTemplateText]);
+
+  // Minimize/maximize helpers to keep state and UI in sync
+  const minimize = () => {
+    const el = popupRef.current;
+    if (!el) return;
+    // Save current height before collapsing
+    if (el.style.height !== '0px' && el.style.height) {
+      popupHeightRef.current = el.style.height;
+    } else if (!popupHeightRef.current) {
+      popupHeightRef.current = `${el.getBoundingClientRect().height || 420}px`;
+    }
+    el.style.height = '0px';
+    setIsMinimized(true);
+  };
+
+  const maximize = () => {
+    const el = popupRef.current;
+    if (!el) return;
+    const target = popupHeightRef.current && popupHeightRef.current !== '0px' ? popupHeightRef.current : `${Math.max(420, el.getBoundingClientRect().height || 420)}px`;
+    el.style.height = target;
+    setIsMinimized(false);
+  };
+
+  // Initialize stored height on open
+  useEffect(() => {
+    if (open && popupRef.current) {
+      const h = popupRef.current.style.height || `${popupRef.current.getBoundingClientRect().height || 420}px`;
+      popupHeightRef.current = h;
+    }
+  }, [open]);
+
   // Toggle between minimized and maximized states
   const toggleMinimize = () => {
     if (!popupRef.current) return;
-
-    if (popupRef.current.style.height === '0px') {
-      popupRef.current.style.height = popupHeightRef.current;
-      setIsMinimized(false);
+    if (isMinimized) {
+      maximize();
     } else {
-      popupHeightRef.current = popupRef.current.style.height;
-      popupRef.current.style.height = '0px';
-      setIsMinimized(true);
+      minimize();
     }
   };
 
   // Handle user input and dispatch to workflow execution
   const handleUserInput = (args: any) => {
     const text = (args?.prompt || '').trim();
-    
     if (text.length > 0 && typeof window !== 'undefined') {
       window.dispatchEvent(new CustomEvent('wf:chat:prompt', {
         detail: { text, at: new Date().toISOString() }
       }));
+      // Auto-minimize after sending a message
+      minimize();
     }
   };
 
-  // Render banner template with icon and instruction text
-  const bannerTemplate = ReactDOMServer.renderToStaticMarkup(
-    <div className="banner-content">
-      <MessageIcon />
-      <span>Send a message below to trigger the chat workflow</span>
-    </div>
-  );
+  // Compute banner template once from current text or default
+  const bannerTemplate = renderBannerHtml(customBannerText ?? bannerTemplateText);
 
   // Initialize draggable functionality for chat popup
   useEffect(() => {
@@ -83,6 +122,17 @@ export const ChatPopup: React.FC<ChatPopupProps> = ({
     };
   }, [open]);
 
+  // Listen for custom banner updates coming from Chat node configuration panel
+  useEffect(() => {
+    const onUpdateBanner = (e: Event) => {
+      const ce = e as CustomEvent<{ text?: string }>;
+      const txt = (ce.detail?.text ?? '').trim();
+      setCustomBannerText(txt || null);
+    };
+    window.addEventListener('wf:chat:update-banner', onUpdateBanner as EventListener);
+    return () => window.removeEventListener('wf:chat:update-banner', onUpdateBanner as EventListener);
+  }, []);
+
   // Listen for assistant responses from workflow execution
   useEffect(() => {
     const onAssistantReply = (e: Event) => {
@@ -91,6 +141,9 @@ export const ChatPopup: React.FC<ChatPopupProps> = ({
       const triggeredFrom = (ce.detail?.triggeredFrom || '').trim();
 
       if (!reply) return;
+
+      // Auto-maximize when a response arrives
+      maximize();
 
       if (triggeredFrom) {
         aiViewRef.current?.addPromptResponse({

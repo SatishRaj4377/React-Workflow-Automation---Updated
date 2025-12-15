@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { DropDownButtonComponent, MenuEventArgs } from '@syncfusion/ej2-react-splitbuttons';
 import { ButtonComponent } from '@syncfusion/ej2-react-buttons';
 import { TooltipComponent } from '@syncfusion/ej2-react-popups';
@@ -31,11 +31,12 @@ const RecentProjectItem: React.FC<RecentProjectItemProps> = ({
   formatDateForListCell,
 }) => {
   const WorkflowFolderIcon = IconRegistry['WorkflowFolder'];
+  const [menuOpen, setMenuOpen] = useState(false);
 
   return (
     <div
       key={getProjectKey(project, index, 'recent-')}
-      className="project-list-item"
+      className={`project-list-item ${menuOpen ? 'menu-open' : ''}`}
       onClick={() => onOpenProject(project)}
       tabIndex={0}
     >
@@ -64,7 +65,7 @@ const RecentProjectItem: React.FC<RecentProjectItemProps> = ({
       <span className="project-col project-bookmark">
         <TooltipComponent content={isBookmarked ? 'Remove from favorites' : 'Add to favorites'}>
           <ButtonComponent
-            cssClass="bookmark-btn"
+            cssClass="bookmark-btn e-flat"
             iconCss={`e-icons e-star-filled ${isBookmarked ? 'star-filled' : ''}`}
             onClick={(e) => onBookmarkToggle(project.id, e)}
           />
@@ -74,10 +75,12 @@ const RecentProjectItem: React.FC<RecentProjectItemProps> = ({
       <span className="project-col project-menu">
         <DropDownButtonComponent
           items={menuItems}
-          iconCss="e-icons e-more-vertical-1"
+          iconCss="e-icons e-more-vertical-1 e-flat"
           cssClass="e-caret-hide project-menu-dropdown"
           select={onMenuSelect(project)}
           onClick={(e) => e.stopPropagation()}
+          open={() => setMenuOpen(true)}
+          close={() => setMenuOpen(false)}
         />
       </span>
     </div>

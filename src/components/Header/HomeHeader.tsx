@@ -18,7 +18,7 @@ const HomeHeader: React.FC = () => {
         </div>
         
         <div className="appbar-right">
-          <TooltipComponent content={`Toggle to ${theme === 'dark' ? 'light' : 'dark'} mode`}>
+          <TooltipComponent position='LeftCenter' content={`Toggle to ${theme === 'dark' ? 'light' : 'dark'} mode`}>
             <SwitchComponent
               checked={theme === 'dark'}
               change={() => toggleTheme()}

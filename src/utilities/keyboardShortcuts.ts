@@ -50,9 +50,6 @@ const performShortcutAction = async (e: KeyboardEvent, shortcut: string, ctx: Sh
             if (isExecuting) {
                 onAction('cancel');
             } else {
-                if (isDirty) {
-                    try { await handleSave(); } catch { }
-                }
                 onAction('execute');
             }
             return true;

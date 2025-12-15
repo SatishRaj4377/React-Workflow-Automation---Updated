@@ -44,7 +44,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 8px;
+  border-radius: var(--border-radius);
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
   border: 2px solid var(--node-border-color);
   background: var(--node-background);
@@ -128,7 +128,7 @@
 /* Node action toolbar styles */
 .node-hover-toolbar {
   position: absolute;
-  top: -36px;
+  top: -32px;
   left: 50%;
   transform: translate(-50%, 50%);
   display: flex;
@@ -136,6 +136,12 @@
   pointer-events: all;
   z-index: -1000;
   transition: all 0.1s ease;
+  justify-content: center;
+  align-items: center;
+  width: 90px;
+  height: 24px;
+  background: var(--background-color);
+  border-radius: 6px;
 }
 .node-template-container :hover .node-hover-toolbar {
   opacity: 1;
@@ -154,9 +160,10 @@
   cursor: pointer;
   background-color: transparent !important;
   box-shadow: none !important;
+  border: none;
 }
 .node-toolbar-btn .e-icons {
-  color: var(--node-toolbar-btn-color);
+  color: var(--color-sf-icon-color);
   font-size: 1rem !important;
 }
 .node-toolbar-btn:hover .e-icons {
@@ -428,18 +435,16 @@
   right: 12px;
   z-index: 1010;
   border: transparent;
-  border-radius: 6px;
+  border-radius: var(--border-radius);
   padding: 6px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  background-color: var(--primary-color);
   transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
-  /* Use accent color as semantic hue for glow/ring via currentColor */
-  color: var(--primary-color);
 }
 .diagram-lock-indicator:hover {
-  transform: translateY(-.8px);
   box-shadow: 0 2px 8px var(--box-shadow2);
 }
 .diagram-lock-indicator:focus {
@@ -454,7 +459,7 @@
 .diagram-lock-indicator.hint {
   animation: lockPulse 0.7s ease-out;
   /* subtle glow to draw attention */
-  filter: drop-shadow(0 0 10px color-mix(in srgb, currentColor 45%, transparent));
+  filter: drop-shadow(0 0 10px color-mix(in srgb, var(--secondary-color) 45%, transparent));
 }
 @keyframes lockPulse {
   0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0,0,0,0); }
@@ -479,19 +484,26 @@
   bottom: 20px;
   right: 20px;
   width: 200px;
-  height: 130px;
+  height: 116px;
   background: var(--surface-color);
   border: 1px solid var(--border-color);
-  border-radius: 4px;
+  border-radius: var(--border-radius);
   box-shadow: 0 2px 8px var(--box-shadow);
   z-index: 1000;
-  transition: 'opacity 0.3s ease-in-out, visibility 0.3s ease-in-out'
+  transition: 'opacity 0.15s ease-in-out, visibility 0.15s ease-in-out'
 }
 .overview-resizer {
   fill: var(--border-color);
 }
 #overview_canvasoverviewrect{
   fill: rgba(177, 220, 255, 0.226);
+}
+
+@media (max-width: 1100px) {
+  .diagram-overview-container {
+    bottom: auto;
+    top: 20px;
+  }
 }
 
 /* Zoom Percentage Display */
@@ -503,7 +515,7 @@
   background-color: var(--text-secondary);
   color: var(--surface-color);
   padding: 5px 8px;
-  border-radius: 4px;
+  border-radius: var(--border-radius);
   font-size: 14px;
   font-weight: bold;
   z-index: 1001;
@@ -525,15 +537,16 @@
 }
 .sticky-note-delete-btn {
   position: absolute;
-  top: -32px;
+  top: -36px;
   left: 50%;
   transform: translateX(-50%);
-  background-color: transparent;
+  background: var(--background-color);
+  border-radius: 4px;
   border: none;
   cursor: pointer;
-  width: 20px;
-  height: 30px;
-  color: var(--node-toolbar-btn-color);
+  width: 38px;
+  height: 28px;
+  color: var(--node-border-color);
   font-size: .9rem;
   opacity: 0;
   transition: opacity 0.2s ease;
@@ -595,7 +608,7 @@
 .markdown-preview code {
   background: rgba(119, 138, 159, 0.1);
   padding: 2px 4px;
-  border-radius: 3px;
+  border-radius: 4px;
   font-family: 'Courier New', monospace;
 }
 .markdown-preview ul {
@@ -611,7 +624,6 @@
   line-height: 1.4;
   color: #142336;
   resize: none;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   white-space: pre-wrap;
   word-wrap: break-word;
   overflow-y: auto;
@@ -624,6 +636,6 @@
   outline: none;
   background: rgba(255, 255, 255, 0.7);
   border: 1.6px solid #9ca3af53;;
-  border-radius: 5px;
+  border-radius: 4px;
   padding: 5px;
 }

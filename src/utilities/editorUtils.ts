@@ -20,6 +20,24 @@ export function extractChatPromptSuggestions(diagram: any): string[] {
   return [];
 }
 
+// Extract optional banner text from the Chat trigger node in the diagram
+export function extractChatBannerText(diagram: any): string {
+  try {
+    if (!diagram) return '';
+    const nodes: any[] = Array.isArray(diagram.nodes) ? diagram.nodes : [];
+    for (const n of nodes) {
+      try {
+        const cfg = getNodeConfig(n);
+        if (cfg?.nodeType === 'Chat') {
+          const txt = (cfg as any)?.settings?.general?.bannerText;
+          return typeof txt === 'string' ? txt : '';
+        }
+      } catch {}
+    }
+  } catch {}
+  return '';
+}
+
 // Check if current active element is a text-editing element (prevents spacebar pan interference)
 export function isEditingTextElement(active: Element | null): boolean {
   const el = active as HTMLElement | null;

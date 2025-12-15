@@ -34,8 +34,9 @@ body, .e-control, .e-card{
   --surface-color: #ffffff;
   --background-color: #f8fafc;
   --text-primary: #1e293b;
-  --text-secondary: #64748b;
+  --text-secondary: #424f63;
   --border-color: #e2e8f0;
+  --theme-border-color: #d1d5db;
   --box-shadow: rgba(53, 164, 255, 0.3);
   --box-shadow2: rgba(53, 164, 255, 0.511);
   --shadow: 0 4px 20px rgba(37, 99, 235, 0.15);
@@ -48,6 +49,7 @@ body, .e-control, .e-card{
   --form-header-bg: #eff6ff;
   --form-body-bg: #ffffff;
   --workflow-locked-bg: rgb(129 176 180 / 13%);
+  --bookmark-icon-color: #F39C12;
 
   /* Node Colors */
   --node-selector-outline: #ccd5e2ad;
@@ -60,18 +62,18 @@ body, .e-control, .e-card{
   --node-executing-color: rgb(188 225 255);
   --node-success-color-light: rgb(233 255 233);
   --node-error-color-light: rgb(255 221 221);
-  --node-toolbar-btn-color: #a8adb3dd;
   --sticky-note-bg-color: #e7f8ff;
   --sticky-note-stroke-color: #536381;
   --sticky-note-text-color: #536381;
 
   --list-hover-bg: #e7f1fe;
+  --list-text-color: #1d4ed8;
   --list-selected-bg: #dbeafe;
   --list-selected-color: var(--primary-color);
   --scrollbar-bg: #f5f7fa;
   --scrollbar-thumb: #bbc7d6;
   --scrollbar-thumb-hover: #7c9acc;
-  --scrollbar-border-radius: 8px;  
+  --border-radius: 8px;  
   --grid-line-color: #d3d5d8; 
   --grid-dotted-color: #a6b4caff; 
   
@@ -111,15 +113,17 @@ body, .e-control, .e-card{
   --center-action-border: #3b82f6;
   --center-action-border-hover: #93c5fd;
   --center-action-icon: #60a5fa;
-  --accent-color: #93c5fd;
+  --accent-color: #72b0f7;
   --surface-color: #1e293b;
   --background-color: #0f172a;
   --box-shadow: rgba(53, 164, 255, 0.053);
   --text-primary: #f1f5f9;
   --text-secondary: #94a3b8;
   --border-color: #334155;
+  --theme-border-color: #374151;
   --list-hover-bg: #23395d; 
-  --list-selected-bg: rgba(59, 130, 246, 0.28);; 
+  --list-selected-bg: rgba(59, 130, 246, 0.28);
+  --list-text-color: #93c5fd; 
   --shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
   --shadow-hover: 0 8px 30px rgba(0, 0, 0, 0.6);
   --gradient-primary: linear-gradient(135deg, #60a5fa 0%, #3b82f6 50%, #93c5fd 100%);
@@ -132,7 +136,6 @@ body, .e-control, .e-card{
   --node-selector-outline: #93a9ff3d;
   --node-background: #0e141d;
   --node-selector-background: #062b40;
-  --node-toolbar-btn-color: #b1b7d283;
   --sticky-note-bg-color: #193d67;
   --sticky-note-stroke-color: #f1f5f9;
   --sticky-note-text-color: #f1f5f9;
@@ -199,37 +202,26 @@ a {
 }
 
 /* Overriding EJ2 Buttons Styles */
-.e-btn,
 .e-btn.e-primary {
   background: var(--primary-color);
   color: #fff;
   border: none;
-  transition: background 0.25s, box-shadow 0.2s;
-  box-shadow: none;
+  transition: background 0.1s, box-shadow 0.2s;
 }
-.e-btn,
-.e-btn.e-danger {
-  color: #fff;
-  border: none;
-  transition: background 0.25s, box-shadow 0.2s;
-}
-.e-btn:hover,
-.e-btn.e-primary:hover {
-  background: var(--accent-color);
-  color: #fff;
-  box-shadow: 0 2px 8px var(--box-shadow);
-}
-.e-btn:focus,
-.e-btn.e-primary:focus {
-  outline: none;
-  box-shadow: none !important;
-}
-
-.e-btn:active,
-.e-btn.e-primary:active {
+.e-btn.e-primary:active, .e-btn.e-primary:focus {
   background: var(--secondary-color);
   color: #fff;
 }
+.e-btn.e-primary:hover {
+  background: var(--accent-color);
+  color: #fff;
+}
+.e-btn.e-danger {
+  color: #fff;
+  transition: background 0.1s, box-shadow 0.2s;
+  box-shadow: none;
+}
+
 .e-icons{
   font-size: 1.2rem !important;
 }
@@ -237,48 +229,46 @@ a {
 /* Overriding EJ2 Toggle Switch Styles */
 .e-switch-wrapper.e-focus .e-switch-inner,
 .e-switch-wrapper:active .e-switch-inner{
-    outline: none !important;
-    box-shadow: none !important;
+  border: 1px solid var(--accent-color) !important;
+  box-shadow: 0 0 0 1px var(--accent-color) !important;
 }
 .e-switch-wrapper .e-switch-on {
   background-color: var(--accent-color) !important;
 }
 .e-switch-wrapper .e-switch-off {
-  background-color: var(--text-secondary) !important;
+  background-color: var(--sticky-note-text-color) !important;
 }
 .e-switch-wrapper:active .e-ripple-check.e-ripple-container{
   background-color: transparent !important;
-}
-/* Hover states */
-.e-switch-wrapper:hover .e-switch-inner {
-  background-color: var(--text-secondary) !important;
-  border-color: var(--text-secondary) !important;
 }
 .e-switch-wrapper.e-switch-active:hover .e-switch-inner {
   background-color: var(--accent-color) !important;
   border-color: var(--accent-color) !important;
 }
-
+.e-switch-wrapper:hover .e-switch-inner.e-switch-active, 
+.e-switch-wrapper .e-switch-inner.e-switch-active {
+   background-color: var(--primary-color) !important;
+  border-color: var(--primary-color) !important;
+}
 
 /* Overriding text box styles */
-.e-input-group,
-.e-input-group.e-control-wrapper {
-  border: 1.5px solid var(--border-color) !important;
-  box-shadow: none !important;
+.e-input-group.e-input-focus:not(.e-success):not(.e-warning):not(.e-error), .e-input-group.e-control-wrapper.e-input-focus:not(.e-success):not(.e-warning):not(.e-error){
+  border: 1px solid var(--accent-color) !important;
+  box-shadow: 0 0 0 1px var(--accent-color) !important;
 }
+
 .e-input-group .e-input-group-icon {
   color: var(--text-secondary) !important;
 }
 
 /* Dropdown and context menu text styles */
+.e-dropdown-popup ul {
+  border-radius: var(--border-radius);
+}
 .e-popup.e-popup-open, .e-dropdown-popup ul .e-item .e-menu-icon {
-  color: var(--text-secondary) !important;
-}
-.e-dropdown-popup ul .e-item:hover {
-  color: var(--text-secondary) !important;
-}
-.e-dropdown-popup ul .e-item {
-  font-weight: 500;
+  color: var(--text-primary) !important;
+  font-size: 16px !important;
+   border-radius: var(--border-radius) !important;
 }
 
 /* Selection Color Update */
@@ -328,11 +318,11 @@ textarea.e-input::selection,
   width: 6px;
   height: 6px;
   background: var(--scrollbar-bg);
-  border-radius: var(--scrollbar-border-radius);
+  border-radius: var(--border-radius);
 }
 ::-webkit-scrollbar-thumb {
   background: var(--scrollbar-thumb);
-  border-radius: var(--scrollbar-border-radius);
+  border-radius: var(--border-radius);
   transition: background 0.2s;
 }
 ::-webkit-scrollbar-thumb:hover {
@@ -340,7 +330,7 @@ textarea.e-input::selection,
 }
 ::-webkit-scrollbar-track {
   background: var(--scrollbar-bg);
-  border-radius: var(--scrollbar-border-radius);
+  border-radius: var(--border-radius);
 }
 /* Firefox */
 .home-main {

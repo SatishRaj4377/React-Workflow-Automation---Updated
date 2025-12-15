@@ -13,7 +13,7 @@ import ConfirmationDialog from '../ConfirmationDialog';
 import { ProjectData, NodeConfig, NodeTemplate, DiagramSettings, StickyNotePosition, ToolbarAction, ExecutionContext, NodeToolbarAction, PaletteFilterContext, WorkflowData } from '../../types';
 import WorkflowProjectService from '../../services/WorkflowProjectService';
 import { generateOptimizedThumbnail, getDefaultDiagramSettings, getNodeConfig, getNodePortById, isAiAgentNode, findAiAgentBottomConnectedNodes, getAiAgentBottomNodePosition, handleEditorKeyDown, refreshNodeTemplate, setGlobalNodeToolbarHandler, applyStaggerMetadata, resetExecutionStates, diagramHasChatTrigger } from '../../utilities';
-import { extractChatPromptSuggestions, isEditingTextElement, determinePaletteFilterContext, handleAddStickyNote as handleAddStickyNoteUtil, addNodeToDiagram, addNodeFromPort, insertNodeBetweenSelectedConnector, handleAutoAlign as handleAutoAlignUtil } from '../../utilities/editorUtils';
+import { extractChatPromptSuggestions, extractChatBannerText, isEditingTextElement, determinePaletteFilterContext, handleAddStickyNote as handleAddStickyNoteUtil, addNodeToDiagram, addNodeFromPort, insertNodeBetweenSelectedConnector, handleAutoAlign as handleAutoAlignUtil } from '../../utilities/editorUtils';
 import { WorkflowExecutionService } from '../../execution/WorkflowExecutionService';
 import { ChatPopup } from '../ChatPopup';
 import { MessageComponent } from '@syncfusion/ej2-react-notifications';
@@ -68,6 +68,8 @@ const Editor: React.FC<EditorProps> = ({project, onSaveProject, onBackToHome, })
   const [isChatOpen, setChatOpen] = useState(false);
   // Prompt suggestions from Chat trigger node
   const [chatPromptSuggestions, setChatPromptSuggestions] = useState<string[]>([]);
+  // Chat banner text tracking
+  const [chatBannerText, setChatBannerText] = useState<string>('');
   // Execution context containing results and variables from executed nodes
   const [executionContext, setExecutionContext] = useState<ExecutionContext>({ results: {}, variables: {} });
   // Trigger waiting state (shown in banner when waiting for trigger event)
@@ -307,11 +309,13 @@ const Editor: React.FC<EditorProps> = ({project, onSaveProject, onBackToHome, })
       }
     }
 
-    // If this is the Chat node, immediately reflect its prompt suggestions in the popup
+    // If this is the Chat node, immediately reflect its prompt suggestions and banner in the popup
     try {
       if (config?.nodeType === 'Chat') {
         const s = (config as any)?.settings?.general?.promptSuggestions;
         setChatPromptSuggestions(Array.isArray(s) ? s : []);
+        const banner = (config as any)?.settings?.general?.bannerText;
+        setChatBannerText(typeof banner === 'string' ? banner : '');
       }
     } catch {}
   };
@@ -580,9 +584,10 @@ const Editor: React.FC<EditorProps> = ({project, onSaveProject, onBackToHome, })
     }
   }, [selectedNodeId, diagramRef]);
 
-  // Sync chat prompt suggestions from Chat trigger node when diagram ref changes
+  // Sync chat prompt suggestions and banner text from Chat trigger node when diagram ref changes
   useEffect(() => {
     setChatPromptSuggestions(extractChatPromptSuggestions(diagramRef));
+    setChatBannerText(extractChatBannerText(diagramRef));
   }, [diagramRef]);
 
   // ========================================================================
@@ -847,6 +852,7 @@ const Editor: React.FC<EditorProps> = ({project, onSaveProject, onBackToHome, })
           open={isChatOpen} 
           onClose={() => setChatOpen(false)} 
           promptSuggestions={chatPromptSuggestions}
+          bannerTemplateText={chatBannerText}
         />        
 
         {/* Left sidebar - Node palette for adding nodes */}

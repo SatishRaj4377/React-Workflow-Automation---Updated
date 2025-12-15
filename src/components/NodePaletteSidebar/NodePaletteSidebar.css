@@ -24,28 +24,24 @@
   justify-content: space-between;
   align-items: center;
   padding: .5rem 1rem;
-  color: var(--text-secondary);
+  color: var(--text-primary);
   background-color: var(--background-color);
   border-bottom: 1px solid var(--border-color);
 }
 
 .sidebar-title {
-  font-size: 1.2rem;
-  font-weight: 600;
+  font-size: 18px;
+  font-weight: 400;
   margin: 0;
 }
 
-.close-btn {
+.close-btn.e-flat {
   color: var(--text-secondary) !important;
-  background-color: transparent !important;
-  padding: 0.5rem;
-  border-radius: 4px;
+  border-radius: var(--border-radius);
 }
 
-.close-btn:hover{
-  background-color: transparent !important;
+.close-btn.e-flat:hover{
   color: var(--text-primary) !important;
-  box-shadow: none;
 }
 
 .sidebar-content {
@@ -71,7 +67,7 @@
 .search-input .e-input-group {
   background: var(--background-color);
   border: 1px solid var(--border-color);
-  border-radius: 8px;
+  border-radius: var(--border-radius);
 }
 
 .search-input .e-input {
@@ -166,14 +162,6 @@
   color: var(--text-primary);
 }
 
-.category-count {
-  font-size: 0.875rem;
-  color: var(--text-secondary);
-  background: var(--surface-color);
-  padding: 0.25rem 0.5rem;
-  border-radius: 12px;
-}
-
 .custom-accordion .e-acrdn-item .e-acrdn-panel {
   background: var(--surface-color);
   border: none;
@@ -248,7 +236,7 @@
   align-items: center;
   justify-content: center;
   background: var(--background-color);
-  border-radius: 8px;
+  border-radius: var(--border-radius);
   border: 1px solid var(--border-color);
 }
 
@@ -323,7 +311,7 @@
 
 .sidebar-content::-webkit-scrollbar-thumb {
   background: var(--border-color);
-  border-radius: 3px;
+  border-radius: var(--border-radius);
 }
 
 .sidebar-content::-webkit-scrollbar-thumb:hover {

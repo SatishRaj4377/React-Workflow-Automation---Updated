@@ -27,8 +27,7 @@ export const SORT_OPTIONS = [
     { text: 'Last Modified', id: 'lastModified' },
     { text: 'Last Created', id: 'created' },
     { text: 'Name (A-Z)', id: 'nameAsc' },
-    { text: 'Name (Z-A)', id: 'nameDesc' },
-    { text: 'Bookmarked', id: 'bookmarked' }
+    { text: 'Name (Z-A)', id: 'nameDesc' }
 ];
 
 export const SIDEBAR_ITEMS = [

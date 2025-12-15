@@ -250,7 +250,7 @@ const ExcelNodeConfig: React.FC<Props> = ({ settings, onPatch, variableGroups })
     <div className="config-section">
       <div className="config-row" style={{ alignItems: 'center', gap: 8 }}>
         <label className="config-label">Excel document</label>
-        <TooltipComponent content="Upload an Excel file or select a built-in sample below. Drag & drop supported.">
+        <TooltipComponent content="Upload an Excel file or select a default excel file.">
           <span className="e-icons e-circle-info help-icon"></span>
         </TooltipComponent>
       </div>
@@ -423,7 +423,7 @@ const ExcelNodeConfig: React.FC<Props> = ({ settings, onPatch, variableGroups })
             </div>
           )}
 
-          <ButtonComponent className="add-field-btn" iconCss="e-icons e-plus" onClick={addHeader}>
+          <ButtonComponent className="add-field-btn e-primary" iconCss="e-icons e-plus" onClick={addHeader}>
             Add header
           </ButtonComponent>
         </div>
@@ -673,7 +673,7 @@ const ExcelNodeConfig: React.FC<Props> = ({ settings, onPatch, variableGroups })
             </div>
           ))}
 
-          <ButtonComponent className="add-field-btn" iconCss="e-icons e-plus" onClick={addFilter}>
+          <ButtonComponent className="add-field-btn e-primary" iconCss="e-icons e-plus" onClick={addFilter}>
             Add Filter
           </ButtonComponent>
         </div>

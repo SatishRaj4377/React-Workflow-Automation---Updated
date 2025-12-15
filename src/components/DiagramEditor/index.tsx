@@ -32,7 +32,7 @@ interface DiagramEditorProps {
 // ============================================================================
 
 const GRAY_COLOR = '#9193a2ff';
-const HOVER_COLOR = '#ea4335';
+const HOVER_COLOR = 'var(--primary-color)';
 const CONNECTOR_STROKEDASH_ARR = '5 3';
 
 // ============================================================================
@@ -746,7 +746,7 @@ const DiagramEditor: React.FC<DiagramEditorProps> = ({
       {isWorkflowLocked && (
         <ButtonComponent
           title='Diagram is locked. Click to unlock.'
-          className={`diagram-lock-indicator${showLockHint ? ' hint' : ''}`}
+          className={`diagram-lock-indicator e-primary${showLockHint ? ' hint' : ''}`}
           onClick={() => {
             setIsWorkflowLocked(false);
             applyWorkflowLock(false);

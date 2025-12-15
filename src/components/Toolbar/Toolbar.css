@@ -2,13 +2,13 @@
 .custom-toolbar {
   background: var(--surface-color);
   border: 1px solid var(--border-color);
-  border-radius: 12px;
+  border-radius: var(--border-radius);
   box-shadow: var(--shadow);
   backdrop-filter: blur(10px);
 }
 
 .custom-toolbar .e-toolbar-item {
-  border-radius: 8px;
+  border-radius: var(--border-radius);
   transition: all 0.3s ease;
   margin: 0 2px;
 }
@@ -53,7 +53,7 @@
   color: white !important;
   width: auto !important;
   padding: 0.5rem 1rem !important;
-  border-radius: 8px;
+  border-radius: var(--border-radius);
   font-weight: 500;
   pointer-events: auto;
   min-width: 120px;
@@ -71,7 +71,7 @@
   color: white !important;
   width: auto !important;
   padding: 0.5rem 1rem !important;
-  border-radius: 8px;
+  border-radius: var(--border-radius);
   font-weight: 500;
   pointer-events: auto;
   min-width: 120px;

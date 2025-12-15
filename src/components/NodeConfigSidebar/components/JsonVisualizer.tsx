@@ -120,7 +120,6 @@ const Row: React.FC<{ depth: number; children: React.ReactNode }> = ({ depth, ch
       gap: 6,
       width: '100%',
       boxSizing: 'border-box',
-      // Base padding + depth-based indent. Do NOT include caret width here.
       padding: '.32rem .5rem',
       paddingInlineStart: `${depth * INDENT + 8}px`,
       borderRadius: 8,

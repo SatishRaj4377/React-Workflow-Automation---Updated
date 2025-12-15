@@ -4,7 +4,7 @@ import { getPortSide, getPortOffset, shouldShowUserHandleForPort } from "./portU
 
 // Color constants for user handles
 const GRAY_COLOR = '#9193a2ff';
-const HOVER_COLOR = '#ea4335';
+const HOVER_COLOR = 'var(--primary-color)';
 
 // Build connector and node operation handles
 export const buildUserHandles = (): UserHandleModel[] => {

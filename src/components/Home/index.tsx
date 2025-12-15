@@ -17,6 +17,7 @@ import { ProjectData, TemplateProjectConfig } from '../../types';
 import { MENU_ITEMS, SIDEBAR_ITEMS, SORT_OPTIONS } from '../../constants';
 import TemplateService from '../../services/TemplateService';
 import './Home.css';
+import { computeItemsPerRow, formatDate, formatDateForListCell, observeResize } from '../../utilities/homeUtils';
 
 interface HomeProps {
   projects: ProjectData[];
@@ -51,8 +52,12 @@ const Home: React.FC<HomeProps> = ({
   const [projectsToDelete, setProjectsToDelete] = useState<ProjectData[]>([]);
   const [selectedProjects, setSelectedProjects] = useState<string[]>([]);
   const [isMultiDeleteConfirmOpen, setMultiDeleteConfirmOpen] = useState(false);
+  const [showBookmarkedOnly, setShowBookmarkedOnly] = useState(false);
 
   const availableTemplates = useMemo(() => TemplateService.getTemplateConfigs(), []);
+  // Dashboard quick access: compute how many templates fit in the first row
+  const quickAccessRef = useRef<HTMLDivElement>(null);
+  const [maxVisibleTemplates, setMaxVisibleTemplates] = useState<number>(3);
 
   const handleSearchCreated = () => {
     setTimeout(() => {
@@ -172,7 +177,7 @@ const Home: React.FC<HomeProps> = ({
       project.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    if (sortBy === 'bookmarked') {
+    if (showBookmarkedOnly) {
       // Filter to only bookmarked projects
       filteredProjects = filteredProjects.filter(project => isBookmarked(project.id));
     }
@@ -199,43 +204,11 @@ const Home: React.FC<HomeProps> = ({
         case 'nameDesc':
           return projectB.name.localeCompare(projectA.name);
 
-        // For 'bookmarked' (handle sort within only bookmarked group)
-        case 'bookmarked':
-          return new Date(projectB.lastModified).getTime() - new Date(projectA.lastModified).getTime();
         default:
           return 0;
       }
     });
-  }, [projects, searchTerm, sortBy, isBookmarked]);
-
-  const formatDate = (date: Date) => {
-    return new Intl.DateTimeFormat('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    }).format(new Date(date));
-  };
-
-  function formatDateForListCell(date: Date|string) {
-    const value = new Date(date);
-    const now = new Date();
-    const diffMs = now.getTime() - value.getTime();
-    const diffSec = Math.round(diffMs / 1000);
-    const diffMin = Math.round(diffSec / 60);
-    const diffHour = Math.round(diffMin / 60);
-    const diffDay = Math.round(diffHour / 24);
-
-    if (diffDay === 0) {
-      if (diffHour > 0) return `${diffHour}h ago`;
-      if (diffMin > 0) return `${diffMin}m ago`;
-      return `Just now`;
-    }
-    if (diffDay === 1) return 'Yesterday';
-    if (diffDay < 7) return `${diffDay}d ago`;
-    return value.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }); // e.g. "Aug 27"
-  }
+  }, [projects, searchTerm, sortBy, isBookmarked, showBookmarkedOnly]);
 
   // Save view mode to localStorage whenever it changes
   useEffect(() => {
@@ -249,7 +222,33 @@ const Home: React.FC<HomeProps> = ({
       // Scroll to top area of the page
       document.querySelector('.home-main')?.scrollTo({ top: 0, behavior: 'smooth' });
     }
+
+    // When switching to Dashboard, reset filters to default so Recent Projects is unfiltered
+    if (activeSection === 'dashboard') {
+      setSearchTerm('');
+      setSortBy('lastModified');
+      setSortText('Last Modified');
+      setShowBookmarkedOnly(false);
+      setSelectedProjects([]);
+    }
   }, [activeSection]);
+
+  // Compute how many template cards fit in the first row of the dashboard grid
+  useEffect(() => {
+    if (activeSection !== 'dashboard') return;
+    const el = quickAccessRef.current;
+    if (!el) return;
+
+    const compute = () => {
+      // Keep in sync with Home.css grid: repeat(auto-fit, minmax(280px, 1fr))
+      const count = computeItemsPerRow(el, 280, 16);
+      setMaxVisibleTemplates(Math.min(count, availableTemplates.length));
+    };
+
+    compute();
+    const cleanup = observeResize(el, compute);
+    return cleanup;
+  }, [activeSection, availableTemplates.length]);
 
   return (
     <div className="home-layout">
@@ -264,7 +263,7 @@ const Home: React.FC<HomeProps> = ({
           iconCss="e-icons e-plus"
           onClick={onCreateNew}
         >
-          Create Workflow
+          Create New Workflow
         </ButtonComponent>
 
         {/* Navigation Options */}
@@ -289,9 +288,9 @@ const Home: React.FC<HomeProps> = ({
               {/* Quick Access Section */}
               <section className="quick-access-section animate-fade-in-up">
                 <h2 className="section-title">Quick Start</h2>
-                <div className="quick-access-grid">
-                  {/* Show only three tempaltes inthe quick access section */}
-                  {availableTemplates.slice(0, 3).map((template) => (
+                <div ref={quickAccessRef} className="quick-access-grid">
+                  {/* Show only the templates that fit in the first row */}
+                  {availableTemplates.slice(0, maxVisibleTemplates).map((template) => (
                     <TemplateCard
                       key={template.id}
                       template={template}
@@ -338,7 +337,7 @@ const Home: React.FC<HomeProps> = ({
                   {filteredAndSortedProjects.length > 5 && (
                     <div className="show-more-container">
                       <ButtonComponent
-                        className="show-more-btn"
+                        className="show-more-btn e-flat"
                         iconCss='e-icons e-arrow-right'
                         iconPosition='right'
                         onClick={() => {
@@ -382,23 +381,34 @@ const Home: React.FC<HomeProps> = ({
                   <DropDownButtonComponent
                     items={SORT_OPTIONS}
                     select={handleSortSelect}
-                    cssClass="sort-dropdown-btn"
+                    cssClass="sort-dropdown-btn e-secondary"
+                    popupWidth={150}
                   >
                     {sortText}
                   </DropDownButtonComponent>
+
+                  {/* Bookmark filter toggle */}
+                  <TooltipComponent position='TopCenter' content={showBookmarkedOnly ? 'Show All' : 'Show Bookmarked Only'}>
+                    <ButtonComponent
+                      cssClass={`view-toggle-btn e-secondary ${showBookmarkedOnly ? 'active' : ''}`}
+                      iconCss="e-icons e-star-filled"
+                      onClick={() => setShowBookmarkedOnly(prev => !prev)}
+                    />
+                  </TooltipComponent>
+
                   {/* Multiple Projects Export and Delete Button */}
                   {viewMode === 'list' && selectedProjects.length > 0 && (
                     <>
                       <TooltipComponent content="Export Selected">
                         <ButtonComponent
-                          cssClass="e-primary view-toggle-btn"
+                          cssClass="e-secondary view-toggle-btn"
                           iconCss="e-icons e-export"
                           onClick={handleExportSelected}
                         />
                       </TooltipComponent>
                       <TooltipComponent content="Delete Selected">
                         <ButtonComponent
-                          cssClass="e-danger view-toggle-btn"
+                          cssClass="e-secondary view-toggle-btn"
                           iconCss="e-icons e-trash"
                           onClick={handleDeleteSelected}
                         />
@@ -406,20 +416,21 @@ const Home: React.FC<HomeProps> = ({
                     </>
                   )}
                   {/* Project View Mode - List/Card*/}
-                  <div className="view-toggle">
+                  <TooltipComponent content="Card View">
                     <ButtonComponent
                       cssClass={`view-toggle-btn ${viewMode === 'card' ? 'active' : ''}`}
                       onClick={() => setViewMode('card')}
                       iconCss="e-icons e-grid-view"
-                      title="Card View"
                     />
+                  </TooltipComponent>
+                  <TooltipComponent content={"List View"}>
                     <ButtonComponent
                       cssClass={`view-toggle-btn ${viewMode === 'list' ? 'active' : ''}`}
                       onClick={() => setViewMode('list')}
                       iconCss="e-icons e-list-unordered"
                       title="List View"
                     />
-                  </div>
+                  </TooltipComponent>
                 </div>
                 )}
               </div>

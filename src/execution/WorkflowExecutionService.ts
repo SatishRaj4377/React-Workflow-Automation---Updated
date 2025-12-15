@@ -227,7 +227,7 @@ export class WorkflowExecutionService {
     }
 
     try {
-      // If a trigger that waits for external input (e.g., Chat/Webhook/Form), do not timeout and show waiting banner
+      // If a trigger that waits for external input (e.g., Chat/Form), do not timeout and show waiting banner
       const isWaitingTrigger = nodeConfig.nodeType === 'Chat' || nodeConfig.nodeType === 'Webhook' || nodeConfig.nodeType === 'Form';
       if (isWaitingTrigger && typeof window !== 'undefined') {
         window.dispatchEvent(

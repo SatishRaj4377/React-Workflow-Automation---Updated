@@ -219,9 +219,10 @@ const NodeConfigSidebar: React.FC<ConfigPanelProps> = ({
     );
   };
 
-  /** Chat node: chat button toggle + prompt suggestions list */
+  /** Chat node: chat button toggle + prompt suggestions list + optional banner text */
   const renderChatNodeConfig = (settings: any) => {
     const promptSuggestions: string[] = settings.promptSuggestions ?? [];
+    const bannerText: string = settings.bannerText ?? '';
 
     const addSuggestion = () => {
       const next = [...promptSuggestions, ''];
@@ -239,13 +240,22 @@ const NodeConfigSidebar: React.FC<ConfigPanelProps> = ({
       handleConfigChange({ promptSuggestions: next });
     };
 
+    const updateBanner = (val: string) => {
+      handleConfigChange({ bannerText: val });
+      try {
+        if (typeof window !== 'undefined') {
+          window.dispatchEvent(new CustomEvent('wf:chat:update-banner', { detail: { text: (val || '').trim() } }));
+        }
+      } catch {}
+    };
+
     return (
       <>
         {/* Chat visibility toggle */}
         <div className="config-section">
           <ButtonComponent
             onClick={() => setChatOpen(prev => !prev)}
-            className='show-chat-button'
+            className='show-chat-button e-primary'
           >
             <MessageIcon className='msg-svg-icon' />
             <span className='show-chat-btn-text'>
@@ -254,11 +264,28 @@ const NodeConfigSidebar: React.FC<ConfigPanelProps> = ({
           </ButtonComponent>
         </div>
 
+        {/* Banner template text */}
+        <div className="config-section">
+          <div className="config-row" style={{ alignItems: 'center', gap: 8 }}>
+            <label className="config-label">Banner text (optional)</label>
+            <TooltipComponent content="Customize the banner shown at the top of the chat popup. Leave empty to use the default banner.">
+              <span className="e-icons e-circle-info help-icon"></span>
+            </TooltipComponent>
+          </div>
+          <TextBoxComponent
+            value={(bannerText && bannerText.trim()) || 'Send a message below to trigger the chat workflow'}
+            placeholder=""
+            change={(e: any) => updateBanner(e.value)}
+            cssClass="config-input"
+            multiline
+          />
+        </div>
+
         {/* Prompt suggestions list */}
         <div className="config-section">
           <div className="config-row" style={{ alignItems: 'center', gap: 8 }}>
             <label className="config-label">Prompt suggestions (optional)</label>
-            <TooltipComponent content="Add quick prompts that appear in the chat popup. Click a suggestion to auto-fill and send.">
+            <TooltipComponent content="Add quick prompts that appear in the chat popup.">
               <span className="e-icons e-circle-info help-icon"></span>
             </TooltipComponent>
           </div>
@@ -349,7 +376,7 @@ const NodeConfigSidebar: React.FC<ConfigPanelProps> = ({
         <div className="config-section">
           <div className="config-row" style={{ alignItems: 'center', gap: 8 }}>
             <label className="config-label">Query Parameters</label>
-            <TooltipComponent content="Add query params as name/value pairs. Values support variables using the picker.">
+            <TooltipComponent content="Add query params as name/value pairs.">
               <span className="e-icons e-circle-info help-icon"></span>
             </TooltipComponent>
           </div>
@@ -379,7 +406,7 @@ const NodeConfigSidebar: React.FC<ConfigPanelProps> = ({
             </div>
           ))}
 
-          <ButtonComponent className="add-field-btn" iconCss="e-icons e-plus" onClick={addQueryParam}>
+          <ButtonComponent className="add-field-btn e-primary" iconCss="e-icons e-plus" onClick={addQueryParam}>
             Add Query
           </ButtonComponent>
         </div>
@@ -534,7 +561,7 @@ const NodeConfigSidebar: React.FC<ConfigPanelProps> = ({
           <div className="config-section">
             <div className="config-row" style={{ alignItems: 'center', gap: 8 }}>
               <label className="config-label">Items (list) to iterate</label>
-              <TooltipComponent content="Choose an array from previous nodes (e.g., $.Google_Sheets#123.rows). Each downstream node will run once per item as $.item.">
+              <TooltipComponent content="Choose an array from previous nodes. Each downstream node will run once per item.">
                 <span className="e-icons e-circle-info help-icon"></span>
               </TooltipComponent>
             </div>
@@ -654,7 +681,7 @@ const NodeConfigSidebar: React.FC<ConfigPanelProps> = ({
             </div>
             <div>
               <ButtonComponent
-                cssClass="close-btn"
+                cssClass="close-btn e-flat"
                 iconCss="e-icons e-play"
                 title='Execute Node'
                 onClick={() => {
@@ -664,7 +691,7 @@ const NodeConfigSidebar: React.FC<ConfigPanelProps> = ({
                 }}
               />
               <ButtonComponent
-                cssClass="close-btn"
+                cssClass="close-btn e-flat"
                 iconCss="e-icons e-close"
                 onClick={onClose}
               />

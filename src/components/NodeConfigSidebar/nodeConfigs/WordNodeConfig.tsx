@@ -235,7 +235,7 @@ const WordNodeConfig: React.FC<Props> = ({ settings, onPatch, variableGroups }) 
     <div className="config-section">
       <div className="config-row" style={{ alignItems: 'center', gap: 8 }}>
         <label className="config-label">Word document</label>
-        <TooltipComponent content="Upload a Word file or select a built-in sample below. Drag & drop is supported.">
+        <TooltipComponent content="Upload a Word file or select a default word file.">
           <span className="e-icons e-circle-info help-icon"></span>
         </TooltipComponent>
       </div>
@@ -358,7 +358,7 @@ const WordNodeConfig: React.FC<Props> = ({ settings, onPatch, variableGroups }) 
         {/* Rich Text Editor for content input */}
         <div className="config-row" style={{ alignItems: 'center', gap: 8 }}>
           <label className="config-label">Content to Write</label>
-          <TooltipComponent content="Enter formatted content to write into the document. Supports formatting, tables, images, variables, and paste from Word files with formatting preserved. Focus to open variable picker.">
+          <TooltipComponent content="Enter formatted content to write into the document.">
             <span className="e-icons e-circle-info help-icon"></span>
           </TooltipComponent>
         </div>

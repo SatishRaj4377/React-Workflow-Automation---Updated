@@ -21,7 +21,7 @@
   align-items: center;
   padding: .5rem 1rem;
   background-color: var(--background-color);
-  color: var(--text-secondary);
+  color: var(--text-primary);
   border-bottom: 1px solid var(--border-color);
 }
 
@@ -32,8 +32,8 @@
 }
 
 .config-panel-title h3 {
-  font-size: 1.2rem;
-  font-weight: 600;
+  font-size: 18px;
+  font-weight: 400;
   margin: 0;
   white-space: nowrap;
   overflow: hidden;
@@ -43,9 +43,9 @@
 
 .custom-config-panel .node-icon {
   font-size: 1.5rem;
-  border-radius: 8px;
-  width: 30px;
-  height: 30px;
+  border-radius: var(--border-radius);
+  width: 24px;
+  height: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -111,9 +111,7 @@
   padding: 1rem;
   transition: none;
 }
-.config-section .show-chat-button {
-  background: var(--primary-color);
-}
+
 .config-section .msg-svg-icon {
   position: absolute;
   left: 18px;
@@ -146,7 +144,7 @@
   width: 100%;
   background: var(--background-color);
   border: 1px solid var(--border-color);
-  border-radius: 8px;
+  border-radius: var(--border-radius);
   color: var(--text-primary);
   transition: all 0.3s ease;
 }
@@ -187,13 +185,17 @@
 
 .config-section .flat-btn{
   min-width: 45px;
+  height: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   color: var(--text-secondary);
   transition: none !important;
 }
 
 .add-field-btn {
   padding: 0.5rem 0.8rem;
-  border-radius: 8px;
+  border-radius: var(--border-radius);
   border: none;
   display: flex;
   align-items: center;
@@ -266,7 +268,7 @@
 
 .config-panel-content::-webkit-scrollbar-thumb {
   background: var(--border-color);
-  border-radius: 3px;
+  border-radius: var(--border-radius);
 }
 
 .config-panel-content::-webkit-scrollbar-thumb:hover {
@@ -314,19 +316,6 @@ background-color: var(--background-color);
 }
 
 /* Variable Picker Styling */
-/* Popup shell */
-.vp-popup {
-  width: 320px;
-  max-height: 320px;
-  background: var(--surface-color);
-  color: var(--text-primary);
-  border: 1px solid var(--border-color);
-  border-radius: 10px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
-  overflow: hidden;
-  user-select: none;
-}
-
 /* Header */
 .vp-header {
   display: flex;
@@ -351,9 +340,10 @@ background-color: var(--background-color);
 
 /* Body */
 .vp-body {
+  flex: 1 1 auto;
   max-height: 270px;
   overflow: auto;
-  padding: .25rem .25rem .5rem;
+  padding: .3rem .25rem .5rem;
 }
 
 /* Loading/empty */
@@ -396,7 +386,7 @@ background-color: var(--background-color);
 }
 .vp-item {
   padding: .45rem .5rem;
-  border-radius: 8px;
+  border-radius: var(--border-radius);
   cursor: pointer;
   transition: background .15s ease;
 }
@@ -408,16 +398,11 @@ background-color: var(--background-color);
 .vp-item:hover {
   background: rgba(102, 126, 234, 0.08); /* primary tint */
 }
-.vp-item-main {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: .5rem;
-}
+
 .vp-key {
   background: var(--background-color);
   border: 1px solid var(--border-color);
-  border-radius: 6px;
+  border-radius: var(--border-radius);
   padding: .15rem .35rem;
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   font-size: .8rem;
@@ -469,7 +454,7 @@ background-color: var(--background-color);
 }
 .vp-body::-webkit-scrollbar-thumb {
   background: var(--border-color);
-  border-radius: 3px;
+  border-radius: var(--border-radius);
 }
 .vp-body::-webkit-scrollbar-thumb:hover {
   background: var(--text-secondary);

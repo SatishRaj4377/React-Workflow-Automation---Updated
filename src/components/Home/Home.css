@@ -68,7 +68,7 @@
   position: fixed;
   left: 0;
   top: 56px;
-  width: 240px;
+  width: 320px;
   height: calc(100vh - 56px);
   z-index: 13;
   display: flex;
@@ -86,7 +86,7 @@
   outline: none !important;
   color: #fff;
   border: none;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  transition: all .2s ease;
 }
 .action-btn:hover {
   box-shadow: 0 4px 5rem var(--box-shadow2) !important;
@@ -99,6 +99,8 @@
   font-size: 1rem;
   border-radius: 8rem;
   font-weight: 500;
+  height: 40px;
+  transition: all .2s ease;
 }
 .create-workflow-btn:hover {
   transform: translateY(-1px);
@@ -108,17 +110,17 @@
   border: none;
 }
 .sidebar-list .e-list-item {
-  border-radius: 8px;
+  border-radius: var(--border-radius);
   margin: 10px;
   padding: 9px !important;
+  height: 44px !important;
 }
 .sidebar-list .e-list-item.e-hover {
   background: var(--list-hover-bg);
-  color: var(--accent-color);
 }
 .sidebar-list .e-list-item.e-active {
   background: var(--list-selected-bg);
-  color: var(--primary-color);
+  color: var(--list-text-color);
 }
 .sidebar-list .e-list-icon {
   font-size: 2rem;
@@ -128,7 +130,7 @@
 
 /* ---- Main Content ---- */
 .home-main {
-  margin-left: 240px; /* Space for sidebar */
+  margin-left: 320px; /* Space for sidebar */
   margin-top: 56px; /* Space for Header */
   flex: 1;
   overflow: auto;
@@ -169,41 +171,87 @@
 }
 .quick-access-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 2rem;
-  align-items: stretch;
-}
-.quick-access-card {
-  cursor: pointer;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-  overflow: hidden;
-  background: var(--surface-color);
-  border-radius: 16px;
-  border: 1px solid var(--border-color) !important;
-  width: 100%; 
-}
-.quick-access-card:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-hover);
-  background: linear-gradient(180deg, var(--box-shadow) 0%, var(--list-hover-bg) 100%);
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: clamp(0.9rem, 2vw, 1.25rem);
+  align-items: start;
+  justify-content: center; /* center when 1-2 cards */
 }
 
-/* Template Image/Icons Styling */
+
+.home-content { max-width: min(1320px, 88vw); margin-left: auto; margin-right: auto; }
+@media (min-width: 1400px) {
+  .home-content { max-width: 1360px; }
+}
+@media (max-width: 1100px) {
+  .home-content { max-width: min(980px, 94vw); }
+}
+@media (max-width: 900px) {
+  .home-content { max-width: 92vw; }
+}
+
+/* Template Card Styling */
+.template-card {
+  background: var(--surface-color);    
+  color: var(--text-primary);
+  border-radius: var(--border-radius, 8px);
+}
+
+.template-card .e-card-content {
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  padding: 8px 16px 16px;
+}
+
+.template-card h3 {
+  font-size: 16px;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  color: var(--text-primary);
+  line-height: 24px;
+}
+
+.template-card p {
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 16px;
+  margin-bottom: 0;
+}
+
+.projects-container.card-view .project-card, .template-card { 
+  max-width: 360px;
+  margin-inline: auto;
+  min-height: 200px;
+  width: 100%;
+  background-color: var(--surface-color);
+}
+
+.projects-container.card-view .project-card:active, .template-card:active {
+  transform: translateY(-2px) scale(0.98);
+}
+
+.projects-container.card-view .project-card:hover,
+.template-card:hover,
+.projects-container.card-view .project-card.menu-open, /* Keep card hover visuals when menu is open */
+.projects-container.card-view .project-card:has(.project-menu-dropdown.e-active) {
+  outline: 3px solid var(--accent-color);
+  outline-offset: -1px;
+  background: var(--surface-color);  
+}
+
+
+/* Template Icons Styling */
 .template-icons-band {
   flex: 1;
-  height: 120px;
+  min-height: 70px !important;
   width: 100%;
   position: relative;
   overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--list-selected-hover-bg);
-  border-radius: 16px 16px 0 0;
-}
-
-.template-icons-band {
   padding: 10px 14px;
 }
 .template-icons-band .icons-row.compact {
@@ -214,73 +262,15 @@
   padding: 2px;
 }
 .template-icons-band .node-icon {
-  width: 40px;
-  height: 40px;
+  width: 45px;
+  height: 45px;
   min-width: 40px;
   min-height: 40px;
   object-fit: contain;
   background: var(--background-color);
-  border-radius: 10px;
+  border-radius: var(--border-radius);;
   padding: 6px;
-  box-shadow: 0 1px 4px var(--box-shadow);
 }
-
-/* On hover: show full grid of icons within the same header area without changing actual height */
-.template-icons-band .icons-grid-on-hover {
-  position: absolute;
-  inset: 0;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
-  gap: 10px;
-  padding: 18px 20px;
-  opacity: 0;
-  transform: translateY(6px);
-  transition: opacity 40ms ease-in, transform 100ms ease;
-  will-change: opacity, transform;
-}
-.quick-access-card:hover .template-icons-band .icons-grid-on-hover {
-  opacity: 1;
-  transform: translateY(0);
-}
-.quick-access-card:hover .template-icons-band .icons-row.compact {
-  opacity: 0;
-  transform: translateY(-6px);
-}
-
-/* If only one row of icons, center them vertically on hover too */
-.template-icons-band .icons-grid-on-hover.single-row {
-  align-content: center; /* centers grid content vertically within fixed header */
-}
-
-.template-icons-band,
-.template-icons-band .icons-row.compact,
-.template-icons-band .icons-grid-on-hover,
-.template-card {
-  transition: all 150ms ease-in-out;
-}
-
-.quick-access-card .e-card-content {
-  text-align: left;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  padding: 8px 16px 16px;
-}
-
-.quick-access-card h3 {
-  font-size: 1.2rem;
-  font-weight: 700;
-  margin-bottom: 0.5rem;
-  color: var(--text-primary);
-}
-
-.quick-access-card p {
-  color: var(--text-secondary);
-  font-size: 0.9rem;
-  line-height: 1.5;
-  margin-bottom: 0;
-}
-
 /* Recent Projects Section */
 .recent-projects-section {
   margin-bottom: 3rem;
@@ -306,7 +296,7 @@
   background: var(--background-color);
   padding: 0.25rem 0.75rem;
   border-radius: 20px;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--theme-border-color);
   margin: .3rem 0;
 }
 
@@ -348,51 +338,41 @@
 
 .project-search {
   padding: 0.5rem;
-  border-radius: 12px;
+  border-radius: var(--border-radius);;
   border: 2px solid var(--border-color);
   background: var(--surface-color);
   color: var(--text-primary);
-  font-size: 0.95rem;
-  transition: all 0.3s ease;
   width: 100%;
 }
 
 /* Sort Dropdown Button Styles */
 .sort-dropdown-btn.e-dropdown-btn {
   width: 100%;
-  height: 48px;
-  border-radius: 12px;
-  background: var(--surface-color);
-  color: var(--text-primary);
+  height: 42px;
+  border-radius: var(--border-radius);;
+  color: var(--text-secondary);
   font-size: 0.95rem;
   font-weight: 400;
-  transition: all 0.3s ease;
+}
+.sort-dropdown-btn.e-dropdown-btn:hover,
+ .sort-dropdown-btn.e-dropdown-btn:focus {
+  color: var(--text-primary);
 }
 
 /* View Toggle Styles */
-.view-toggle {
-  display: flex;
-  padding: 4px;
-  gap: 1rem;
-}
-
 .view-toggle-btn {
   padding: 0.75rem;
-  background: transparent;
-  border-radius: 8px;
+  border-radius: var(--border-radius);;
   color: var(--text-secondary);
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  border: 1.5px solid var(--border-color) !important;
+  height: 42px;
+  width: 42px;
+  display: flex;
+  justify-content: center;
 }
 
 .view-toggle-btn.active {
   background: var(--primary-color);
-  color: white;
-}
-
-.view-toggle-btn :focus {
-  background: transparent !important;
   color: white;
 }
 
@@ -406,6 +386,7 @@
   grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
   gap: 1.5rem;
   align-items: start;
+
 }
 
 .projects-container.list-view {
@@ -421,9 +402,9 @@
   padding: 0 8px;
   background: var(--background-color);
   color: var(--text-secondary);
-  font-size: 0.98rem;
+  font-size: 16px;
   font-weight: 500;
-  border-radius: 8px 8px 0 0;
+  border-radius: var(--border-radius) var(--border-radius) 0 0;
   border-bottom: 1.5px solid var(--border-color);
 }
 
@@ -442,6 +423,10 @@
 }
 .project-list-item:hover, .project-list-item:focus {
    background: var(--list-hover-bg, #e7f1fe);
+}
+/* Maintain hover bg while menu is open */
+.project-list-item.menu-open {
+  background: var(--list-hover-bg, #e7f1fe);
 }
 .project-list-item.selected {
   background-color: var(--list-selected-bg);
@@ -467,7 +452,6 @@
   opacity: 0;
   position: absolute;
   transform: scale(0.8);
-  transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
   z-index: 10; /* Ensure checkbox is on top */
   pointer-events: none; /* Disable clicks when hidden */
 }
@@ -511,7 +495,6 @@
 .project-item-icon-svg {
   opacity: .7;
   transform: scale(1);
-  transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
 }
 /* Logic for the "Select All" checkbox - now always visible */
 .project-select-all-checkbox {
@@ -526,11 +509,17 @@
    overflow: hidden; 
    text-overflow: ellipsis;
 }
+.recent-projects-section .project-title-header {
+    margin-left: -35px;
+}
 .project-date-header, .project-date { 
   width: 100px;
-  font-size: 0.97rem;
-  color: var(--text-secondary); 
+  font-size: 16px;
 }
+
+.project-date-header {color: var(--text-secondary);}
+.project-date { color: var(--text-secondary); }
+
 .project-bookmark-header, .project-bookmark {
   width: 38px;
   justify-content: center;
@@ -540,24 +529,26 @@
   justify-content: flex-end;
 }
 
-.project-list-item .project-title{
-  font-weight: 500;
-  margin: 0;
-  font-size: 1rem;
-}
 .project-list-item .project-menu-dropdown {
   opacity: 0;
-  transition: opacity 0.16s;
   overflow: auto;
   background-color: transparent !important;
   color: var(--text-primary); 
-  box-shadow: none;
   overflow: hidden;
+  border: none;
+  box-shadow: none;
 }
 .project-list-item:hover .project-menu-dropdown,
 .project-list-item:focus .project-menu-dropdown { 
   background-color: transparent !important;
   opacity: 1; 
+}
+.project-list-item .project-menu-dropdown:hover {
+  background-color: var(--center-action-bg-hover) !important;
+}
+/* Keep list view menu button visible while menu is open */
+.project-list-item.menu-open .project-menu-dropdown {
+  opacity: 1;
 }
 
 .show-more-btn{
@@ -567,10 +558,12 @@
   box-shadow: none !important;
   display: flex;
   align-items: flex-end;
+  border: none;
 }
 .show-more-btn:hover{
   background-color: transparent !important;
   color: var(--text-primary) !important;
+  outline: 1px solid var(--text-secondary) !important;
 }
 
 .show-more-btn .e-btn-icon{
@@ -579,17 +572,12 @@
 
 
 /* Cards Styling */
-.project-card {
+.project-card, .template-card {
   cursor: pointer;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
   border: 1px solid var(--border-color) !important;
-  border-radius: 16px;
-}
-.project-card:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-hover);
+  border-radius: 12px;
 }
 .project-card.list-item {
   display: flex;
@@ -621,10 +609,7 @@
   justify-content: center;
   overflow: hidden;
   position: relative;
-  border-radius: 16px 16px 0 0;
-}
-.project-card:hover .project-thumbnail {
-  background: var(--gradient-accent);
+  border-radius: 12px 12px 0 0;
 }
 .project-thumbnail img {
   width: 100%;
@@ -635,12 +620,16 @@
 }
 .project-card-overlay {
   position: absolute;
-  top: 12px;
+  top: 6px;
   right: 12px;
   opacity: 0;
-  transition: opacity 0.3s ease;
 }
 .project-card:hover .project-card-overlay {
+  opacity: 1;
+}
+/* Keep overlay visible while menu is open or button is active */
+.project-card.menu-open .project-card-overlay,
+.project-card:has(.project-menu-dropdown.e-active) .project-card-overlay {
   opacity: 1;
 }
 .project-card .e-card-content {
@@ -656,27 +645,40 @@
 }
 .project-title {
   display: inline-block;
-  font-size: 1.1rem;
-  font-weight: 700;
+  font-size: 16px;
+  font-weight: 400;
   color: var(--text-primary);
   margin-right: 0.5rem !important;
-  line-height: 1.3;
+  line-height: 24px;
   width: 85%;
+  margin: 0;
+  font-size: 16px;
 }
 .project-modified {
   color: var(--text-secondary);
-  font-size: 0.85rem;
+  font-size: 12px;
+  line-height: 16px;
   margin: 0;
 }
 
 /* Dropdown Menu Styling */
 .project-card-overlay .project-menu-dropdown.e-dropdown-btn {
   background: var(--surface-color) !important;
-  border-radius: 50%;
+  border-radius: 6px;;
+  border: none;
+}
+.project-card-overlay .project-menu-dropdown.e-dropdown-btn:hover {
+  background-color: var(--sticky-note-bg-color) !important;
 }
 .project-menu-dropdown .e-icons {
   color: var(--text-primary) !important;
-  font-size: 16px !important;
+  font-size: 15px !important;
+}
+
+.project-list-item.menu-open .project-menu-dropdown,
+.project-card.menu-open .project-menu-dropdown,
+.project-menu-dropdown:active {
+  background: var(--border-color) !important;
 }
 
 /* Projects Empty State */
@@ -721,29 +723,10 @@
   padding: .9rem 2.6rem;
   font-size: 1.1rem;
   font-weight: 500;
-  border-radius: 12px;
+  border-radius: var(--border-radius);;
 }
 .empty-state .e-btn:hover {
   transform: translateY(-2px);
-}
-
-/* Loading and interaction states */
-.quick-access-card:active {
-  transform: translateY(-2px) scale(0.98);
-}
-.project-card:active {
-  transform: translateY(-2px) scale(0.98);
-}
-
-/* Dark theme support */
-[data-theme="dark"] .project-search.e-textbox .e-input,
-[data-theme="dark"] .sort-dropdown-btn.e-dropdown-btn {
-  background: var(--surface-color);
-  border-color: var(--border-color);
-  color: var(--text-primary);
-}
-[data-theme="dark"] .project-search.e-textbox .e-input::placeholder {
-  color: var(--text-secondary);
 }
 
 /* Responsive Design */
@@ -758,6 +741,12 @@
 }
 
 @media (max-width: 768px) {
+  .home-sidebar {
+    width: 260px;
+  }
+  .home-main {
+    margin-left: 260px;
+  }
   .section-header {
     align-items: flex-start;
     justify-content: space-between;
@@ -841,7 +830,7 @@
 }
 
 @media (max-width: 480px) {
-  .quick-access-card .e-card-content {
+  .template-card .e-card-content {
     padding: 2rem 1.5rem;
   }
   .section-title {
@@ -902,7 +891,6 @@
 /* Projects Tools */
 .section-header {
   display: flex;
-  align-items: flex-start;
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 1.2rem;
@@ -924,11 +912,26 @@
   margin-left: auto;
   min-width: 0;
 }
-.tools-row .project-search { min-width: 140px; width: 190px; max-width: 100vw; }
-.tools-row .sort-dropdown-btn { min-width: 120px; width: 150px; }
+.tools-row .project-search { 
+  min-width: 140px;
+  width: 190px;
+  max-width: 100vw;
+  height: 42px;
+  display: flex;
+  align-items: center;
+}
+
+.tools-row .sort-dropdown-btn { 
+  min-width: 120px;
+  width: 150px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 .tools-row .view-toggle { display: flex; gap: 0.4rem; }
 
-@media (max-width: 1075px) {
+@media (max-width: 1165px) {
   .section-header {
     flex-direction: column;
     align-items: stretch;
@@ -958,39 +961,31 @@
   }
 }
 
-/* filter dropdown border and color updated */
-.sort-dropdown-btn.e-dropdown-btn {
-  background-color: transparent !important;
-  border: 1.5px solid var(--border-color) !important;
-  border-radius: 5px !important;
-  color: var(--text-secondary) !important;
-}
-
 /* Bookmark Button Styling for List View */
 .bookmark-btn.e-btn {
   background: transparent !important;
   border: none !important;
   width: 32px !important;
   height: 32px !important;
-  border-radius: 50% !important;
   padding: 0 !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
   min-width: 32px !important;
-  transition: all 0.2s ease;
+  transition: all .3s ease;
   box-shadow: none;
 }
 /* show stroke styled bookmark icon be defualt */
 .bookmark-btn.e-btn .e-btn-icon, .bookmark-btn-card.e-btn .e-btn-icon  {
   color: transparent !important;
-  -webkit-text-stroke: 1px var(--text-secondary) !important;
-  font-size: 16px !important;
+  -webkit-text-stroke: 1px var(--text-primary) !important;
+  font-size: 1.13rem !important;
   margin: 0 !important;
 }
 .bookmark-btn.e-btn .e-star-filled.star-filled, .bookmark-btn-card.e-btn .e-star-filled.star-filled  {
-  color: var(--box-shadow2) !important;
+  color: var(--bookmark-icon-color) !important;
   -webkit-text-stroke-width: 0px !important;
+  font-size: 1.15rem !important;
 }
 
 
@@ -1000,21 +995,21 @@
   right: 10px;
 }
 .bookmark-btn-card.e-btn {
-  background: var(--surface-color) !important;
+  background: transparent !important;
+  border: none;
   width: 36px !important;
   height: 36px !important;
-  border-radius: 8px !important;
   padding: 0 !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
   min-width: 36px !important;
-  transition: all 0.2s ease;
   box-shadow: none !important;
+  transition: all .3s ease;
 }
-.bookmark-btn-card.e-btn:hover {
-  background: var(--list-hover-bg) !important;
-  transform: scale(1.05);
+.bookmark-btn-card.e-btn:hover, .bookmark-btn.e-btn:hover {
+  background: transparent !important;
+  transform: scale(1.12);
 }
 
 /* common bookmark styling - show only on hover or when bookmarked */

@@ -36,7 +36,7 @@ const EmptyState: React.FC<EmptyStateProps> = ({ type, onCreateNew }) => {
       {onCreateNew && (
         <ButtonComponent
           onClick={onCreateNew}
-          cssClass="e-btn action-btn"
+          cssClass="action-btn e-primary"
           iconCss="e-icons e-plus"
         >
           Create New Workflow

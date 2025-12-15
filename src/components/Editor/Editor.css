@@ -48,7 +48,7 @@
 }
 .trigger-start-notification.active {
   opacity: 1;
-  bottom: 80px;
+  bottom: 78px;
 }
 .trigger-start-notification .e-message.e-info {
   background: var(--gradient-secondary);
@@ -76,5 +76,11 @@
 @keyframes spin {
   to {
     transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 660px) {
+  .trigger-start-notification.active{
+    bottom: 68px;
   }
 }

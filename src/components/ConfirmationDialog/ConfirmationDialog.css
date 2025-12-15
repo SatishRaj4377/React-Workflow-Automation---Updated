@@ -1,7 +1,7 @@
 
 .confirm-dialog-container .e-btn {
-  border-radius: 8px;
-  font-weight: 500;
+  border-radius: var(--border-radius);
+  font-weight: 400;
   padding: 0.4rem 1rem;
   border: none;
   box-shadow: none !important;
@@ -11,11 +11,11 @@
 .confirm-dialog-container .cancel-btn {
   background: transparent !important;
   color: var(--text-secondary) !important;
-  background-color: var(--border-color) !important;
+  background-color: var(--color-sf-flyout-border) !important;
   transition: background-color 0.2s, border-color 0.2s;
 }
 .confirm-dialog-container .cancel-btn:hover {
-   background: var(--list-hover-bg) !important;
+   background: var(--theme-border-color) !important;
    border-color: var(--node-handle) !important;
    transform: none;
 }

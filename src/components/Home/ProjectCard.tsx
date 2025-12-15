@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { DropDownButtonComponent, MenuEventArgs } from '@syncfusion/ej2-react-splitbuttons';
 import { ButtonComponent } from '@syncfusion/ej2-react-buttons';
 import { ProjectData } from '../../types';
@@ -20,10 +20,12 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
   onMenuSelect,
   menuItems,
 }) => {
+  const [menuOpen, setMenuOpen] = useState(false);
+  
   return (
     <div
       key={project.id}
-      className="e-card project-card card-item"
+      className={`e-card project-card card-item ${menuOpen ? 'menu-open' : ''}`}
       onClick={() => onOpenProject(project)}
     >
       <div className="e-card-image project-thumbnail">
@@ -35,6 +37,10 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
             cssClass="e-caret-hide project-menu-dropdown"
             select={onMenuSelect(project)}
             onClick={(e) => e.stopPropagation()}
+            beforeOpen={() => setMenuOpen(true)}
+            open={() => setMenuOpen(true)}
+            beforeClose={() => setMenuOpen(false)}
+            close={() => setMenuOpen(false)}
           />
         </div>
       </div>
@@ -45,7 +51,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
         </div>
         <div className="project-bookmark-card">
           <ButtonComponent
-            cssClass="bookmark-btn-card"
+            cssClass="bookmark-btn-card e-flat"
             iconCss={`e-icons e-star-filled ${isBookmarked ? 'star-filled' : ''}`}
             onClick={(e) => onBookmarkToggle(project.id, e)}
             title={isBookmarked ? 'Remove from favorites' : 'Add to favorites'}

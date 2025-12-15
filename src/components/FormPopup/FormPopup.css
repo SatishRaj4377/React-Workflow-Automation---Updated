@@ -11,11 +11,12 @@
   background: var(--surface-color);
   color: var(--text-primary);
   border: 1px solid var(--border-color);
-  border-radius: 12px;
+  border-radius: var(--border-radius);
   box-shadow: 0 8px 24px rgba(0,0,0,0.15);
   overflow: hidden;
   z-index: 100000;
   resize: both;
+  transition: all .3s ease;
 }
 
 /* Header */
@@ -103,7 +104,7 @@
   background: var(--surface-color);
   color: var(--text-primary);
   border: 1px solid var(--border-color);
-  border-radius: 8px;
+  border-radius: var(--border-radius);
 }
 
 .form-control:focus {

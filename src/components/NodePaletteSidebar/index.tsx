@@ -157,7 +157,7 @@ const NodePaletteSidebar: React.FC<SidebarProps> = ({
       <div className="sidebar-header">
         <h3 className="sidebar-title">Node Palette</h3>
         <ButtonComponent
-          cssClass="close-btn"
+          cssClass="close-btn e-flat"
           iconCss="e-icons e-close"
           onClick={onClose}
         />

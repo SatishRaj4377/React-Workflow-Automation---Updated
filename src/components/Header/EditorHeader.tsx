@@ -115,7 +115,7 @@ const EditorHeader: React.FC<EditorHeaderProps> = ({
       <div className="appbar-left">
         {onBack && (
           <ButtonComponent
-            cssClass="back-button"
+            cssClass="back-button e-flat"
             iconCss="e-icons e-arrow-left"
             onClick={onBack}
             title="Back to Home"
@@ -154,7 +154,7 @@ const EditorHeader: React.FC<EditorHeaderProps> = ({
           >
             <ButtonComponent
               onClick={onSave}
-              className="header-btn save-btn"
+              className="header-btn save-btn e-primary"
               disabled={!enableSaveBtn}
               content={enableSaveBtn ? 'Save' : 'Saved'}
             />
@@ -164,7 +164,7 @@ const EditorHeader: React.FC<EditorHeaderProps> = ({
           items={SETTINGS_DROPDOWN_ITEMS}
           select={handleSettingsDropdownSelect}
           iconCss="e-icons e-more-horizontal-1"
-          cssClass="header-btn e-caret-hide more-btn"
+          cssClass="header-btn e-caret-hide more-btn e-secondary"
         />
       </div>
 

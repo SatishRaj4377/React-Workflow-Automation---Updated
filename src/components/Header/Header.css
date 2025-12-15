@@ -20,19 +20,21 @@
   border-radius: 100%;
   transition: all 0.3s ease;
   background-color: var(--surface-color) !important;
-  color: var(--text-primary);
   width: 40px;
   height: 40px;
   margin: 0 !important;
+  border: none !important;
 }
 .back-button .e-btn-icon {
   margin-top: 4px;
 }
 .back-button:hover {
   background-color: var(--background-color);
-  color: var(--text-primary);
   transform: translateX(-2px);
   box-shadow: none;
+}
+.back-button:hover .e-btn-icon {
+  color: var(--text-primary);
 }
 
 .project-name-section {
@@ -40,7 +42,7 @@
 }
 
 .project-name {
-  font-size: 1.25rem;
+  font-size: 1.2rem;
   font-weight: 600;
   margin: 0;
   color: var(--text-primary);
@@ -49,7 +51,7 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.2rem;
-  border-radius: 8px;
+  border-radius: var(--border-radius);
   transition: all 0.3s ease;
   max-width: 750px;
   overflow: hidden;
@@ -75,6 +77,13 @@
   transition: opacity 0.3s ease;
   font-size: 1.2rem;
   flex-shrink: 0;
+  margin-left: .1rem;
+  transition: all .3s ease;
+}
+
+.project-name .edit-icon:hover {
+  color: var(--text-secondary);
+  transform: scale(1.12);
 }
 
 .project-name:hover .edit-icon {
@@ -86,7 +95,7 @@
   font-weight: 600;
   padding: 0.5rem 0.75rem;
   border: 2px solid var(--primary-color);
-  border-radius: 8px;
+  border-radius: var(--border-radius);
   background: var(--surface-color);
   color: var(--text-primary);
   outline: none;
@@ -100,11 +109,10 @@
 
 /* Buttons */
 .header-btn {
-  border-radius: 6px;
+  border-radius: var(--border-radius);
 }
 .header-btn.save-btn {
   width: 4.5rem;
-  border-radius: 7px;
   font-size: .95rem;
   transition: none;
 }
@@ -114,12 +122,11 @@
   cursor: default;
   color: inherit;
   background: inherit; 
-  border: 1.9px solid var(--border-color);
+  border: 1.9px solid var(--border-color) !important;
+  background: var(--border-color) !important;
+  color: var(--text-secondary) !important;
 }
 .header-btn.more-btn{
-  background: var(--background-color);
-  color: var(--text-primary);
-  border: 1.9px solid var(--border-color);
 }
 
 /* Theme-specific styles */
@@ -136,7 +143,7 @@
 
 /* Settings Dialog Styles */
 .settings-dialog-container {
-  border-radius: 12px;
+  border-radius: var(--border-radius);
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
 }
 

@@ -144,31 +144,13 @@ export const VariablePickerPopup: React.FC<PickerPopupProps> = ({
       onMouseDown={(e) => e.preventDefault()} // keep focus in textbox
     >
       {/* Header */}
-      <div
-        className="vp-header"
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          padding: '.5rem .75rem',
-          borderBottom: '1px solid var(--border-color)',
-          background: 'var(--background-color)',
-          cursor: 'move'
-        }}
-      >
-        <div className="vp-title" style={{ fontSize: '.85rem', fontWeight: 600 }}>
+      <div className="vp-header">
+        <div className="vp-title">
           Insert variable
         </div>
         <button
           className="vp-close"
           onClick={handleClose}
-          style={{
-            background: 'transparent',
-            border: 'none',
-            color: 'var(--text-secondary)',
-            cursor: 'pointer',
-            fontSize: '1rem',
-          }}
           aria-label="Close"
         >
           ✕
@@ -176,10 +158,7 @@ export const VariablePickerPopup: React.FC<PickerPopupProps> = ({
       </div>
 
       {/* Body */}
-      <div
-        className="vp-body"
-        style={{ flex: '1 1 auto', overflow: 'auto', padding: '.35rem .5rem .6rem' }}
-      >
+      <div className="vp-body">
         {!variableGroups.length && (
           <div className="vp-empty" style={{ padding: '.75rem', fontSize: '.85rem' }}>
             No variables available from previous steps.
@@ -189,32 +168,8 @@ export const VariablePickerPopup: React.FC<PickerPopupProps> = ({
         {/* Render only JsonVisualizer per group */}
         {variableGroups.map((g) => (
             <div key={g.nodeId} className="vp-group" style={{ paddingBottom: '.5rem' }}>
-              <div
-                className="vp-group-title"
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '.5rem',
-                  padding: '.25rem .5rem',
-                  margin: '.25rem 0 .35rem',
-                  backgroundColor: 'var(--border-color)',
-                  color: 'var(--text-secondary)',
-                  fontSize: '.75rem',
-                  textTransform: 'uppercase',
-                  letterSpacing: '.03em',
-                  borderRadius: 6,
-                }}
-              >
-                <span
-                  className="vp-node-type"
-                  style={{
-                    background: 'var(--background-color)',
-                    border: '1px solid var(--border-color)',
-                    borderRadius: 999,
-                    padding: '0 .4rem',
-                    fontSize: '.7rem',
-                  }}
-                >
+              <div className="vp-group-title">
+                <span className="vp-node-type">
                   {g.nodeType}
                 </span>
                 {g.nodeName}

@@ -189,7 +189,7 @@ const FormNodeConfig: React.FC<FormNodeConfigProps> = ({ title, description, val
           );
         })}
 
-        <ButtonComponent className="add-field-btn" iconCss="e-icons e-plus" onClick={addRow}>
+        <ButtonComponent className="add-field-btn e-primary" iconCss="e-icons e-plus" onClick={addRow}>
           Add Field
         </ButtonComponent>
       </div>
