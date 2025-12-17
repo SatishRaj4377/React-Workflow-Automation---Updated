@@ -78,7 +78,7 @@ const ConditionNodeConfig: React.FC<ConditionNodeConfigProps> = ({
 
           return (
             <React.Fragment key={i}>
-              <div style={{ background: 'var(--border-color)', padding: '.5rem', borderRadius: '8px' }}>
+              <div style={{ background: 'var(--condition-field-bg)', padding: '.5rem', borderRadius: '6px' }}>
                 {/* Row Header: Delete button + Left value input + Operator dropdown */}
                 <div style={{ display: 'flex', gap: 8, alignItems: 'center', width: '100%' }}>
                   <ButtonComponent
@@ -162,7 +162,7 @@ const ConditionNodeConfig: React.FC<ConditionNodeConfigProps> = ({
           );
         })}
 
-        <ButtonComponent className="add-field-btn e-primary" iconCss="e-icons e-plus" onClick={addRow}>
+        <ButtonComponent className="add-field-btn e-secondary" iconCss="e-icons e-plus" onClick={addRow}>
           Add {!showJoiners ? 'Case' : 'Condition'}
         </ButtonComponent>
       </div>

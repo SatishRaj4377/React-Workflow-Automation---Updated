@@ -176,7 +176,7 @@ const EditorHeader: React.FC<EditorHeaderProps> = ({
         showCloseIcon={true}
         close={() => setIsSettingsDialogOpen(false)}
         overlayClick={() => setIsSettingsDialogOpen(false)}
-        width="760px"
+        width="600px"
         height="auto"
         target={document.body}
         isModal={true}
@@ -185,122 +185,127 @@ const EditorHeader: React.FC<EditorHeaderProps> = ({
         animationSettings={{ effect: 'None' }}
       >
         <div className="settings-dialog-content">
-          <div className="settings-grid">
-            {/* Grid Style Settings */}
-            <div className="settings-section">
-              <h3 className="settings-section-title">Grid Settings</h3>
-              
-              <div className="settings-item" title='Update the diagram grid type.'>
-                <label className="settings-label">Grid Style</label>
-                <DropDownListComponent
-                  dataSource={GRID_STYLE_OPTIONS}
-                  fields={{ text: 'text', value: 'value' }}
-                  value={diagramSettings.gridStyle}
-                  change={(args: any) => handleSettingsChange('gridStyle', args.value)}
-                  width="150px"
-                  cssClass="settings-dropdown"
-                />
+          <div className="settings-list">
+            {/* Group: Grid Style */}
+            <div className="settings-group">
+              <div className="settings-row" title='Update the diagram grid type.'>
+                <p className="settings-title">Grid Style</p>
+                <div className="settings-control">
+                  <DropDownListComponent
+                    dataSource={GRID_STYLE_OPTIONS}
+                    fields={{ text: 'text', value: 'value' }}
+                    value={diagramSettings.gridStyle}
+                    change={(args: any) => handleSettingsChange('gridStyle', args.value)}
+                    width="220px"
+                    cssClass="settings-dropdown"
+                  />
+                </div>
               </div>
             </div>
 
-            {/* Connector Style Settings */}
-            <div className="settings-section">
-              <h3 className="settings-section-title">Connector Settings</h3>
-              <div className="settings-item" title='Update the connector segments type.'>
-                <label className="settings-label">Connector type</label>
+            {/* Group: Connector Type (+ conditional sub) */}
+            <div className="settings-group">
+              <div className="settings-row" title='Update the connector segments type.'>
+                <p className="settings-title">Connector Type</p>
+                <div className="settings-control">
                   <DropDownListComponent
                     dataSource={CONNECTOR_STYLE_OPTIONS}
                     fields={{ text: 'text', value: 'value' }}
                     value={diagramSettings.connectorType}
                     change={(args: any) => handleSettingsChange('connectorType', args.value)}
-                    width="150px"
+                    width="220px"
                     cssClass="settings-dropdown"
                   />
+                </div>
               </div>
               {diagramSettings.connectorType === 'Orthogonal' && (
-              <div className="settings-sub">
-                <div className="settings-item">
-                    <label>Connector corner radius</label>
-                    <NumericTextBoxComponent
-                      min={0}
-                      max={50}
-                      step={1}
-                      format="n0"
-                      width="100px"
-                      value={diagramSettings.connectorCornerRadius ?? 0}
-                      change={(args) =>
-                        handleSettingsChange(`connectorCornerRadius`, (args.value as number) ?? 0 )
-                      }
-                    />
+                <div className="settings-subgroup">
+                  <div className="settings-sub-row">
+                    <p className="settings-label">Connector Corner Radius</p>
+                    <div className="settings-control">
+                      <NumericTextBoxComponent
+                        min={0}
+                        max={50}
+                        step={1}
+                        format="n0"
+                        width={120}
+                        value={diagramSettings.connectorCornerRadius ?? 0}
+                        change={(args) =>
+                          handleSettingsChange(`connectorCornerRadius`, (args.value as number) ?? 0 )
+                        }
+                      />
+                    </div>
                   </div>
                 </div>
               )}
             </div>
 
-            {/* Snap Settings */}
-            <div className="settings-section">
-              <h3 className="settings-section-title">Snapping Settings</h3>
-              <div className="settings-item" title='Snap elements to grid or nearby objects for precise alignment.'>
-                <label className="settings-label">Enable Snapping</label>
-                <SwitchComponent
-                  checked={diagramSettings.snapping && (!!diagramSettings.snapping.enableSnapToObjects || !!diagramSettings.snapping.enableSnapToGrid)}
-                  change={(e) => {
-                    // Turn on all the sub-settings on switching on the main snapsettings switch 
-                    if (e.checked){
-                      diagramSettings.snapping.enableSnapToObjects = true;
-                      diagramSettings.snapping.enableSnapToGrid = true;
-                    }
-                    // Turn off all the sub-settings on switching off the main snapsettings switch 
-                    if (!e.checked){
-                      diagramSettings.snapping.enableSnapToObjects = false;
-                      diagramSettings.snapping.enableSnapToGrid = false;
-                    }
-                    handleSettingsChange('snapping', {...diagramSettings.snapping, isEnabled: e.checked})
-                  }}
-                  cssClass="settings-switch"
-                />
+            {/* Group: Snapping (+ conditional sub) */}
+            <div className="settings-group">
+              <div className="settings-row" title='Snap elements to grid or nearby objects for precise alignment.'>
+                <p className="settings-title">Enable Snapping</p>
+                <div className="settings-control">
+                  <SwitchComponent
+                    checked={diagramSettings.snapping && (!!diagramSettings.snapping.enableSnapToObjects || !!diagramSettings.snapping.enableSnapToGrid)}
+                    change={(e) => {
+                      const nextSnapping = {
+                        ...(diagramSettings.snapping || {}),
+                        enableSnapToObjects: !!e.checked,
+                        enableSnapToGrid: !!e.checked,
+                        isEnabled: !!e.checked,
+                      } as any;
+                      handleSettingsChange('snapping', nextSnapping)
+                    }}
+                    cssClass="settings-switch"
+                  />
+                </div>
               </div>
-              {/* Snapping Sub Settings */}
               {diagramSettings.snapping && (!!diagramSettings.snapping.enableSnapToObjects || !!diagramSettings.snapping.enableSnapToGrid) && (
-                <div className="settings-sub">
-                  <div className="settings-item" title='Align nodes to nearby shapes using smart guides.'>
-                    <label>Snap to objects</label>
-                    <CheckBoxComponent
-                      checked={!!diagramSettings.snapping.enableSnapToObjects}
-                      change={(e) => handleSettingsChange('snapping', {...diagramSettings.snapping, enableSnapToObjects: e.checked})}
-                    />
+                <div className="settings-subgroup">
+                  <div className="settings-sub-row" title='Align nodes to nearby shapes using smart guides.'>
+                    <p className="settings-label">Snap to objects</p>
+                    <div className="settings-control">
+                      <CheckBoxComponent
+                        checked={!!diagramSettings.snapping.enableSnapToObjects}
+                        change={(e) => handleSettingsChange('snapping', { ...diagramSettings.snapping, enableSnapToObjects: e.checked })}
+                      />
+                    </div>
                   </div>
-                  <div className="settings-item" title='Snap elements to the nearest grid intersection.'>
-                    <label>Snap to grid</label>
-                    <CheckBoxComponent
-                      checked={!!diagramSettings.snapping.enableSnapToGrid}
-                      change={(e) => handleSettingsChange('snapping', {...diagramSettings.snapping, enableSnapToGrid: e.checked})}
-                    />
+                  <div className="settings-sub-row" title='Snap elements to the nearest grid intersection.'>
+                    <p className="settings-label">Snap to grid</p>
+                    <div className="settings-control">
+                      <CheckBoxComponent
+                        checked={!!diagramSettings.snapping.enableSnapToGrid}
+                        change={(e) => handleSettingsChange('snapping', { ...diagramSettings.snapping, enableSnapToGrid: e.checked })}
+                      />
+                    </div>
                   </div>
                 </div>
               )}
             </div>
 
-            {/* Overview Panel Settings */}
-            <div className="settings-section">
-              <h3 className="settings-section-title">Overview Panel</h3>
-              <div className="settings-item" title='Display a mini map for quick navigation across large diagrams.'>
-                <label className="settings-label">Show Overview Panel</label>
-                <SwitchComponent
-                  checked={diagramSettings.showOverview}
-                  change={(args) => handleSettingsChange('showOverview', args.checked)}
-                  cssClass="settings-switch"
-                />
+            {/* Group: Overview (+ conditional sub) */}
+            <div className="settings-group">
+              <div className="settings-row" title='Display a mini map for quick navigation across large diagrams.'>
+                <p className="settings-title">Show Overview Panel</p>
+                <div className="settings-control">
+                  <SwitchComponent
+                    checked={diagramSettings.showOverview}
+                    change={(args) => handleSettingsChange('showOverview', args.checked)}
+                    cssClass="settings-switch"
+                  />
+                </div>
               </div>
-              {/* Overview panel Sub Settings */}
               {diagramSettings.showOverview && (
-                <div className="settings-sub">
-                  <div className="settings-item" title='Keep the overview panel visible at all times.'>
-                    <label>Show overview panel always</label>
-                    <CheckBoxComponent
-                      checked={!!diagramSettings.showOverviewAlways}
-                      change={(e) => handleSettingsChange('showOverviewAlways', e.checked)}
-                    />
+                <div className="settings-subgroup">
+                  <div className="settings-sub-row" title='Keep the overview panel visible at all times.'>
+                    <p className="settings-label">Show overview panel always</p>
+                    <div className="settings-control">
+                      <CheckBoxComponent
+                        checked={!!diagramSettings.showOverviewAlways}
+                        change={(e) => handleSettingsChange('showOverviewAlways', e.checked)}
+                      />
+                    </div>
                   </div>
                 </div>
               )}

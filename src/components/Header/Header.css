@@ -20,9 +20,7 @@
   border-radius: 100%;
   transition: all 0.3s ease;
   background-color: var(--surface-color) !important;
-  width: 40px;
-  height: 40px;
-  margin: 0 !important;
+  margin: 0 5px 0 0 !important;
   border: none !important;
 }
 .back-button .e-btn-icon {
@@ -150,87 +148,100 @@
 .settings-dialog-container .e-dlg-header-content {
   background: var(--surface-color);
   border-bottom: 1px solid var(--border-color);
-  padding: 24px;
+  padding: 22px;
 }
 
 .settings-dialog-container .e-dlg-header {
-  font-size: 1.5rem;
+  font-size: 1.4rem;
   font-weight: 600;
   color: var(--text-primary);
-  margin: -10px 0;
+  margin: -8px 0;
 }
 
+/* Panel layout */
 .settings-dialog-content {
-  padding: .5rem;
   display: flex;
   flex-direction: column;
-  gap: 2rem;
 }
 
-.settings-grid {
+/* Single-line settings list */
+.settings-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* New group container that wraps parent setting + its sub-settings */
+.settings-group {
+  background: var(--surface-color);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.settings-row {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  column-gap: 2rem;
-  row-gap: 2rem;
-  position: relative;
+  grid-template-columns: 1fr max-content;
+  align-items: center;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 2px 4px; /* inner spacing only */
+  gap: 16px;
 }
 
-/* Adds a divider betweeen the columns */
-.settings-grid::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 50%;
-  width: 1px;
-  background-color: var(--border-color);
-  transform: translateX(-50%);
-  pointer-events: none;
-}
-
-.settings-section {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-.settings-section-title {
-  font-size: 1.1rem;
-  font-weight: 600;
+.settings-title {
+  font-size: 0.95rem;
+  font-weight: 500;
   color: var(--text-primary);
   margin: 0;
-}
-
-.settings-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
 }
 
 .settings-label {
-  font-size: 0.95rem;
-  font-weight: 500;
+  font-size: 0.92rem;
+  font-weight: 400;
   color: var(--text-secondary);
   margin: 0;
-  flex: 1;
 }
 
-/* Sub-section that appears under a main setting */
-.settings-sub {
-  margin-left: 1rem;
-  padding-left: 1rem;
-  border-left: 2px dashed var(--border-color);
-  color: var(--text-secondary);
+.settings-control {
+  min-width: 220px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* Subgroup under a row (no borders) */
+.settings-subgroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-left: 16px; /* subtle indentation */
+  padding: 2px 4px 8px 4px; /* inner padding within group */
+}
+
+.settings-sub-row {
   display: grid;
+  grid-template-columns: 1fr max-content;
+  align-items: center;
+  gap: 12px;
 }
 
-/* Make sub-rows slightly tighter */
-.settings-sub .settings-item {
-  min-height: 34px;
+.settings-sub-row .settings-control {
+  min-width: auto;
 }
 
-.settings-sub .e-checkbox-wrapper {
-  margin: 0 20px;
+.settings-sub-row .e-checkbox-wrapper { margin: 0 20px; }
+
+/* Mobile: stack control below label */
+@media (max-width: 640px) {
+  .settings-row,
+  .settings-sub-row {
+    grid-template-columns: 1fr;
+  }
+  .settings-control { justify-content: stretch; }
 }
 
 /* Responsive Design */
@@ -248,30 +259,6 @@
     max-width: 300px;
     width: 300px;
   }
-
-  .settings-grid::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 50%;
-    width: 1px;
-    background-color: var(--border-color);
-    transform: translateX(-50%);
-    pointer-events: none;
-  }
-
-  .settings-grid {
-    grid-template-columns: 1fr;
-    column-gap: 24px;
-    row-gap: 16px;
-  }
-
-  /* Hide the vertical divider in 1-col mode */
-  .settings-grid::before {
-    display: none;
-  }
-
 }
 
 @media (max-width: 480px) {

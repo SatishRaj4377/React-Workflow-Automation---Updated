@@ -1,7 +1,6 @@
 
 .confirm-dialog-container .e-btn {
   border-radius: var(--border-radius);
-  font-weight: 400;
   padding: 0.4rem 1rem;
   border: none;
   box-shadow: none !important;

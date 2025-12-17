@@ -35,12 +35,21 @@ export function getFilteredCategories(
     .filter((cat) => allowedSections.has(cat.name as PaletteCategoryLabel))
     .map((cat) => ({
       ...cat,
-      nodes: cat.nodes.filter((node) =>
-        term === ''
-          ? true
-          : node.name.toLowerCase().includes(term) ||
-            (node.description || '').toLowerCase().includes(term)
-      ),
+      nodes: cat.nodes.filter((node) => {
+        // Apply text search match
+        const matchesSearch =
+          term === ''
+            ? true
+            : node.name.toLowerCase().includes(term) ||
+              (node.description || '').toLowerCase().includes(term);
+
+        // In connector-insert mode, hide "Do Nothing" (Stop) node
+        const isStopNode =
+          (node as any).nodeType === 'Stop' || node.name.toLowerCase() === 'do nothing';
+        const allowedByMode = context.mode === 'connector-insert' ? !isStopNode : true;
+
+        return matchesSearch && allowedByMode;
+      }),
     }))
     .filter((cat) => cat.nodes.length > 0);
 }

@@ -423,7 +423,7 @@ const ExcelNodeConfig: React.FC<Props> = ({ settings, onPatch, variableGroups })
             </div>
           )}
 
-          <ButtonComponent className="add-field-btn e-primary" iconCss="e-icons e-plus" onClick={addHeader}>
+          <ButtonComponent className="add-field-btn e-secondary" iconCss="e-icons e-plus" onClick={addHeader}>
             Add header
           </ButtonComponent>
         </div>
@@ -673,7 +673,7 @@ const ExcelNodeConfig: React.FC<Props> = ({ settings, onPatch, variableGroups })
             </div>
           ))}
 
-          <ButtonComponent className="add-field-btn e-primary" iconCss="e-icons e-plus" onClick={addFilter}>
+          <ButtonComponent className="add-field-btn e-secondary" iconCss="e-icons e-plus" onClick={addFilter}>
             Add Filter
           </ButtonComponent>
         </div>

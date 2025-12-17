@@ -7,10 +7,8 @@ import { IconRegistry } from '../../assets/icons';
 
 interface ProjectListItemProps {
   project: ProjectData;
-  index: number;
   isSelected: boolean;
   isBookmarked: boolean;
-  getProjectKey: (project: ProjectData, index: number, prefix?: string) => string;
   onOpenProject: (project: ProjectData) => void;
   onToggleSelect: (project: ProjectData, isChecked: boolean) => void;
   onBookmarkToggle: (projectId: string, e: React.MouseEvent) => void;
@@ -22,10 +20,8 @@ interface ProjectListItemProps {
 
 const ProjectListItem: React.FC<ProjectListItemProps> = ({
   project,
-  index,
   isSelected,
   isBookmarked,
-  getProjectKey,
   onOpenProject,
   onToggleSelect,
   onBookmarkToggle,
@@ -39,10 +35,10 @@ const ProjectListItem: React.FC<ProjectListItemProps> = ({
 
   return (
     <div
-      key={getProjectKey(project, index, 'list-')}
       className={`project-list-item ${isSelected ? 'selected' : ''} ${menuOpen ? 'menu-open' : ''}`}
       onClick={() => onOpenProject(project)}
       tabIndex={0}
+      aria-label={`Workflow ${project.name}`}
     >
       <span className="project-col project-icon" onClick={(e) => e.stopPropagation()}>
         <CheckBoxComponent

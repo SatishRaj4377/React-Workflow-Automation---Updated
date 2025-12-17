@@ -15,8 +15,6 @@
   box-shadow: 0 8px 24px rgba(0,0,0,0.15);
   overflow: hidden;
   z-index: 100000;
-  resize: both;
-  transition: all .3s ease;
 }
 
 /* Header */
@@ -53,7 +51,9 @@
   color: var(--text-secondary);
   box-shadow: none;
 }
-
+.form-popup-header .icon-btn:hover {
+  color: var(--text-primary);
+}
 /* Body */
 .form-popup-body {
   overflow: auto;

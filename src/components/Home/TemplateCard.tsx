@@ -43,7 +43,7 @@ const TemplateCard: React.FC<TemplateCardProps> = ({ template, onOpenTemplate })
           {/* Single-line band by default; overflow hidden and only full icons shown */}
           <div ref={rowRef} className="icons-row compact">
             {compactIcons.map((src, idx) => (
-              <img key={idx} className="node-icon" src={src} alt="node" />
+              <img key={idx} className="node-icon" src={src} alt="template node" />
             ))}
           </div>
         </div>

@@ -4,7 +4,7 @@ import { getPortSide, getPortOffset, shouldShowUserHandleForPort } from "./portU
 
 // Color constants for user handles
 const GRAY_COLOR = '#9193a2ff';
-const HOVER_COLOR = 'var(--primary-color)';
+const HOVER_COLOR = 'var(--accent-color)';
 
 // Build connector and node operation handles
 export const buildUserHandles = (): UserHandleModel[] => {
@@ -73,7 +73,7 @@ export const generatePortBasedUserHandles = (
         <path class="plus" d="M8 5 V11 M5 8 H11" stroke="white" stroke-width="1.2" stroke-linecap="round"/>
         <style>
           .add-handle { cursor: pointer; }
-          .add-handle:hover .bg { fill: var(--accent-color); }
+          .add-handle:hover .bg { fill: ${HOVER_COLOR}; }
         </style>
       </g>
     `,

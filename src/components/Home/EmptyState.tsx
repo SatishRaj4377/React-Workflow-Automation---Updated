@@ -16,7 +16,7 @@ const EmptyState: React.FC<EmptyStateProps> = ({ type, onCreateNew }) => {
 
   if (type === 'search') {
     return (
-      <div className="empty-state animate-fade-in-up">
+      <div className="empty-state animate-fade-in-up" role="status" aria-live="polite">
         <div className="empty-icon">
           <WorkflowFolderSearchIcon className="svg-icon search-folder" />
         </div>
@@ -27,7 +27,7 @@ const EmptyState: React.FC<EmptyStateProps> = ({ type, onCreateNew }) => {
   }
 
   return (
-    <div className="empty-state animate-fade-in-up">
+    <div className="empty-state animate-fade-in-up" role="status" aria-live="polite">
       <div className="empty-icon">
         <WorkflowLogoIcon className="svg-icon" />
       </div>

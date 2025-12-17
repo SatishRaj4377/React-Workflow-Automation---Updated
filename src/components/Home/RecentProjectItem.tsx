@@ -39,6 +39,7 @@ const RecentProjectItem: React.FC<RecentProjectItemProps> = ({
       className={`project-list-item ${menuOpen ? 'menu-open' : ''}`}
       onClick={() => onOpenProject(project)}
       tabIndex={0}
+      aria-label={`Recent workflow ${project.name}`}
     >
       <span className="project-col project-icon">
         <WorkflowFolderIcon className="svg-icon" />

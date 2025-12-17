@@ -49,12 +49,17 @@
 }
 .theme-toggle-switch.e-switch-wrapper .e-switch-inner {
   left: 2px;
+  box-shadow: none;
 }
 
 .theme-toggle-switch .e-switch-handle {
   background-size: contain !important;
   background-repeat: no-repeat;
   background-position: center;
+}
+.theme-toggle-switch.e-switch-wrapper .e-ripple-container, .e-css.e-switch-wrapper .e-ripple-container{
+  left: -14px;
+  top: -14px;
 }
 .theme-toggle-switch.light .e-switch-handle {
   background-image: url("/assets/images/sun.png") !important;
@@ -336,27 +341,21 @@
   width: 100%;
 }
 
-.project-search {
-  padding: 0.5rem;
-  border-radius: var(--border-radius);;
-  border: 2px solid var(--border-color);
-  background: var(--surface-color);
-  color: var(--text-primary);
-  width: 100%;
-}
-
-/* Sort Dropdown Button Styles */
-.sort-dropdown-btn.e-dropdown-btn {
-  width: 100%;
+/* Sort Dropdown (DropDownList only) */
+.sort-dropdown-list.e-control-wrapper.e-input-group {
   height: 42px;
-  border-radius: var(--border-radius);;
+  border-radius: var(--border-radius);
+  display: flex;
+  align-items: center;
   color: var(--text-secondary);
   font-size: 0.95rem;
   font-weight: 400;
 }
-.sort-dropdown-btn.e-dropdown-btn:hover,
- .sort-dropdown-btn.e-dropdown-btn:focus {
-  color: var(--text-primary);
+
+/* Ensure width behavior inside tools row (same footprint as old button) */
+.tools-row .sort-dropdown-list.e-control-wrapper.e-input-group { 
+  min-width: 120px;
+  width: 140px !important;
 }
 
 /* View Toggle Styles */
@@ -906,7 +905,7 @@
 .tools-row {
   display: flex;
   align-items: center;
-  gap: 0.9rem;
+  gap: 0.6rem;
   flex-wrap: wrap;
   margin-left: auto;
   min-width: 0;
@@ -918,14 +917,10 @@
   height: 42px;
   display: flex;
   align-items: center;
+  color: var(--text-secondary);
 }
-
-.tools-row .sort-dropdown-btn { 
-  min-width: 120px;
-  width: 150px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.tools-row .project-search .search-icon{ 
+  color: var(--text-secondary) !important;
 }
 
 .tools-row .view-toggle { display: flex; gap: 0.4rem; }
@@ -953,9 +948,9 @@
     padding-top: 6px;
   }
   .tools-row .project-search,
-  .tools-row .sort-dropdown-btn {
+  .tools-row .sort-dropdown-list {
     min-width: 0;
-    width: 100%;
+    width: 100% !important;
     max-width: 100%;
   }
 }

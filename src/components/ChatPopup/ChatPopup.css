@@ -16,7 +16,6 @@
     overflow: hidden;
     user-select: none;
     z-index: 100000;
-    resize: both;
     transition: height .3s ease;
 }
 
@@ -41,7 +40,9 @@
     box-shadow: none;
     padding: .1rem !important;
 }
-
+.chat-popup-btn:hover {
+    color: var(--text-primary);
+}
 .chat-popup-btn .e-btn-icon {
     font-size: 1rem !important;
 }

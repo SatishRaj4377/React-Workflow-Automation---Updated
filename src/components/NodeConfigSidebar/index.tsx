@@ -22,7 +22,7 @@ import './NodeConfigSidebar.css';
 interface ConfigPanelProps {
   isOpen: boolean;
   onClose: () => void;
-  selectedNode: NodeConfig | null;
+  selectedNodeConfig: NodeConfig | null;
   diagram: Diagram | null;
   executionContext: ExecutionContext;
   onExecuteNode: (nodeId: string) => void;
@@ -35,7 +35,7 @@ const NodeConfigSidebar: React.FC<ConfigPanelProps> = ({
   isOpen,
   onClose,
   onExecuteNode,
-  selectedNode,
+  selectedNodeConfig,
   diagram,
   executionContext,
   onNodeConfigChange,
@@ -52,10 +52,47 @@ const NodeConfigSidebar: React.FC<ConfigPanelProps> = ({
   const [formPreviewOpen, setFormPreviewOpen] = useState(false); // Form preview modal state
   const [formPreviewError, setFormPreviewError] = useState<string>(''); // Form preview validation error
 
+  // Draft state for non-destructive editing
+  const [draftGeneral, setDraftGeneral] = useState<any>({});
+  const [draftName, setDraftName] = useState<string>('');
+
+  // Initialize/reset draft when node changes
+  useEffect(() => {
+    const g = (selectedNodeConfig?.settings && (selectedNodeConfig.settings as any).general) || {};
+    setDraftGeneral(g);
+    setDraftName(selectedNodeConfig?.displayName ?? '');
+  }, [selectedNodeConfig?.id]);
+
+  const isDirty = React.useMemo(() => {
+    if (!selectedNodeConfig) return false;
+    try {
+      const current = (selectedNodeConfig.settings && (selectedNodeConfig.settings as any).general) || {};
+      const sameGeneral = JSON.stringify(current) === JSON.stringify(draftGeneral || {});
+      const sameName = (selectedNodeConfig.displayName ?? '') === (draftName ?? '');
+      return !(sameGeneral && sameName);
+    } catch {
+      return true;
+    }
+  }, [selectedNodeConfig, draftGeneral, draftName]);
+
+  // Commit draft to parent config
+  const commitDraft = useCallback(() => {
+    if (!selectedNodeConfig || !isDirty) return;
+    const updatedConfig: NodeConfig = {
+      ...selectedNodeConfig,
+      displayName: draftName,
+      settings: {
+        ...selectedNodeConfig.settings,
+        general: { ...(draftGeneral || {}) },
+      },
+    };
+    onNodeConfigChange(selectedNodeConfig.id, updatedConfig);
+  }, [selectedNodeConfig, draftGeneral, draftName, isDirty, onNodeConfigChange]);
+
   // ========================================================================
   // Derived State & Icons
   // ========================================================================
-  const nodeIconSrc = selectedNode?.icon ? IconRegistry[selectedNode.icon] : null; // Node type icon
+  const nodeIconSrc = selectedNodeConfig?.icon ? IconRegistry[selectedNodeConfig.icon] : null; // Node type icon
   const MessageIcon = IconRegistry['Message']; // Chat trigger icon
 
   // ========================================================================
@@ -66,7 +103,7 @@ const NodeConfigSidebar: React.FC<ConfigPanelProps> = ({
   useEffect(() => {
     const fetchData = async () => {
       // Reset state if no node or diagram
-      if (!selectedNode || !diagram) {
+      if (!selectedNodeConfig || !diagram) {
         setAvailableVariables([]);
         setNodeOutput(null);
         return;
@@ -74,14 +111,14 @@ const NodeConfigSidebar: React.FC<ConfigPanelProps> = ({
 
       // Fetch upstream variables available to this node
       const vars = await getAvailableVariablesForNode(
-        selectedNode.id,
+        selectedNodeConfig.id,
         diagram,
         executionContext
       );
 
       // Get the output produced by this node after execution
       const output = getNodeOutputAsVariableGroup(
-        selectedNode.id,
+        selectedNodeConfig.id,
         diagram,
         executionContext
       );
@@ -93,20 +130,20 @@ const NodeConfigSidebar: React.FC<ConfigPanelProps> = ({
     fetchData();
 
     // Sync dynamic ports for Switch Case nodes (update port count if cases change)
-    if (selectedNode && diagram && selectedNode.nodeType === 'Switch Case') {
-      const general = (selectedNode?.settings?.general as any) ?? {};
+    if (selectedNodeConfig && diagram && selectedNodeConfig.nodeType === 'Switch Case') {
+      const general = (selectedNodeConfig?.settings?.general as any) ?? {};
       const rules = general?.rules as any[] | undefined;
       const desired = Math.max(1, rules?.length ?? 1);
-      const node: any = (diagram as any).getObject(selectedNode.id);
+      const node: any = (diagram as any).getObject(selectedNodeConfig.id);
       const enableDefault = !!general?.enableDefaultPort;
       const existing = (node?.addInfo?.dynamicCaseCount)
         ?? (Array.isArray(node?.ports) ? node.ports.filter((p: any) => String(p.id).startsWith('right-case-')).length : 0)
         ?? 0;
       if (existing !== desired) {
-        updateSwitchPorts(diagram as any, selectedNode.id, desired, enableDefault);
+        updateSwitchPorts(diagram as any, selectedNodeConfig.id, desired, enableDefault);
       }
     }
-  }, [selectedNode?.id, diagram, executionContext]);
+  }, [selectedNodeConfig?.id, diagram, executionContext]);
 
   // ========================================================================
   // Event Handlers - Config Changes & Validation
@@ -119,40 +156,31 @@ const NodeConfigSidebar: React.FC<ConfigPanelProps> = ({
     value?: any,
     section: 'general' = 'general'
   ) => {
-    if (!selectedNode) return;
-    const prevSection = (selectedNode.settings && (selectedNode.settings as any)[section]) ?? {};
+    if (section !== 'general') return; // only general supported here
+    const prevSection = draftGeneral || {};
     const nextSection =
       typeof fieldOrPatch === 'object' && fieldOrPatch !== null
         ? { ...prevSection, ...fieldOrPatch }
         : { ...prevSection, [fieldOrPatch as any]: value };
 
-    // Only propagate if something actually changed (optimization)
+    // Only update draft if something changed
     let same = true;
     for (const k of Object.keys(nextSection)) {
       if (prevSection[k] !== nextSection[k]) { same = false; break; }
     }
     if (same) return;
 
-    const updatedConfig: NodeConfig = {
-      ...selectedNode,
-      settings: {
-        ...selectedNode.settings,
-        [section]: nextSection,
-      },
-    };
-    onNodeConfigChange(selectedNode.id, updatedConfig);
+    setDraftGeneral(nextSection);
 
     // Close form preview if form settings changed
-    if (selectedNode.nodeType === 'Form' && formPreviewOpen) {
+    if (selectedNodeConfig?.nodeType === 'Form' && formPreviewOpen) {
       setFormPreviewOpen(false);
     }
   };
 
   // Update the node's display name
   const handleNameChange = (value: string) => {
-    if (!selectedNode) return;
-    const updatedConfig: NodeConfig = { ...selectedNode, displayName: value };
-    onNodeConfigChange(selectedNode.id, updatedConfig);
+    setDraftName(value);
   };
 
   // ========================================================================
@@ -309,8 +337,7 @@ const NodeConfigSidebar: React.FC<ConfigPanelProps> = ({
           ))}
 
           <ButtonComponent
-            style={{ border: '.1rem solid var(--scrollbar-thumb)', opacity: .8, color: 'var(--text-secondary)' }}
-            className="e-flat add-field-btn"
+            className="e-secondary add-field-btn"
             iconCss="e-icons e-plus"
             onClick={addSuggestion}
           >
@@ -406,7 +433,7 @@ const NodeConfigSidebar: React.FC<ConfigPanelProps> = ({
             </div>
           ))}
 
-          <ButtonComponent className="add-field-btn e-primary" iconCss="e-icons e-plus" onClick={addQueryParam}>
+          <ButtonComponent className="add-field-btn e-secondary" iconCss="e-icons e-plus" onClick={addQueryParam}>
             Add Query
           </ButtonComponent>
         </div>
@@ -504,9 +531,9 @@ const NodeConfigSidebar: React.FC<ConfigPanelProps> = ({
         const onRowsChange = (nextRows: any[]) => {
           // Persist back as 'rules' (ignore joiners)
           handleConfigChange('rules', nextRows.map(r => ({ left: r.left ?? '', comparator: r.comparator, right: r.right ?? '', name: r.name ?? '' })));
-          if (diagram && selectedNode) {
+          if (diagram && selectedNodeConfig) {
             const count = Math.max(1, nextRows.length);
-            updateSwitchPorts(diagram as any, selectedNode.id, count);
+            updateSwitchPorts(diagram as any, selectedNodeConfig.id, count);
           }
         };
 
@@ -587,22 +614,23 @@ const NodeConfigSidebar: React.FC<ConfigPanelProps> = ({
 
   // General tab: node name + type-specific config
   const renderGeneralTab = useCallback(() => {
-    const settings = (selectedNode?.settings && (selectedNode.settings as any).general) || {};
+    console.log(selectedNodeConfig)
+    const settings = draftGeneral || {};
     return (
       <div className="config-tab-content">
         <div className="config-section">
           <label className="config-label">Node Name</label>
           <TextBoxComponent
-            value={selectedNode?.displayName ?? ''}
+            value={selectedNodeConfig?.displayName ?? ''}
             placeholder="Enter node name"
             change={(e: any) => handleNameChange(e.value)}
             cssClass="config-input"
           />
         </div>
-        {renderNodeSpecificFields(selectedNode!.nodeType, settings)}
+        {renderNodeSpecificFields(selectedNodeConfig!.nodeType, settings)}
       </div>
     );
-  }, [selectedNode, availableVariables, isChatOpen, formPreviewOpen, formPreviewError]);
+  }, [selectedNodeConfig?.id, draftGeneral, availableVariables, isChatOpen, formPreviewOpen, formPreviewError]);
 
   // Output tab: execution results (JSON visualizer + value peek)
   const renderOutputTab = useCallback(() => {
@@ -658,7 +686,7 @@ const NodeConfigSidebar: React.FC<ConfigPanelProps> = ({
       enableGestures={false}
       target=".editor-content"
     >
-      {!selectedNode ? (
+      {!selectedNodeConfig ? (
         // Empty state: no node selected
         <div className="config-panel-empty">
           <div className="empty-state-icon">⚙️</div>
@@ -675,18 +703,19 @@ const NodeConfigSidebar: React.FC<ConfigPanelProps> = ({
                   <img src={nodeIconSrc} draggable={false} />
                 )}
               </span>
-              <TooltipComponent content={`${selectedNode?.nodeType || 'Node'} Configuration`}>
-                <h3>{selectedNode?.nodeType || 'Node'} Configuration</h3>
+              <TooltipComponent content={`${selectedNodeConfig?.nodeType || 'Node'} Configuration`}>
+                <h3>{selectedNodeConfig?.nodeType || 'Node'} Configuration</h3>
               </TooltipComponent>
             </div>
             <div>
+              
               <ButtonComponent
                 cssClass="close-btn e-flat"
                 iconCss="e-icons e-play"
                 title='Execute Node'
                 onClick={() => {
-                  if (selectedNode && onExecuteNode) {
-                    onExecuteNode(selectedNode.id);
+                  if (selectedNodeConfig && onExecuteNode) {
+                    onExecuteNode(selectedNodeConfig.id);
                   }
                 }}
               />
@@ -712,10 +741,21 @@ const NodeConfigSidebar: React.FC<ConfigPanelProps> = ({
 
                 {/* Output tab: shown when node has been executed and produced output */}
                 {nodeOutput && (
-                  <TabItemDirective header={{ text: 'Output' }} content={renderOutputTab} />
-                )}
+                  <TabItemDirective header={{ text: 'Output' }} content={renderOutputTab} />)
+                }
               </TabItemsDirective>
             </TabComponent>
+          </div>
+
+          {/* -------- Footer: fixed at bottom with Update button -------- */}
+          <div className="config-panel-footer">
+            <ButtonComponent
+              cssClass="e-secondary update-btn"
+              onClick={commitDraft}
+              disabled={!isDirty}
+            >
+              Update
+            </ButtonComponent>
           </div>
         </>
       )}

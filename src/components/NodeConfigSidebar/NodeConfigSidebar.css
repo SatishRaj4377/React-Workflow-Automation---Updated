@@ -175,7 +175,6 @@
 }
 
 .config-row .help-icon {
-  color: var(--scrollbar-thumb);
   font-size: 1rem !important;
 }
 .config-row .help-icon:hover {
@@ -193,10 +192,27 @@
   transition: none !important;
 }
 
+.update-btn{
+  position: static;
+  width: 25%;
+  background: var(--primary-color); 
+  color: white;
+}
+.update-btn:not(:disabled):hover {
+  background: var(--accent-color);
+  color: white;
+}
+
+/* Footer fixed at bottom (outside scroll area) */
+.config-panel-footer {
+  padding: .5rem 1rem;
+  background-color: var(--background-color);
+  border-top: 1px solid var(--border-color);
+}
+
 .add-field-btn {
   padding: 0.5rem 0.8rem;
   border-radius: var(--border-radius);
-  border: none;
   display: flex;
   align-items: center;
   justify-content: center;  
@@ -206,10 +222,6 @@
   font-weight: 500;
   margin-top: .1rem;
   font-size: 1.1rem !important;
-}
-
-.add-field-btn:hover {
-  background: var(--secondary-color);
 }
 
 /* Color of the dropdown list fixed head */
@@ -302,9 +314,11 @@
   padding: 0 1rem; 
 }
 
-.filter-row { display: flex; 
+.filter-row {
+  display: flex; 
   gap: 8px; 
   align-items: center; 
+  margin: 1rem 0;
 }
 
 /* Rich text editor */

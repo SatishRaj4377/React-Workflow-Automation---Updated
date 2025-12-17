@@ -2,7 +2,8 @@ import React, { useState, useMemo, useRef, useEffect, useCallback } from 'react'
 import { ButtonComponent } from '@syncfusion/ej2-react-buttons';
 import { TooltipComponent } from '@syncfusion/ej2-react-popups';
 import { TextBoxComponent } from '@syncfusion/ej2-react-inputs';
-import { DropDownButtonComponent, MenuEventArgs } from '@syncfusion/ej2-react-splitbuttons';
+import { MenuEventArgs } from '@syncfusion/ej2-react-splitbuttons';
+import { DropDownListComponent } from '@syncfusion/ej2-react-dropdowns';
 import { ListViewComponent, SelectEventArgs } from '@syncfusion/ej2-react-lists';
 import { CheckBoxComponent, ChangeEventArgs as CheckBoxChangeEventArgs } from '@syncfusion/ej2-react-buttons';
 import WorkflowProjectService from '../../services/WorkflowProjectService';
@@ -36,7 +37,6 @@ const Home: React.FC<HomeProps> = ({
   onDeleteProject,
   onMultipleDeleteProjects,
   onBookmarkToggle,
-  onSaveProject
 }) => {
   const searchRef = useRef<TextBoxComponent>(null);
   const sidebarRef = useRef<ListViewComponent>(null);
@@ -46,7 +46,6 @@ const Home: React.FC<HomeProps> = ({
   });
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState('lastModified');
-  const [sortText, setSortText] = useState('Last Modified');
   const [activeSection, setActiveSection] = useState('dashboard');
   const [projectToDelete, setProjectToDelete] = useState<ProjectData | null>(null);
   const [projectsToDelete, setProjectsToDelete] = useState<ProjectData[]>([]);
@@ -62,14 +61,14 @@ const Home: React.FC<HomeProps> = ({
   const handleSearchCreated = () => {
     setTimeout(() => {
       if (searchRef.current) {
-        searchRef.current.addIcon('append', 'e-icons e-search search-icon');
+        searchRef.current.addIcon('prepend', 'e-icons e-search search-icon');
       }
     });
   };
 
   const handleSortSelect = (args: any) => {
-    setSortBy(args.item.id);
-    setSortText(args.item.text);
+    const value = args?.value ?? args?.item?.id ?? args?.itemData?.id;
+    if (value) setSortBy(value);
   };
 
   const handleSidebarSelect = (args: SelectEventArgs) => {
@@ -227,7 +226,6 @@ const Home: React.FC<HomeProps> = ({
     if (activeSection === 'dashboard') {
       setSearchTerm('');
       setSortBy('lastModified');
-      setSortText('Last Modified');
       setShowBookmarkedOnly(false);
       setSelectedProjects([]);
     }
@@ -375,17 +373,18 @@ const Home: React.FC<HomeProps> = ({
                     value={searchTerm}
                     input={arg => setSearchTerm(arg.value)}
                     cssClass="project-search"
+                    showClearButton={true}
                     created={handleSearchCreated}
                   />
                   {/* Sort Dropdown */}
-                  <DropDownButtonComponent
-                    items={SORT_OPTIONS}
-                    select={handleSortSelect}
-                    cssClass="sort-dropdown-btn e-secondary"
-                    popupWidth={150}
-                  >
-                    {sortText}
-                  </DropDownButtonComponent>
+                  <DropDownListComponent
+                    dataSource={SORT_OPTIONS}
+                    fields={{ text: 'text', value: 'id' }}
+                    value={sortBy}
+                    change={handleSortSelect}
+                    cssClass="sort-dropdown-list"
+                    popupWidth={140}
+                  />
 
                   {/* Bookmark filter toggle */}
                   <TooltipComponent position='TopCenter' content={showBookmarkedOnly ? 'Show All' : 'Show Bookmarked Only'}>
@@ -469,10 +468,8 @@ const Home: React.FC<HomeProps> = ({
                         <ProjectListItem
                           key={getProjectKey(project, index, 'list-')}
                           project={project}
-                          index={index}
                           isSelected={selectedProjects.includes(project.id)}
                           isBookmarked={isBookmarked(project.id)}
-                          getProjectKey={getProjectKey}
                           onOpenProject={onOpenProject}
                           onToggleSelect={handleMultiSelectToggle}
                           onBookmarkToggle={handleBookmarkToggle}

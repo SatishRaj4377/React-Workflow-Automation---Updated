@@ -32,7 +32,7 @@ interface DiagramEditorProps {
 // ============================================================================
 
 const GRAY_COLOR = '#9193a2ff';
-const HOVER_COLOR = 'var(--primary-color)';
+const HOVER_COLOR = 'var(--accent-color)';
 const CONNECTOR_STROKEDASH_ARR = '5 3';
 
 // ============================================================================
@@ -84,37 +84,16 @@ const DiagramEditor: React.FC<DiagramEditorProps> = ({
   const [isWorkflowLocked, setIsWorkflowLocked] = useState(false);
 
   // Timeout refs for cleanup
-  const overviewTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const zoomTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const overviewTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const zoomTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [showLockHint, setShowLockHint] = useState(false);
 
   // ========================================================================
   // Diagram Configuration
   // ========================================================================
 
-  // Get current diagram settings for UI interactions
-  const firstSelectedNode = getFirstSelectedNode(diagramRef.current);
-  const selectedConnector = (diagramRef.current as any)?.selectedItems?.connectors?.[0];
-
-  // Initialize user handles for node and connector operations
-  let userHandles: UserHandleModel[] = buildUserHandles();
-
-  // Filter handles based on current selection
-  if (selectedConnector && isAgentBottomToToolConnector(selectedConnector, diagramRef.current)) {
-    userHandles = userHandles.filter((h) => h.name !== 'insertNodeOnConnector');
-  }
-
-  if (firstSelectedNode && (diagramRef.current as any).selectedItems.nodes.length === 1) {
-    const portBasedUserHandles = generatePortBasedUserHandles(firstSelectedNode, diagramRef.current);
-    userHandles.push(...portBasedUserHandles);
-    (diagramRef.current as any).selectedItems.userHandles = userHandles;
-    (diagramRef.current as any).dataBind();
-  } else if (selectedConnector) {
-    const length = computeConnectorLength(selectedConnector);
-    userHandles = adjustUserHandlesForConnectorLength(userHandles, length);
-    (diagramRef.current as any).selectedItems.userHandles = userHandles;
-    (diagramRef.current as any).dataBind();
-  }
+  // Base user handles; specific selection-based adjustments are applied in an effect
+  const baseUserHandles: UserHandleModel[] = buildUserHandles();
 
   // Context menu configuration
   const contextMenuSettings = {
@@ -207,6 +186,31 @@ const DiagramEditor: React.FC<DiagramEditorProps> = ({
   // ========================================================================
   // User Handle Events
   // ========================================================================
+
+  // Recompute and apply user handles based on current selection and diagram state
+  const refreshSelectedUserHandles = () => {
+    const diagram = diagramRef.current;
+    if (!diagram) return;
+
+    let handles: UserHandleModel[] = buildUserHandles();
+    const firstNode = getFirstSelectedNode(diagram);
+    const selConnector = (diagram as any)?.selectedItems?.connectors?.[0];
+
+    if (selConnector && isAgentBottomToToolConnector(selConnector, diagram)) {
+      handles = handles.filter((h) => h.name !== 'insertNodeOnConnector');
+    }
+
+    if (firstNode && (diagram as any).selectedItems.nodes.length === 1) {
+      const portHandles = generatePortBasedUserHandles(firstNode, diagram);
+      handles.push(...portHandles);
+    } else if (selConnector) {
+      const length = computeConnectorLength(selConnector);
+      handles = adjustUserHandlesForConnectorLength(handles, length);
+    }
+
+    (diagram as any).selectedItems.userHandles = handles;
+    (diagram as any).dataBind();
+  };
 
   // Handle user interactions with custom handles (add node, delete connector, etc.)
   const handleUserHandleMouseDown = (args: UserHandleEventsArgs) => {
@@ -330,6 +334,10 @@ const DiagramEditor: React.FC<DiagramEditorProps> = ({
           (diagramRef.current as any)?.remove(element);
         });
       }
+
+      // After any addition, refresh user handles to reflect new connection state
+      // (e.g., hide port-based add handles once a port becomes connected)
+      setTimeout(() => refreshSelectedUserHandles());
     }
   };
 
@@ -381,6 +389,8 @@ const DiagramEditor: React.FC<DiagramEditorProps> = ({
     // Remove connector if still disconnected after draw complete
     if (args.state === 'Completed') {
       removeDisconnectedConnectorIfInvalid(connector, diagramRef);
+      // Refresh handles since connection state may have changed after draw completes
+      setTimeout(() => refreshSelectedUserHandles());
     }
   };
 
@@ -447,6 +457,7 @@ const DiagramEditor: React.FC<DiagramEditorProps> = ({
     if (args?.newValue && args.newValue.length > 0) {
       const selectedIds = args.newValue.map((item: any) => item.id);
       setSelectedNodeIds(selectedIds);
+
       updateNodeSelection(selectedIds);
       updateResizeHandleVisibility(selectedIds, diagramRef);
     } else {
@@ -622,8 +633,8 @@ const DiagramEditor: React.FC<DiagramEditorProps> = ({
   // Cleanup timeouts on unmount
   useEffect(() => {
     return () => {
-      if (overviewTimeoutRef.current) clearTimeout(overviewTimeoutRef.current);
-      if (zoomTimeoutRef.current) clearTimeout(zoomTimeoutRef.current);
+      if (overviewTimeoutRef.current) clearTimeout(overviewTimeoutRef.current as any);
+      if (zoomTimeoutRef.current) clearTimeout(zoomTimeoutRef.current as any);
     };
   }, []);
 
@@ -634,6 +645,11 @@ const DiagramEditor: React.FC<DiagramEditorProps> = ({
         updateNodeSelection(selectedNodeIds);
       }, 100);
     }
+  }, [selectedNodeIds]);
+
+  // Apply selection-based user handle updates outside of render
+  useEffect(() => {
+    refreshSelectedUserHandles();
   }, [selectedNodeIds]);
 
   // Handle space key release for pan mode exit
@@ -679,7 +695,7 @@ const DiagramEditor: React.FC<DiagramEditorProps> = ({
         }
       } catch {}
     }
-  }, [diagramRef.current, project?.workflowData?.diagramString]);
+  }, [project?.workflowData?.diagramString]);
 
   // Update diagram when settings change
   useEffect(() => {
@@ -719,7 +735,7 @@ const DiagramEditor: React.FC<DiagramEditorProps> = ({
     if (diagramRef.current && onDiagramRef) {
       onDiagramRef(diagramRef.current);
     }
-  }, [diagramRef.current, onDiagramRef]);
+  }, [onDiagramRef]);
 
   // ========================================================================
   // Render
@@ -750,7 +766,6 @@ const DiagramEditor: React.FC<DiagramEditorProps> = ({
           onClick={() => {
             setIsWorkflowLocked(false);
             applyWorkflowLock(false);
-            try { if (project?.workflowData) project.workflowData.locked = false; } catch {}
           }}
           aria-label="Unlock diagram"
         >
@@ -786,7 +801,7 @@ const DiagramEditor: React.FC<DiagramEditorProps> = ({
         doubleClick={handleDoubleClick}
         selectionChange={handleSelectionChange}
         commandManager={getCommandManagerSettings()}
-        selectedItems={{ userHandles: userHandles }}
+        selectedItems={{ userHandles: baseUserHandles }}
         onUserHandleMouseDown={handleUserHandleMouseDown}
         historyChange={onDiagramChange}
         loaded={handleDiagramLoaded}

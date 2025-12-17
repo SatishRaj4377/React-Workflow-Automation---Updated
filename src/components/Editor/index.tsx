@@ -56,7 +56,7 @@ const Editor: React.FC<EditorProps> = ({project, onSaveProject, onBackToHome, })
   // Selected node ID for editing in config panel
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
   // Selected node configuration object
-  const [selectedNode, setSelectedNode] = useState<NodeConfig | null>(null);
+  const [selectedNodeConfig, setSelectedNodeConfig] = useState<NodeConfig | null>(null);
 
   // ========================================================================
   // State Management - Execution & Chat
@@ -291,12 +291,10 @@ const Editor: React.FC<EditorProps> = ({project, onSaveProject, onBackToHome, })
     }
   }, [diagramRef]);
 
-  // Ensure the global node toolbar handler is available before any templates mount
-  setGlobalNodeToolbarHandler(handleNodeToolbarAction);
 
   // Update node configuration and refresh diagram
   const handleNodeConfigChange = (nodeId: string, config: NodeConfig) => {
-    setSelectedNode(config);
+    setSelectedNodeConfig(config);
     
     // Update the node's addInfo and node's template
     if (diagramRef) {
@@ -470,7 +468,7 @@ const Editor: React.FC<EditorProps> = ({project, onSaveProject, onBackToHome, })
   // ========================================================================
 
   // Execute full workflow and stream chat messages
-  const handleExecuteWorkflow = async () => {
+  const handleExecuteWorkflow = React.useCallback(async () => {
     if (!workflowExecutionRef.current) {
       showErrorToast('Execution Failed', 'Workflow service not initialized');
       return;
@@ -515,7 +513,7 @@ const Editor: React.FC<EditorProps> = ({project, onSaveProject, onBackToHome, })
         window.removeEventListener('wf:chat:assistant-response', markAssistantResponded as EventListener);
       }
     }
-  };
+  }, []);
 
   // Cancel current execution and notify chat listeners
   const handleCancelExecution = () => {
@@ -571,16 +569,16 @@ const Editor: React.FC<EditorProps> = ({project, onSaveProject, onBackToHome, })
       // Get node from diagram
       const node = diagramRef.getObject(selectedNodeId);
       if (node && node.addInfo && node.addInfo.nodeConfig) {
-        setSelectedNode(node.addInfo.nodeConfig);
+        setSelectedNodeConfig(node.addInfo.nodeConfig);
         setNodePaletteSidebarOpen(false);
         setNodeConfigPanelOpen(true);
       } else {
         setNodeConfigPanelOpen(false);
-        setSelectedNode(null);
+        setSelectedNodeConfig(null);
       }
     } else {
       setNodeConfigPanelOpen(false);
-      setSelectedNode(null);
+      setSelectedNodeConfig(null);
     }
   }, [selectedNodeId, diagramRef]);
 
@@ -770,7 +768,7 @@ const Editor: React.FC<EditorProps> = ({project, onSaveProject, onBackToHome, })
     return () => {
       window.removeEventListener('wf:chat:prompt', handleChatPromptEvent as EventListener);
     };
-  }, [isExecuting, diagramHasChatTrigger, handleExecuteWorkflow]);
+  }, [isExecuting, diagramRef, handleExecuteWorkflow]);
 
   // Listen for trigger waiting/resume/clear events for banner
   useEffect(() => {
@@ -839,7 +837,7 @@ const Editor: React.FC<EditorProps> = ({project, onSaveProject, onBackToHome, })
           isOpen={nodeConfigPanelOpen}
           onClose={() => setNodeConfigPanelOpen(false)}
           onExecuteNode={(nodeId) => handleSingleNodeExecute(nodeId)}
-          selectedNode={selectedNode}
+          selectedNodeConfig={selectedNodeConfig}
           onNodeConfigChange={handleNodeConfigChange}
           diagram={diagramRef}
           executionContext={executionContext}

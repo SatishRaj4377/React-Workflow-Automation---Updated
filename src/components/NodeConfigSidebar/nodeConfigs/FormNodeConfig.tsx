@@ -94,7 +94,7 @@ const FormNodeConfig: React.FC<FormNodeConfigProps> = ({ title, description, val
           const isDropdown = row.type === 'dropdown';
           return (
             <React.Fragment key={i}>
-              <div style={{ background: 'var(--border-color)', padding: '.6rem .6rem', borderRadius: '12px', display: 'grid', gridTemplateColumns: '44px 1fr', columnGap: 12, rowGap: 10 }}>
+              <div style={{ background: 'var(--condition-field-bg)', padding: '.6rem .6rem', borderRadius: '6px', display: 'grid', gridTemplateColumns: '44px 1fr', columnGap: 12, rowGap: 10 }}>
                 {/* Left gutter with delete button */}
                 <div>
                   <ButtonComponent
@@ -189,7 +189,7 @@ const FormNodeConfig: React.FC<FormNodeConfigProps> = ({ title, description, val
           );
         })}
 
-        <ButtonComponent className="add-field-btn e-primary" iconCss="e-icons e-plus" onClick={addRow}>
+        <ButtonComponent className="add-field-btn e-secondary" iconCss="e-icons e-plus" onClick={addRow}>
           Add Field
         </ButtonComponent>
       </div>
