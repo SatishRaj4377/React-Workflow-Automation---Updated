@@ -21,7 +21,7 @@ body, .e-control, .e-card{
   flex-direction: column;
 }
 
-/* Custom Theme Variables - Professional Blue Palette */
+/* Custom Theme Variables */
 :root {
   --primary-color: #2563eb;
   --secondary-color: #1d4ed8;
@@ -52,7 +52,6 @@ body, .e-control, .e-card{
   --bookmark-icon-color: #F39C12;
   --condition-field-bg: #e5e7eb;
 
-  /* Node Colors */
   --node-selector-outline: #ccd5e2ad;
   --node-background: #ffffff;
   --node-selector-background: #effdff;
@@ -78,7 +77,6 @@ body, .e-control, .e-card{
   --grid-line-color: #d3d5d8; 
   --grid-dotted-color: #a6b4caff; 
   
-  /* Toast Colors - Light Theme */
   --toast-success-bg: #ecfdf5;
   --toast-success-border: #10b981;
   --toast-success-text: #065f46;
@@ -105,7 +103,7 @@ body, .e-control, .e-card{
 
 }
 
-/* Dark theme - Professional Blue Dark Palette */
+/* Dark theme */
 [data-theme="dark"] {
   --primary-color: #286fe4;
   --secondary-color: #3b82f6;
@@ -134,7 +132,6 @@ body, .e-control, .e-card{
   --form-body-bg: #0e1520;
   --condition-field-bg: #2d3a4d;
 
-  /* Node Colors */
   --node-selector-outline: #93a9ff3d;
   --node-background: #0e141d;
   --node-selector-background: #062b40;
@@ -151,7 +148,6 @@ body, .e-control, .e-card{
   --grid-line-color: #475569;
   --grid-dotted-color: #475569;
   
-  /* Toast Colors - Dark Theme */
   --toast-success-bg: #064e3b;
   --toast-success-border: #10b981;
   --toast-success-text: #d1fae5;

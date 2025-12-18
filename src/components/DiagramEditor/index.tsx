@@ -1,12 +1,13 @@
 import React, { useRef, useEffect, useState, useMemo } from 'react';
 import { DiagramComponent, SnapSettingsModel, OverviewComponent, GridlinesModel, Inject, ConnectorModel, NodeModel, DiagramTools, UndoRedo, DataBinding, DiagramContextMenu, Keys, KeyModifiers, CommandManagerModel, UserHandleModel, UserHandleEventsArgs, Snapping, DiagramConstraints, DiagramModel, Connector, ComplexHierarchicalTree, LayoutModel, IScrollChangeEventArgs, IMouseEventArgs, ICollectionChangeEventArgs, IElementDrawEventArgs, IDoubleClickEventArgs, ISelectionChangeEventArgs } from '@syncfusion/ej2-react-diagrams';
 import { DiagramSettings, NodeConfig } from '../../types';
-import { getConnectorCornerRadius, getConnectorType, getFirstSelectedNode, getGridColor, getGridType, getNodeConfig,  getSnapConstraints, initializeNodeDimensions, isNodeOutOfViewport, isStickyNote, prepareUserHandlePortData, updateNodeConstraints, computeConnectorLength, adjustUserHandlesForConnectorLength, attachNodeTemplateEvents, buildUserHandles, generatePortBasedUserHandles, updateNodePosition, updateNodeTemplates, updateNodeSelection, updateResizeHandleVisibility } from '../../utilities';
+import { getConnectorCornerRadius, getConnectorType, getFirstSelectedNode, getGridColor, getGridType, getNodeConfig,  getSnapConstraints, initializeNodeDimensions, isNodeOutOfViewport, isStickyNote, prepareUserHandlePortData, updateNodeConstraints, attachNodeTemplateEvents, buildUserHandles, updateNodePosition, updateNodeTemplates, updateNodeSelection, updateResizeHandleVisibility, refreshSelectedNodesUserHandles } from '../../utilities';
 import { finalizeConnectorStyle, applyDisconnectedConnectorStyle, removeDisconnectedConnectorIfInvalid, applyConnectorHoverStyle, resetConnectorToDefaultStyle } from '../../utilities/connectorUtils';
 import { handleStickyNoteEditMode, initializeStickyNote } from '../../utilities/stickyNoteUtils';
 import { filterContextMenuItems, getAvailableContextMenuIds } from '../../utilities/contextMenuUtils';
 import { IconRegistry } from '../../assets/icons';
 import { ButtonComponent } from '@syncfusion/ej2-react-buttons';
+import { isEditingTextElement } from '../../utilities/editorUtils';
 import './DiagramEditor.css';
 
 interface DiagramEditorProps {
@@ -178,27 +179,6 @@ const DiagramEditor: React.FC<DiagramEditorProps> = ({
   // User Handle Events
   // ========================================================================
 
-  // Recompute and apply user handles based on current selection and diagram state
-  const refreshSelectedUserHandles = () => {
-    const diagram = diagramRef.current;
-    if (!diagram) return;
-
-    let handles: UserHandleModel[] = buildUserHandles();
-    const firstNode = getFirstSelectedNode(diagram);
-    const selectedConnector = diagram.selectedItems?.connectors?.[0];
-
-    if (firstNode && diagram.selectedItems.nodes.length === 1) {
-      const portHandles = generatePortBasedUserHandles(firstNode, diagram);
-      handles.push(...portHandles);
-    } else if (selectedConnector) {
-      const length = computeConnectorLength(selectedConnector);
-      handles = adjustUserHandlesForConnectorLength(handles, length);
-    }
-
-    diagram.selectedItems.userHandles = handles;
-    diagram.dataBind();
-  };
-
   // Handle user interactions with custom handles (add node, delete connector, etc.)
   const handleUserHandleMouseDown = (args: UserHandleEventsArgs) => {
     const handleName = (args.element as UserHandleModel)?.name || '';
@@ -322,7 +302,7 @@ const DiagramEditor: React.FC<DiagramEditorProps> = ({
 
       // After any addition, refresh user handles to reflect new connection state
       // (e.g., hide port-based add handles once a port becomes connected)
-      setTimeout(() => refreshSelectedUserHandles());
+      setTimeout(() => refreshSelectedNodesUserHandles(diagramRef.current!));
     }
   };
 
@@ -375,7 +355,7 @@ const DiagramEditor: React.FC<DiagramEditorProps> = ({
     if ((args as any).state === 'Completed') {
       removeDisconnectedConnectorIfInvalid(connector, diagramRef);
       // Refresh handles since connection state may have changed after draw completes
-      setTimeout(() => refreshSelectedUserHandles());
+      setTimeout(() => refreshSelectedNodesUserHandles(diagramRef.current!));
     }
   };
 
@@ -601,12 +581,61 @@ const DiagramEditor: React.FC<DiagramEditorProps> = ({
             keyModifiers: KeyModifiers.None,
           },
         },
+        // Block group action (Ctrl+G)
         {
           name: 'group',
           canExecute: () => false, // Disable grouping
           execute: () => {},
           gesture: {
             key: Keys.G,
+            keyModifiers: KeyModifiers.Control,
+          },
+        },
+        // Block copy (Ctrl+C)
+        {
+          name: 'blockCopy',
+          canExecute: () => true,
+          execute: () => {
+            // intentionally no-op to override default copy
+          },
+          gesture: {
+            key: Keys.C,
+            keyModifiers: KeyModifiers.Control,
+          },
+        },
+        // Block paste (Ctrl+V)
+        {
+          name: 'blockPaste',
+          canExecute: () => true,
+          execute: () => {
+            // intentionally no-op to override default paste
+          },
+          gesture: {
+            key: Keys.V,
+            keyModifiers: KeyModifiers.Control,
+          },
+        },
+        // Block cut (Ctrl+X)
+        {
+          name: 'blockCut',
+          canExecute: () => true,
+          execute: () => {
+            // intentionally no-op to override default cut
+          },
+          gesture: {
+            key: Keys.X,
+            keyModifiers: KeyModifiers.Control,
+          },
+        },
+        // Block duplicate (Ctrl+D)
+        {
+          name: 'blockDuplicate',
+          canExecute: () => true,
+          execute: () => {
+            // intentionally no-op to override default duplicate
+          },
+          gesture: {
+            key: Keys.D,
             keyModifiers: KeyModifiers.Control,
           },
         },
@@ -637,11 +666,25 @@ const DiagramEditor: React.FC<DiagramEditorProps> = ({
 
   // Apply selection-based user handle updates outside of render
   useEffect(() => {
-    refreshSelectedUserHandles();
+    refreshSelectedNodesUserHandles(diagramRef.current!);
   }, [selectedNodeIds]);
 
-  // Handle space key release for pan mode exit
+  // Handle space key press/release for robust pan toggle
   useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.code === 'Space' && !isPanning) {
+        // Ignore when typing in inputs/editors (reuse shared utility)
+        if (isEditingTextElement(document.activeElement)) return;
+
+        event.preventDefault();
+        if (diagramRef.current) {
+          setPreviousDiagramTool(diagramRef.current.tool);
+          diagramRef.current.tool = DiagramTools.ZoomPan;
+          setIsPanning(true);
+        }
+      }
+    };
+
     const handleKeyUp = (event: KeyboardEvent) => {
       if (event.code === 'Space' && isPanning) {
         event.preventDefault();
@@ -652,8 +695,21 @@ const DiagramEditor: React.FC<DiagramEditorProps> = ({
       }
     };
 
+    const handleWindowBlur = () => {
+      if (isPanning && diagramRef.current) {
+        diagramRef.current.tool = previousDiagramTool;
+        setIsPanning(false);
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
     document.addEventListener('keyup', handleKeyUp);
-    return () => document.removeEventListener('keyup', handleKeyUp);
+    window.addEventListener('blur', handleWindowBlur);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      document.removeEventListener('keyup', handleKeyUp);
+      window.removeEventListener('blur', handleWindowBlur);
+    };
   }, [isPanning, previousDiagramTool]);
 
   // Load saved diagram on mount

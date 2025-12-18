@@ -137,7 +137,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
         const shortcutMap: any = {
           'Add Nodes': 'Open Node Palette <kbd>Tab</kbd>',
           'Add Sticky Note': 'Add Sticky Note <kbd>Shift</kbd> <kbd>S</kbd>',
-          'Pan': 'Pan <kbd>Space</kbd>',
+          'Pan': 'Pan <kbd>Spacebar</kbd> + Mouse drag to pan',
           'Auto Align Nodes': 'Auto Align Nodes <kbd>Shift</kbd> <kbd>A</kbd>',
           'Zoom In': 'Zoom In <kbd>Ctrl</kbd> <kbd>+</kbd>',
           'Zoom Out': 'Zoom Out <kbd>Ctrl</kbd> <kbd>-</kbd>',

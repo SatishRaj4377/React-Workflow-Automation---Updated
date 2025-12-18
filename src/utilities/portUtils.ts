@@ -3,7 +3,7 @@ import { NodeCategories, NodeConfig, NodePortDirection, NodeType, PortConfigurat
 import { PORT_POSITIONS } from "../constants";
 import { NODE_REGISTRY } from "../constants/nodeRegistry";
 import { refreshNodeTemplate } from "./nodeTemplateUtils";
-import { getNodeConfig } from "./nodeUtils";
+import { refreshSelectedNodesUserHandles } from "./userhandleUtils";
 
 // Helper to find first IN/OUT port id on a node
 export const findFirstPortId = (node: NodeModel, wantOut: boolean): string => {
@@ -287,4 +287,7 @@ export function updateSwitchPorts(
 
   // refresh the node template (handler will come from global if Editor provided it)
   refreshNodeTemplate(diagram as any, nodeId);
+
+  // ensure user handles refresh immediately
+  refreshSelectedNodesUserHandles(diagram as any);
 }

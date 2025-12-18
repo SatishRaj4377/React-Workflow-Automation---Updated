@@ -1,6 +1,7 @@
-import { NodeModel, UserHandleModel, DiagramComponent } from "@syncfusion/ej2-react-diagrams";
+import { NodeModel, UserHandleModel, DiagramComponent, ConnectorModel } from "@syncfusion/ej2-react-diagrams";
 import { NodePortDirection } from "../types";
 import { getPortSide, getPortOffset, shouldShowUserHandleForPort } from "./portUtils";
+import { computeConnectorLength, adjustUserHandlesForConnectorLength, getFirstSelectedNode } from "./index";
 
 // Color constants for user handles
 const GRAY_COLOR = '#9193a2ff';
@@ -85,3 +86,24 @@ export const generatePortBasedUserHandles = (
     tooltip: { content: 'Add Node', position: 'RightCenter' },
   }));
 };
+
+// Recompute and apply user handles based on current selection
+export function refreshSelectedNodesUserHandles(diagram?: DiagramComponent | null) {
+  if (!diagram) return;
+
+  let handles: UserHandleModel[] = buildUserHandles();
+
+  const firstNode = getFirstSelectedNode(diagram);
+  const selectedConnector: ConnectorModel | undefined = diagram.selectedItems?.connectors?.[0] as any;
+
+  if (firstNode && diagram.selectedItems.nodes.length === 1) {
+    const portHandles = generatePortBasedUserHandles(firstNode, diagram);
+    handles.push(...portHandles);
+  } else if (selectedConnector) {
+    const length = computeConnectorLength(selectedConnector as any);
+    handles = adjustUserHandlesForConnectorLength(handles, length);
+  }
+
+  diagram.selectedItems.userHandles = handles;
+  (diagram as any).dataBind?.();
+}

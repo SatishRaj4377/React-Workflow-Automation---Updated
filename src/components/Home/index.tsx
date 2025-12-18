@@ -427,7 +427,6 @@ const Home: React.FC<HomeProps> = ({
                       cssClass={`view-toggle-btn ${viewMode === 'list' ? 'active' : ''}`}
                       onClick={() => setViewMode('list')}
                       iconCss="e-icons e-list-unordered"
-                      title="List View"
                     />
                   </TooltipComponent>
                 </div>
