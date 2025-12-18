@@ -93,7 +93,6 @@ const NodeConfigSidebar: React.FC<ConfigPanelProps> = ({
   // Derived State & Icons
   // ========================================================================
   const nodeIconSrc = selectedNodeConfig?.icon ? IconRegistry[selectedNodeConfig.icon] : null; // Node type icon
-  const MessageIcon = IconRegistry['Message']; // Chat trigger icon
 
   // ========================================================================
   // Effects - Data Fetching & Sync
@@ -221,7 +220,7 @@ const NodeConfigSidebar: React.FC<ConfigPanelProps> = ({
     return (
       <>
         <div className="config-section" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 8 }}>
-          <ButtonComponent cssClass="e-flat flat-btn" iconCss="e-icons e-eye" onClick={onPreview}>
+          <ButtonComponent cssClass="e-secondary" iconCss="e-icons e-eye" onClick={onPreview}>
             Show Form Preview
           </ButtonComponent>
           {formPreviewError && <div style={{ color: 'var(--danger-color)' }}>{formPreviewError}</div>}
@@ -281,14 +280,8 @@ const NodeConfigSidebar: React.FC<ConfigPanelProps> = ({
       <>
         {/* Chat visibility toggle */}
         <div className="config-section">
-          <ButtonComponent
-            onClick={() => setChatOpen(prev => !prev)}
-            className='show-chat-button e-primary'
-          >
-            <MessageIcon className='msg-svg-icon' />
-            <span className='show-chat-btn-text'>
-              {isChatOpen ? 'Hide Chat' : ' Open Chat'}
-            </span>
+          <ButtonComponent style={{width: '8rem'}} cssClass="e-secondary" iconCss={`e-icons e-eye${isChatOpen ? '-slash' : ''}`} onClick={() => setChatOpen(prev => !prev)}>
+            {isChatOpen ? 'Hide Chat' : ' Show Chat'}
           </ButtonComponent>
         </div>
 
@@ -621,7 +614,7 @@ const NodeConfigSidebar: React.FC<ConfigPanelProps> = ({
         <div className="config-section">
           <label className="config-label">Node Name</label>
           <TextBoxComponent
-            value={selectedNodeConfig?.displayName ?? ''}
+            value={draftName ?? ''}
             placeholder="Enter node name"
             change={(e: any) => handleNameChange(e.value)}
             cssClass="config-input"

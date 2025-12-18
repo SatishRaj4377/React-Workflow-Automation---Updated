@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useMemo } from 'react';
 import ReactDOMServer from 'react-dom/server';
 import { createPortal } from 'react-dom';
 import { Draggable, getRandomId } from '@syncfusion/ej2-base';
@@ -8,13 +8,27 @@ import { ensurePortalRoot } from '../../utilities/variablePickerUtils';
 import { IconRegistry } from '../../assets/icons';
 import './ChatPopup.css';
 
+interface UpdateBannerDetail {
+  text?: string;
+}
+
+interface AssistantResponseDetail {
+  text?: string;
+  triggeredFrom?: string;
+}
+
+// Event args contract expected from AIAssistViewComponent when user submits a prompt
+interface PromptRequestArgs {
+  prompt?: string;
+}
+
 // Props type definition for ChatPopup component
- type ChatPopupProps = {
-   open: boolean;
-   onClose: () => void;
-   promptSuggestions?: string[];
-   bannerTemplateText?: string;
- };
+type ChatPopupProps = {
+  open: boolean;
+  onClose: () => void;
+  promptSuggestions?: string[];
+  bannerTemplateText?: string;
+};
 
 // ChatPopup component for AI assistant interaction
 export const ChatPopup: React.FC<ChatPopupProps> = ({
@@ -25,7 +39,8 @@ export const ChatPopup: React.FC<ChatPopupProps> = ({
 }) => {
   // DOM references
   const popupRef = useRef<HTMLDivElement>(null);
-  const popupHeightRef = useRef('0px');
+  // Stores last known expanded height so we can restore it after minimizing
+  const popupHeightRef = useRef<string>('0px');
   const dragRef = useRef<Draggable | null>(null);
   const aiViewRef = useRef<AIAssistViewComponent>(null);
 
@@ -52,31 +67,33 @@ export const ChatPopup: React.FC<ChatPopupProps> = ({
 
   // Minimize/maximize helpers to keep state and UI in sync
   const minimize = () => {
-    const el = popupRef.current;
-    if (!el) return;
+    const popupElement = popupRef.current;
+    if (!popupElement) return;
     // Save current height before collapsing
-    if (el.style.height !== '0px' && el.style.height) {
-      popupHeightRef.current = el.style.height;
+    if (popupElement.style.height !== '0px' && popupElement.style.height) {
+      popupHeightRef.current = popupElement.style.height;
     } else if (!popupHeightRef.current) {
-      popupHeightRef.current = `${el.getBoundingClientRect().height || 420}px`;
+      popupHeightRef.current = `${popupElement.getBoundingClientRect().height || 420}px`;
     }
-    el.style.height = '0px';
+    popupElement.style.height = '0px';
     setIsMinimized(true);
   };
 
   const maximize = () => {
-    const el = popupRef.current;
-    if (!el) return;
-    const target = popupHeightRef.current && popupHeightRef.current !== '0px' ? popupHeightRef.current : `${Math.max(420, el.getBoundingClientRect().height || 420)}px`;
-    el.style.height = target;
+    const popupElement = popupRef.current;
+    if (!popupElement) return;
+    const target = popupHeightRef.current && popupHeightRef.current !== '0px'
+      ? popupHeightRef.current
+      : `${Math.max(420, popupElement.getBoundingClientRect().height || 420)}px`;
+    popupElement.style.height = target;
     setIsMinimized(false);
   };
 
   // Initialize stored height on open
   useEffect(() => {
     if (open && popupRef.current) {
-      const h = popupRef.current.style.height || `${popupRef.current.getBoundingClientRect().height || 420}px`;
-      popupHeightRef.current = h;
+      const storedHeight = popupRef.current.style.height || `${popupRef.current.getBoundingClientRect().height || 420}px`;
+      popupHeightRef.current = storedHeight;
     }
   }, [open]);
 
@@ -91,9 +108,10 @@ export const ChatPopup: React.FC<ChatPopupProps> = ({
   };
 
   // Handle user input and dispatch to workflow execution
-  const handleUserInput = (args: any) => {
+  const handleUserInput = (args: PromptRequestArgs) => {
     const text = (args?.prompt || '').trim();
     if (text.length > 0 && typeof window !== 'undefined') {
+      // Event fired by the chat when the user submits a prompt
       window.dispatchEvent(new CustomEvent('wf:chat:prompt', {
         detail: { text, at: new Date().toISOString() }
       }));
@@ -103,61 +121,83 @@ export const ChatPopup: React.FC<ChatPopupProps> = ({
   };
 
   // Compute banner template once from current text or default
-  const bannerTemplate = renderBannerHtml(customBannerText ?? bannerTemplateText);
+  // Only regenerate the server-rendered banner markup when input text changes
+  const bannerTemplate = useMemo(
+    () => renderBannerHtml(customBannerText ?? bannerTemplateText),
+    [customBannerText, bannerTemplateText]
+  );
 
   // Initialize draggable functionality for chat popup
   useEffect(() => {
     if (!open || !popupRef.current) return;
 
-    const el = popupRef.current;
-    dragRef.current = new Draggable(el, {
+    const popupElement = popupRef.current;
+    dragRef.current = new Draggable(popupElement, {
       clone: false,
       handle: '.chat-popup-header',
       dragArea: '.editor-container'
     });
 
     return () => {
-      (dragRef.current as any)?.destroy?.();
+      // Clean up draggable instance when popup is closed/unmounted
+      dragRef.current?.destroy();
       dragRef.current = null;
     };
   }, [open]);
 
   // Listen for custom banner updates coming from Chat node configuration panel
   useEffect(() => {
-    const onUpdateBanner = (e: Event) => {
-      const ce = e as CustomEvent<{ text?: string }>;
-      const txt = (ce.detail?.text ?? '').trim();
-      setCustomBannerText(txt || null);
+    // Listen for banner text updates sent from the Chat node configuration panel
+    const onUpdateBanner = (event: Event) => {
+      const customEvent = event as CustomEvent<UpdateBannerDetail>;
+      const updatedText = (customEvent.detail?.text ?? '').trim();
+      setCustomBannerText(updatedText || null);
     };
-    window.addEventListener('wf:chat:update-banner', onUpdateBanner as EventListener);
-    return () => window.removeEventListener('wf:chat:update-banner', onUpdateBanner as EventListener);
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('wf:chat:update-banner', onUpdateBanner as EventListener);
+    }
+
+    return () => {
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('wf:chat:update-banner', onUpdateBanner as EventListener);
+      }
+    };
   }, []);
 
   // Listen for assistant responses from workflow execution
   useEffect(() => {
-    const onAssistantReply = (e: Event) => {
-      const ce = e as CustomEvent<{ text?: string; triggeredFrom?: string }>;
-      const reply = (ce.detail?.text || '').trim();
-      const triggeredFrom = (ce.detail?.triggeredFrom || '').trim();
+    // Listen for assistant responses published by the workflow runtime and
+    // push them into the Syncfusion AIAssistView. Also auto-expand the popup.
+    const onAssistantReply = (event: Event) => {
+      const customEvent = event as CustomEvent<AssistantResponseDetail>;
+      const assistantReplyText = (customEvent.detail?.text || '').trim();
+      const triggerSource = (customEvent.detail?.triggeredFrom || '').trim();
 
-      if (!reply) return;
+      if (!assistantReplyText) return;
 
-      // Auto-maximize when a response arrives
+      // Auto-maximize when a response arrives so the user can read it
       maximize();
 
-      if (triggeredFrom) {
+      if (triggerSource) {
         aiViewRef.current?.addPromptResponse({
-          prompt: `${triggeredFrom}${getRandomId()}`,
-          response: reply
+          prompt: `${triggerSource}${getRandomId()}`,
+          response: assistantReplyText
         });
       } else {
-        aiViewRef.current?.addPromptResponse(reply);
+        aiViewRef.current?.addPromptResponse(assistantReplyText);
       }
     };
 
-    window.addEventListener('wf:chat:assistant-response', onAssistantReply as EventListener);
+    if (typeof window !== 'undefined') {
+      window.addEventListener('wf:chat:assistant-response', onAssistantReply as EventListener);
+    }
 
-    return () => window.removeEventListener('wf:chat:assistant-response', onAssistantReply as EventListener);
+    return () => {
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('wf:chat:assistant-response', onAssistantReply as EventListener);
+      }
+    };
   }, []);
 
   // Hide popup when closed

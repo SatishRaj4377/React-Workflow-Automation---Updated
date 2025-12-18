@@ -3,7 +3,7 @@ import { NodeCategories, NodeConfig, NodePortDirection, NodeType, PortConfigurat
 import { PORT_POSITIONS } from "../constants";
 import { NODE_REGISTRY } from "../constants/nodeRegistry";
 import { refreshNodeTemplate } from "./nodeTemplateUtils";
-import { getNodeConfig, isAiAgentNode } from "./nodeUtils";
+import { getNodeConfig } from "./nodeUtils";
 
 // Helper to find first IN/OUT port id on a node
 export const findFirstPortId = (node: NodeModel, wantOut: boolean): string => {
@@ -37,23 +37,17 @@ export const createPort = (
 // Build concrete ports from a declarative PortConfiguration
 function buildPortsFromConfig(config: PortConfiguration): PortModel[] {
   const ports: PortModel[] = [];
-  if (config.topPort) ports.push(createPort("top-port", PORT_POSITIONS.TOP, "Circle", 20, PortConstraints.InConnect));
   if (config.rightPort) ports.push(createPort("right-port", PORT_POSITIONS.RIGHT, "Circle", 20, PortConstraints.OutConnect | PortConstraints.Draw));
   if (config.rightTopPort) ports.push(createPort("right-top-port", PORT_POSITIONS.RIGHT_TOP, "Circle", 20, PortConstraints.OutConnect | PortConstraints.Draw));
   if (config.rightBottomPort) ports.push(createPort("right-bottom-port", PORT_POSITIONS.RIGHT_BOTTOM, "Circle", 20, PortConstraints.OutConnect | PortConstraints.Draw));
-  // if bottomleft port is true, then ports are for ai agent node, so we will use the use the AI agent left port position, otherwise use the default left port position.
-  if (config.leftPort) ports.push(createPort("left-port", config.bottomLeftPort ? PORT_POSITIONS.AI_AGENT_LEFT : PORT_POSITIONS.LEFT, "Circle", 20, PortConstraints.InConnect));
-  if (config.bottomLeftPort) ports.push(createPort("bottom-left-port", PORT_POSITIONS.BOTTOM_LEFT, "Square", 14, PortConstraints.OutConnect | PortConstraints.Draw));
-  if (config.bottomRightPort) ports.push(createPort("bottom-right-port", PORT_POSITIONS.BOTTOM_RIGHT, "Square", 14, PortConstraints.OutConnect | PortConstraints.Draw));
+  if (config.leftPort) ports.push(createPort("left-port", PORT_POSITIONS.LEFT, "Circle", 20, PortConstraints.InConnect));
   return ports;
 }
 
 // Single source of truth for category fallbacks (used only if registry lacks config)
 const DEFAULT_PORT_CONFIG_BY_CATEGORY: Record<NodeCategories, PortConfiguration> = {
-  'ai-agent': { leftPort: true, rightPort: true, bottomLeftPort: true, bottomRightPort: true },
   'condition': { leftPort: true, rightTopPort: true, rightBottomPort: true },
   'trigger': { rightPort: true },
-  'tool': { topPort: true },
   'action': { leftPort: true, rightPort: true },
   'sticky': { leftPort: true, rightPort: true },
 };
@@ -100,9 +94,6 @@ export const getPortOffset = (direction: NodePortDirection): number => {
     'right': PORT_POSITIONS.RIGHT.y,
     'right-top': PORT_POSITIONS.RIGHT_TOP.y,
     'right-bottom': PORT_POSITIONS.RIGHT_BOTTOM.y,
-    'bottom-left': PORT_POSITIONS.BOTTOM_LEFT.x,
-    'bottom-middle': PORT_POSITIONS.BOTTOM_MIDDLE.x,
-    'bottom-right': PORT_POSITIONS.BOTTOM_RIGHT.x,
   };
   return offsetMap[direction] ?? 0.5;
 };
@@ -114,7 +105,7 @@ export function prepareUserHandlePortData(node: NodeModel): void {
     const pointPort = port as PointPortModel;
     if (pointPort?.offset) {
       const { x, y } = pointPort.offset as Point;
-      // Right side
+
       if (x === PORT_POSITIONS.RIGHT.x && y === PORT_POSITIONS.RIGHT.y)
         return { direction: 'right', side: 'Right', offset: y } as any;
       if (x === PORT_POSITIONS.RIGHT_TOP.x && y === PORT_POSITIONS.RIGHT_TOP.y)
@@ -122,15 +113,7 @@ export function prepareUserHandlePortData(node: NodeModel): void {
       if (x === PORT_POSITIONS.RIGHT_BOTTOM.x && y === PORT_POSITIONS.RIGHT_BOTTOM.y)
         return { direction: 'right-bottom', side: 'Right', offset: y } as any;
 
-      // Bottom side
-      if (x === PORT_POSITIONS.BOTTOM_LEFT.x && y === PORT_POSITIONS.BOTTOM_LEFT.y)
-        return { direction: 'bottom-left', side: 'Bottom', offset: x } as any;
-      if (x === PORT_POSITIONS.BOTTOM_MIDDLE.x && y === PORT_POSITIONS.BOTTOM_MIDDLE.y)
-        return { direction: 'bottom-middle', side: 'Bottom', offset: x } as any;
-      if (x === PORT_POSITIONS.BOTTOM_RIGHT.x && y === PORT_POSITIONS.BOTTOM_RIGHT.y)
-        return { direction: 'bottom-right', side: 'Bottom', offset: x } as any;
-
-      // Dynamic: if port lies on right edge (x ~ 1), treat as right with custom offset
+      // For switch case dynamic ports: if port lies on right edge (x ~ 1), treat as right with custom offset
       if (Math.abs(x - 1) < 0.0001) {
         return { direction: 'right', side: 'Right', offset: y } as any;
       }
@@ -167,17 +150,9 @@ export function prepareUserHandlePortData(node: NodeModel): void {
  * Determines whether we should render the add-node userhandle for a given port on a node.
  * Rules:
  * - If a completed connector already exists from the node using that port, hide the handle
- * - EXCEPTION: For AI Agent nodes, on the 'bottom-right-port' allow multiple tool connections,
- *   so we always show the handle for that specific port
  */
 export function shouldShowUserHandleForPort(node: any, portId: string, diagramInstance: any): boolean {
   if (!node || !portId || !diagramInstance) return true;
-
-  const nodeConfig = getNodeConfig(node);
-  // Exception: AI Agent bottom-right port supports multiple connections
-  if (nodeConfig && isAiAgentNode(nodeConfig) && portId === 'bottom-right-port') {
-    return true;
-  }
 
   const connectors: ConnectorModel[] = Array.isArray(diagramInstance.connectors)
     ? (diagramInstance.connectors as any)

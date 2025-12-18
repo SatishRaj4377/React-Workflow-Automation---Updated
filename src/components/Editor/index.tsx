@@ -1,7 +1,7 @@
 import './Editor.css';
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useBlocker } from 'react-router';
-import { DiagramTools, NodeModel, PortConstraints, ConnectorModel } from '@syncfusion/ej2-react-diagrams';
+import { DiagramTools, NodeModel, PortConstraints, ConnectorModel, DiagramComponent } from '@syncfusion/ej2-react-diagrams';
 import EditorHeader from '../Header/EditorHeader';
 import DiagramEditor from '../DiagramEditor';
 import Toolbar from '../Toolbar';
@@ -12,8 +12,8 @@ import { useTheme } from '../../contexts/ThemeContext';
 import ConfirmationDialog from '../ConfirmationDialog';
 import { ProjectData, NodeConfig, NodeTemplate, DiagramSettings, StickyNotePosition, ToolbarAction, ExecutionContext, NodeToolbarAction, PaletteFilterContext, WorkflowData } from '../../types';
 import WorkflowProjectService from '../../services/WorkflowProjectService';
-import { generateOptimizedThumbnail, getDefaultDiagramSettings, getNodeConfig, getNodePortById, isAiAgentNode, findAiAgentBottomConnectedNodes, getAiAgentBottomNodePosition, handleEditorKeyDown, refreshNodeTemplate, setGlobalNodeToolbarHandler, applyStaggerMetadata, resetExecutionStates, diagramHasChatTrigger } from '../../utilities';
-import { extractChatPromptSuggestions, extractChatBannerText, isEditingTextElement, determinePaletteFilterContext, handleAddStickyNote as handleAddStickyNoteUtil, addNodeToDiagram, addNodeFromPort, insertNodeBetweenSelectedConnector, handleAutoAlign as handleAutoAlignUtil } from '../../utilities/editorUtils';
+import { generateOptimizedThumbnail, getDefaultDiagramSettings, getNodePortById, handleEditorKeyDown, refreshNodeTemplate, setGlobalNodeToolbarHandler, applyStaggerMetadata, resetExecutionStates, diagramHasChatTrigger } from '../../utilities';
+import { extractChatPromptSuggestions, extractChatBannerText, isEditingTextElement, handleAddStickyNote as handleAddStickyNoteUtil, addNodeToDiagram, addNodeFromPort, insertNodeBetweenSelectedConnector } from '../../utilities/editorUtils';
 import { WorkflowExecutionService } from '../../execution/WorkflowExecutionService';
 import { ChatPopup } from '../ChatPopup';
 import { MessageComponent } from '@syncfusion/ej2-react-notifications';
@@ -81,8 +81,8 @@ const Editor: React.FC<EditorProps> = ({project, onSaveProject, onBackToHome, })
 
   // Current project name for editing in header
   const [projectName, setProjectName] = useState(project.name);
-  // Diagram reference from DiagramEditor component
-  const [diagramRef, setDiagramRef] = useState<any>(null);
+  // Ref to the Syncfusion Diagram instance exposed by DiagramEditor
+  const [diagramRef, setDiagramRef] = useState<DiagramComponent | null>(null);
   // Pan tool active flag for UI indicator
   const [isPanActive, setIsPanActive] = useState(false);
   // Dirty flag for unsaved changes detection
@@ -150,7 +150,7 @@ const Editor: React.FC<EditorProps> = ({project, onSaveProject, onBackToHome, })
         const diagramString = diagramRef.saveDiagram();
 
         // Generate thumbnail with current diagram output
-        const thumbnailBase64 = await generateOptimizedThumbnail(diagramRef.id);
+        const thumbnailBase64 = await generateOptimizedThumbnail((diagramRef as any).id);
 
         const updatedProject: ProjectData = {
           ...project,
@@ -204,7 +204,7 @@ const Editor: React.FC<EditorProps> = ({project, onSaveProject, onBackToHome, })
   };
 
   // Import project data and load diagram
-  const handleImport = (importedProject: any) => {
+  const handleImport = (importedProject: ProjectData) => {
     try {
       // Validate the imported data structure
       if (!importedProject || typeof importedProject !== 'object') {
@@ -219,14 +219,15 @@ const Editor: React.FC<EditorProps> = ({project, onSaveProject, onBackToHome, })
       // Load the diagram if available
       if (diagramRef && importedProject.workflowData?.diagramString) {
         diagramRef.loadDiagram(importedProject.workflowData.diagramString);
+        setIsWorkflowLocked(!!importedProject.workflowData?.locked);
       }
 
       // Update parent component with imported project
-      const updatedProject = {
+      const updatedProject: ProjectData = {
         ...importedProject,
         id: project.id, // Keep current project ID to replace current project
         isBookmarked: false,
-        lastModified: now.toISOString(),
+        lastModified: now,
         workflowData: {
           ...importedProject.workflowData,
           metadata: {
@@ -298,7 +299,7 @@ const Editor: React.FC<EditorProps> = ({project, onSaveProject, onBackToHome, })
     
     // Update the node's addInfo and node's template
     if (diagramRef) {
-      const node = diagramRef.getObject(nodeId);
+      const node = diagramRef.getObject(nodeId) as any;
       if (node) {
         node.addInfo = { ...node.addInfo, nodeConfig: config };
         // Rebuild the node HTML and reattach toolbar handlers via global handler
@@ -337,18 +338,7 @@ const Editor: React.FC<EditorProps> = ({project, onSaveProject, onBackToHome, })
       setSelectedPortConnection({ nodeId: node?.id as string, portId });
       setUserhandleAddNodeSelectionMode(true);
       setNodeConfigPanelOpen(false);
-
-      // Determine palette filter context based on port and node type
-      try {
-        const cfg = getNodeConfig(node);
-        const isAgent = cfg ? isAiAgentNode(cfg) : false;
-        const isBottomPort = (portId || '').toLowerCase().startsWith('bottom');
-        const context = determinePaletteFilterContext(isAgent, isBottomPort);
-        setPaletteFilterContext({ mode: context as any });
-      } catch {
-        setPaletteFilterContext({ mode: 'port-core-flow' });
-      }
-
+      setPaletteFilterContext({ mode: 'port-core-flow' });
       setNodePaletteSidebarOpen(true);
     } else {
       // Port not connectable - reset modes
@@ -368,7 +358,6 @@ const Editor: React.FC<EditorProps> = ({project, onSaveProject, onBackToHome, })
           setSelectedPortConnection(null);
           setNodePaletteSidebarOpen(false);
         },
-        repositionTargets: repositionAiAgentTargets,
       });
     } else if (isConnectorInsertSelectionMode) {
       insertNodeBetweenSelectedConnector(diagramRef, selectedConnectorForInsertion, nodeTemplate, {
@@ -385,25 +374,6 @@ const Editor: React.FC<EditorProps> = ({project, onSaveProject, onBackToHome, })
   const resetConnectorInsertMode = () => {
     setConnectorInsertSelectionMode(false);
     setSelectedConnectorForInsertion(null);
-  };
-
-  // Reposition AI Agent bottom targets to keep centered and spaced
-  const repositionAiAgentTargets = (agent: NodeModel) => {
-    if (!diagramRef || !agent) return;
-    
-    // Get all nodes connected to bottom ports
-    const targets: NodeModel[] = findAiAgentBottomConnectedNodes(agent, diagramRef);
-    if (targets.length === 0) return;
-
-    // Position each target node
-    targets.forEach((target: NodeModel, _: number) => {
-      // Place this target relative to all other targets
-      const position = getAiAgentBottomNodePosition(agent, 'bottom-port', diagramRef, target);
-      target.offsetX = position.offsetX;
-      target.offsetY = position.offsetY;
-    });
-
-    diagramRef.dataBind();
   };
 
   // ========================================================================
@@ -434,7 +404,7 @@ const Editor: React.FC<EditorProps> = ({project, onSaveProject, onBackToHome, })
         handleCancelExecution();
         break;
       case 'autoAlign':
-        handleAutoAlignWrapper();
+        handleAutoAlign();
         break;
       case 'fitToPage':
         diagramRef?.fitToPage({
@@ -552,11 +522,9 @@ const Editor: React.FC<EditorProps> = ({project, onSaveProject, onBackToHome, })
     });
   };
 
-  // Auto-align all nodes in diagram and fix AI Agent bottom targets spacing
-  const handleAutoAlignWrapper = () => {
-    handleAutoAlignUtil(diagramRef, {
-      repositionAgentTargets: repositionAiAgentTargets,
-    });
+  // Auto-align all nodes in diagram
+  const handleAutoAlign = () => {
+    diagramRef.doLayout();
   };
 
   // ========================================================================
@@ -567,7 +535,7 @@ const Editor: React.FC<EditorProps> = ({project, onSaveProject, onBackToHome, })
   useEffect(() => {
     if (selectedNodeId && diagramRef) {
       // Get node from diagram
-      const node = diagramRef.getObject(selectedNodeId);
+      const node = diagramRef.getObject(selectedNodeId) as any;
       if (node && node.addInfo && node.addInfo.nodeConfig) {
         setSelectedNodeConfig(node.addInfo.nodeConfig);
         setNodePaletteSidebarOpen(false);
@@ -719,12 +687,16 @@ const Editor: React.FC<EditorProps> = ({project, onSaveProject, onBackToHome, })
 
   // Auto-start workflow on chat prompt if Chat trigger exists
   useEffect(() => {
-    const handleChatPromptEvent = (e: Event) => {
-      const ce = e as CustomEvent<{ text?: string; at?: string }>;
-      const text = (ce.detail?.text || '').trim();
+    // Custom Event: wf:chat:prompt
+    // Purpose: Fired by ChatPopup when a user submits a prompt. This listener forwards
+    // the prompt to the Chat trigger (if present) and starts execution, or simply
+    // re-emits the message so any listeners can react.
+    const handleChatPromptEvent = (event: Event) => {
+      const customEvent = event as CustomEvent<{ text?: string; at?: string }>;
+      const text = (customEvent.detail?.text || '').trim();
       if (!text) return; // ignore empty after trim
 
-      const promptPayload = { text, at: ce.detail?.at || new Date().toISOString() };
+      const promptPayload = { text, at: customEvent.detail?.at || new Date().toISOString() };
 
       // Send the prompt to the waiting Chat trigger (used once it's ready)
       const dispatchPromptToWaitingChatTrigger = () => {
@@ -772,9 +744,10 @@ const Editor: React.FC<EditorProps> = ({project, onSaveProject, onBackToHome, })
 
   // Listen for trigger waiting/resume/clear events for banner
   useEffect(() => {
-    const onWaiting = (e: Event) => {
-      const ce = e as CustomEvent<{ type?: string }>;
-      setWaitingTrigger({ active: true, type: ce.detail?.type });
+    // Custom Events for trigger state banner
+    const onWaiting = (event: Event) => {
+      const customEvent = event as CustomEvent<{ type?: string }>;
+      setWaitingTrigger({ active: true, type: customEvent.detail?.type });
     };
     const onResumed = () => setWaitingTrigger({ active: false });
     const onClear = () => setWaitingTrigger({ active: false });
@@ -795,17 +768,19 @@ const Editor: React.FC<EditorProps> = ({project, onSaveProject, onBackToHome, })
     // Ensure global Form popup host is mounted once
     try { ensureGlobalFormPopupHost(); } catch {}
 
-    const handler = () => setChatOpen(true);
-    window.addEventListener('wf:chat:open', handler);
+    // Custom Event: wf:chat:open — opens Chat popup on demand
+    const onOpenChat = () => setChatOpen(true);
+    window.addEventListener('wf:chat:open', onOpenChat);
 
-    return () => window.removeEventListener('wf:chat:open', handler);
+    return () => window.removeEventListener('wf:chat:open', onOpenChat);
   }, []);
 
   // Track workflow lock/unlock change
   useEffect(() => {
-    const onLockChanged = (e: any) => setIsWorkflowLocked(!!e?.detail?.locked);
-    window.addEventListener('workflow-lock-changed', onLockChanged as any);
-    return () => window.removeEventListener('workflow-lock-changed', onLockChanged as any);
+    // Custom Event: workflow-lock-changed
+    const onLockChanged = (event: Event) => setIsWorkflowLocked(!!(event as CustomEvent<{ locked?: boolean }>).detail?.locked);
+    window.addEventListener('workflow-lock-changed', onLockChanged as EventListener);
+    return () => window.removeEventListener('workflow-lock-changed', onLockChanged as EventListener);
   }, []);
 
   // ========================================================================
@@ -876,7 +851,7 @@ const Editor: React.FC<EditorProps> = ({project, onSaveProject, onBackToHome, })
             onAddStickyNote={handleAddStickyNoteWrapper}
             onUserhandleAddNodeClick={handleUserhandleAddNodeClick}
             onConnectorUserhandleAddNodeClick={(connector) => {
-              setSelectedConnectorForInsertion(connector as any);
+              setSelectedConnectorForInsertion(connector);
               setConnectorInsertSelectionMode(true);
               setNodeConfigPanelOpen(false);
               setPaletteFilterContext({ mode: 'connector-insert' });
@@ -891,7 +866,7 @@ const Editor: React.FC<EditorProps> = ({project, onSaveProject, onBackToHome, })
               setNodePaletteSidebarOpen(true);
             }}
             onNodeAddedFirstTime={() => setShowInitialAddButton(false)}
-            onAutoAlignNodes={handleAutoAlignWrapper}
+            onAutoAlignNodes={handleAutoAlign}
             onCanvasClick={() => {
               setUserhandleAddNodeSelectionMode(false)
               resetConnectorInsertMode();

@@ -110,6 +110,10 @@ const EditorHeader: React.FC<EditorHeaderProps> = ({
   };
   // PROJECT SETTINGS HANDLERS - END
 
+  // Derived flags for UI state
+  const isSnappingEnabled = !!(diagramSettings?.snapping && (diagramSettings.snapping.enableSnapToObjects || diagramSettings.snapping.enableSnapToGrid));
+  const isOverviewEnabled = !!diagramSettings?.showOverview;
+
   return (
     <AppBarComponent id="workflow-appbar">
       <div className="appbar-left">
@@ -260,55 +264,67 @@ const EditorHeader: React.FC<EditorHeaderProps> = ({
                   />
                 </div>
               </div>
-              {diagramSettings.snapping && (!!diagramSettings.snapping.enableSnapToObjects || !!diagramSettings.snapping.enableSnapToGrid) && (
-                <div className="settings-subgroup">
-                  <div className="settings-sub-row" title='Align nodes to nearby shapes using smart guides.'>
-                    <p className="settings-label">Snap to objects</p>
-                    <div className="settings-control">
-                      <CheckBoxComponent
-                        checked={!!diagramSettings.snapping.enableSnapToObjects}
-                        change={(e) => handleSettingsChange('snapping', { ...diagramSettings.snapping, enableSnapToObjects: e.checked })}
-                      />
-                    </div>
-                  </div>
-                  <div className="settings-sub-row" title='Snap elements to the nearest grid intersection.'>
-                    <p className="settings-label">Snap to grid</p>
-                    <div className="settings-control">
-                      <CheckBoxComponent
-                        checked={!!diagramSettings.snapping.enableSnapToGrid}
-                        change={(e) => handleSettingsChange('snapping', { ...diagramSettings.snapping, enableSnapToGrid: e.checked })}
-                      />
-                    </div>
+              <div className={`settings-subgroup ${isSnappingEnabled ? '' : 'is-disabled'}`}>
+                <div className="settings-sub-row" title='Align nodes to nearby shapes using smart guides.'>
+                  <p className="settings-label">Snap to objects</p>
+                  <div className="settings-control">
+                    <CheckBoxComponent
+                      checked={!!diagramSettings.snapping?.enableSnapToObjects}
+                      disabled={!isSnappingEnabled}
+                      change={(e) => handleSettingsChange('snapping', { ...(diagramSettings.snapping || {}), enableSnapToObjects: e.checked })}
+                    />
                   </div>
                 </div>
-              )}
+                <div className="settings-sub-row" title='Snap elements to the nearest grid intersection.'>
+                  <p className="settings-label">Snap to grid</p>
+                  <div className="settings-control">
+                    <CheckBoxComponent
+                      checked={!!diagramSettings.snapping?.enableSnapToGrid}
+                      disabled={!isSnappingEnabled}
+                      change={(e) => handleSettingsChange('snapping', { ...(diagramSettings.snapping || {}), enableSnapToGrid: e.checked })}
+                    />
+                  </div>
+                </div>
+              </div>
             </div>
 
             {/* Group: Overview (+ conditional sub) */}
             <div className="settings-group">
-              <div className="settings-row" title='Display a mini map for quick navigation across large diagrams.'>
+              <div className="settings-row" title='Show a minimap for quick navigation, visible only when scrolling or zooming.'>
                 <p className="settings-title">Show Overview Panel</p>
                 <div className="settings-control">
-                  <SwitchComponent
+                <SwitchComponent
                     checked={diagramSettings.showOverview}
-                    change={(args) => handleSettingsChange('showOverview', args.checked)}
+                    change={(args) => {
+                      if (!args.checked) {
+                        // When overview is turned off, also uncheck the sub-setting
+                        if (onDiagramSettingsChange) {
+                          onDiagramSettingsChange({
+                            ...diagramSettings,
+                            showOverview: false,
+                            showOverviewAlways: false,
+                          });
+                        }
+                      } else {
+                        handleSettingsChange('showOverview', true);
+                      }
+                    }}
                     cssClass="settings-switch"
                   />
                 </div>
               </div>
-              {diagramSettings.showOverview && (
-                <div className="settings-subgroup">
-                  <div className="settings-sub-row" title='Keep the overview panel visible at all times.'>
-                    <p className="settings-label">Show overview panel always</p>
-                    <div className="settings-control">
-                      <CheckBoxComponent
-                        checked={!!diagramSettings.showOverviewAlways}
-                        change={(e) => handleSettingsChange('showOverviewAlways', e.checked)}
-                      />
-                    </div>
+              <div className={`settings-subgroup ${isOverviewEnabled ? '' : 'is-disabled'}`}>
+                <div className="settings-sub-row" title='Keep the overview panel visible at all times.'>
+                  <p className="settings-label">Show overview panel always</p>
+                  <div className="settings-control">
+                    <CheckBoxComponent
+                      checked={!!diagramSettings.showOverviewAlways}
+                      disabled={!isOverviewEnabled}
+                      change={(e) => handleSettingsChange('showOverviewAlways', e.checked)}
+                    />
                   </div>
                 </div>
-              )}
+              </div>
             </div>
           </div>
         </div>

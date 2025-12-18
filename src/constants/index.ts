@@ -47,10 +47,6 @@ export const NODE_DIMENSIONS = {
     WIDTH: 80,
     HEIGHT: 80
   },
-  AI_AGENT: {
-    WIDTH: 160,
-    HEIGHT: 80
-  },
   STICKY_NOTE: {
     WIDTH: 200,
     HEIGHT: 120,
@@ -62,7 +58,6 @@ export const NODE_DIMENSIONS = {
 export const PORT_POSITIONS = {
     TOP: { x: 0.5, y: 0 },
     LEFT: { x: -0.04, y: 0.5 }, // Slight left offset to improve connector link visibility
-    AI_AGENT_LEFT: { x: -0.02, y: 0.5 }, // Slight left offset to improve connector link visibility
     RIGHT: { x: 1, y: 0.5 },
     RIGHT_TOP: { x: 1, y: 0.3 },
     RIGHT_BOTTOM: { x: 1, y: 0.7 },

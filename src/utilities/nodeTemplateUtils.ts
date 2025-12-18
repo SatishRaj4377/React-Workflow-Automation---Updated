@@ -1,7 +1,7 @@
 import { DiagramComponent, NodeModel } from '@syncfusion/ej2-react-diagrams';
 import { NodeConfig, NodeToolbarAction } from '../types';
 import { getNodePortConfiguration } from './portUtils';
-import { isAiAgentNode, isSwitchNode, isLoopNode } from './nodeUtils';
+import { isSwitchNode, isLoopNode } from './nodeUtils';
 import { IconRegistry } from '../assets/icons';
 
 // Global handler used when a local callback isn't provided
@@ -17,14 +17,12 @@ export function buildNodeHtml(node: NodeModel): string {
   if (!nodeConfig) return `<div class="node-template-container"><div class="node-template" data-node-id="${node.id}">Invalid Node</div></div>`;
 
   const portConfig = getNodePortConfiguration(nodeConfig);
-  const isAgent = isAiAgentNode(nodeConfig);
   const isSwitch = isSwitchNode(nodeConfig);
   const isLoop = isLoopNode(nodeConfig);
   const dynamicCaseOffsets: number[] = addInfo?.dynamicCaseOffsets || [];
   const iconKey: any = (nodeConfig as any).icon;
   const iconSrc: string | undefined = iconKey ? (IconRegistry as any)[iconKey] : undefined;
 
-  const topPort = portConfig.topPort ? '<div class="node-port-top"></div>' : '';
   const leftPort = portConfig.leftPort ? '<div class="node-port-left"></div>' : '';
   const rightPort = portConfig.rightPort && !isSwitch ? '<div class="node-port-right"></div>' : '';
 
@@ -59,15 +57,11 @@ export function buildNodeHtml(node: NodeModel): string {
     ].join('')
     : '';
 
-  const bottomLeft = portConfig.bottomLeftPort ? "<div class=\"node-port-bottom-left\"><span class='agent-node-port-label'>AI Model</span></div>" : '';
-  const bottomRight = portConfig.bottomRightPort ? "<div class=\"node-port-bottom-right\"><span class='agent-node-port-label'>Tool</span></div>" : '';
-
   const isRightPortOnly = portConfig.rightPort && !portConfig.leftPort;
-  const mainClass = `node-template ${isRightPortOnly ? 'trigger-node' : (portConfig.topPort ? 'tool-node' : '')}`;
+  const mainClass = `node-template ${isRightPortOnly ? 'trigger-node' : ''}`;
 
   const iconHtml = iconSrc ? `<img src=\"${iconSrc}\" draggable=\"false\" />` : '';
-  const agentNameHtml = isAgent ? `<span class='ai-agent-name-bar' title='${nodeConfig.displayName || ''}'>${nodeConfig.displayName || ''}</span>` : '';
-  const nameBarHtml = !isAgent && nodeConfig.displayName ? `<div class=\"node-name-bar\">${nodeConfig.displayName}</div>` : '';
+  const nameBarHtml = nodeConfig.displayName ? `<div class=\"node-name-bar\">${nodeConfig.displayName}</div>` : '';
 
   return `
   <div class=\"node-template-container\">
@@ -77,10 +71,9 @@ export function buildNodeHtml(node: NodeModel): string {
         <button id=\"btn-edit-${node.id}\" title=\"Edit\" class=\"node-toolbar-btn e-control e-btn e-lib\"><span class=\"e-btn-icon e-icons e-edit\"></span></button>
         <button id=\"btn-del-${node.id}\" title=\"Delete\" class=\"node-toolbar-btn e-control e-btn e-lib\"><span class=\"e-btn-icon e-icons e-trash\"></span></button>
       </div>
-      ${topPort}${leftPort}${rightPort}${switchRightPorts}${ifRightPorts}${bottomLeft}${bottomRight}
-      <div class=\"node-img-content\" ${isAgent ? "style=\\\"gap:1.2rem\\\"" : ''}>
+      ${leftPort}${rightPort}${switchRightPorts}${ifRightPorts}
+      <div class=\"node-img-content\">
         ${iconHtml}
-        ${agentNameHtml}
       </div>
     </div>
     ${nameBarHtml}

@@ -36,7 +36,6 @@ export class ClientSideNodeExecutor extends BaseNodeExecutor {
       case 'condition':
         return executeConditionCategory(node, nodeConfig, context);
       case 'action':
-      case 'tool':
         return executeActionCategory(node, nodeConfig, context);
       default:
         return Promise.reject({ success: false, error: `Unsupported node category: ${nodeConfig.category}` });

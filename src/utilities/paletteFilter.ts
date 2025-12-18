@@ -4,16 +4,10 @@ import { PaletteCategory, PaletteCategoryLabel, PaletteFilterContext, PaletteFil
 export function getAllowedSectionsByMode(mode: PaletteFilterMode): Set<PaletteCategoryLabel> {
   switch (mode) {
     case 'initial-add':
-      // From any node port (except agent bottom) → only Core & Flow
       return new Set<PaletteCategoryLabel>(['Triggers']);
     case 'port-core-flow':
-      // From any node port (except agent bottom) → only Core & Flow
       return new Set<PaletteCategoryLabel>(['Core', 'Flow']);
-    case 'port-agent-bottom':
-      // From AI Agent bottom ports → allow only Tools
-      return new Set<PaletteCategoryLabel>(['Tools']);
     case 'connector-insert':
-      // Inserting into an existing connector → only Core & Flow nodes
       return new Set<PaletteCategoryLabel>(['Core', 'Flow']);
     case 'default':
     default:

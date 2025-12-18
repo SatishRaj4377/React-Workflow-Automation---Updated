@@ -102,30 +102,6 @@
   margin-bottom: 1.5rem;
 }
 
-.config-section .show-chat-button {
-  position: relative;
-  width: 7.6rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 1rem;
-  transition: none;
-}
-
-.config-section .msg-svg-icon {
-  position: absolute;
-  left: 18px;
-  width: 40px;
-  height: 38px;
-  margin-left: -14px;
-  margin-right: -3px;
-  margin-top: 2px;
-}
-.config-section .show-chat-btn-text {
-  position: absolute;
-  left: 42px;
-}
-
 .config-label {
   display: block;
   font-weight: 500;
@@ -211,7 +187,7 @@
 }
 
 .add-field-btn {
-  padding: 0.5rem 0.8rem;
+  padding: 0.4rem 0.8rem;
   border-radius: var(--border-radius);
   display: flex;
   align-items: center;

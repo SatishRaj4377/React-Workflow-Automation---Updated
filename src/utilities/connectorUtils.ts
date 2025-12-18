@@ -16,37 +16,6 @@ export const createConnector = (
   targetPortID: targetPortId
 });
 
-export const isConnectorBetweenAgentAndTool = (connector: any, diagramInstance: any): boolean => {
-  // Find source and target nodes by their IDs
-  const sourceNode = diagramInstance.nodes.find((node: any) => node.id === connector.sourceID);
-  const targetNode = diagramInstance.nodes.find((node: any) => node.id === connector.targetID);
-
-  // If either node is not found, return false (though this shouldn't happen for valid connectors)
-  if (!sourceNode || !targetNode) return false;
-
-  // Assuming nodes have a 'category' property matching the NodeCategories type
-  const sourceCategory = getNodeConfig(sourceNode)?.category;
-  const targetCategory = getNodeConfig(targetNode)?.category;
-
-  // Check if one end is ai-agent and the other is tool (order doesn't matter)
-  return sourceCategory === "ai-agent" && targetCategory === 'tool';
-};
-
-// More specific: only AI Agent bottom port to Tool node connectors
-export const isAgentBottomToToolConnector = (connector: any, diagramInstance: any): boolean => {
-  if (!connector) return false;
-  const sourceNode = diagramInstance.nodes.find((node: any) => node.id === connector.sourceID);
-  const targetNode = diagramInstance.nodes.find((node: any) => node.id === connector.targetID);
-  if (!sourceNode || !targetNode) return false;
-
-  const sourceCategory = getNodeConfig(sourceNode)?.category;
-  const targetCategory = getNodeConfig(targetNode)?.category;
-  const sourcePortId: string = connector.sourcePortID || '';
-
-  // Block only when source is AI Agent using a bottom* port and target is a Tool
-  return sourceCategory === 'ai-agent' && targetCategory === 'tool' && sourcePortId.startsWith('bottom');
-};
-
 // Computes an approximate connector length in pixels using available points/wrapper size
 export const computeConnectorLength = (connector: any): number => {
   try {
@@ -93,38 +62,20 @@ const GRAY_COLOR = '#9193a2ff';
 const CONNECTOR_STROKEDASH_ARR = '5 3';
 
 // Apply visual style to connector after successful connection
-export const finalizeConnectorStyle = (
-  connector: ConnectorModel,
-  diagramRef: any
-): void => {
-  const isBetweenAIAgentAndTool = isConnectorBetweenAgentAndTool(connector, diagramRef);
-
-  if (!isBetweenAIAgentAndTool) {
-    // Update to solid style when fully connected
-    setTimeout(() => {
-      connector.style = {
-        ...connector.style,
-        strokeDashArray: '',
-        opacity: 1,
-      };
-      connector.constraints =
-        (ConnectorConstraints.Default | ConnectorConstraints.ReadOnly) &
-        ~ConnectorConstraints.DragSourceEnd &
-        ~ConnectorConstraints.DragTargetEnd &
-        ~ConnectorConstraints.Drag;
-    });
-  } else {
-    // Hide target decorator for AI Agent to Tool connections
-    connector.targetDecorator = {
-      shape: 'None',
-      ...connector.targetDecorator,
-      style: {
-        ...connector.targetDecorator?.style,
-        fill: GRAY_COLOR,
-        strokeColor: GRAY_COLOR,
-      },
+export const finalizeConnectorStyle = (connector: ConnectorModel): void => {
+  // Update to solid style when fully connected
+  setTimeout(() => {
+    connector.style = {
+      ...connector.style,
+      strokeDashArray: '',
+      opacity: 1,
     };
-  }
+    connector.constraints =
+      (ConnectorConstraints.Default | ConnectorConstraints.ReadOnly) &
+      ~ConnectorConstraints.DragSourceEnd &
+      ~ConnectorConstraints.DragTargetEnd &
+      ~ConnectorConstraints.Drag;
+  });
 };
 
 // Apply disconnected style to incomplete connectors

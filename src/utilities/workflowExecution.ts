@@ -44,10 +44,7 @@ export function findConnectedNodes(diagram: any, nodeId: string) {
 
   // Pick main-flow ports for this node
   let allowedSourcePorts: string[];
-  if (type === 'ai agent') {
-    // AI Agent main flow → right-port only; exclude bottom-* (tools)
-    allowedSourcePorts = ['right-port'];
-  } else if (type === 'if condition' || type === 'switch case' || type === 'loop') {
+  if (type === 'if condition' || type === 'switch case' || type === 'loop') {
     allowedSourcePorts = ['right-top-port', 'right-bottom-port'];
   } else {
     allowedSourcePorts = ['right-port'];
@@ -55,12 +52,7 @@ export function findConnectedNodes(diagram: any, nodeId: string) {
 
   const targets = (diagram.connectors || [])
     .filter((conn: any) => conn.sourceID === nodeId && allowedSourcePorts.includes(conn.sourcePortID))
-    .map((conn: any) => diagram.getObject(conn.targetID))
-    // never traverse into tool nodes
-    .filter((node: any) => {
-      const nodeConfig = getNodeConfig(node)
-      return nodeConfig?.category !== 'tool';
-    });
+    .map((conn: any) => diagram.getObject(conn.targetID));
 
   return targets;
 }

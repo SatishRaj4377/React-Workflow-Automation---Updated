@@ -26,82 +26,11 @@ export const createNodeFromTemplate = (
     offsetX: position?.x,
     offsetY: position?.y,
     addInfo: { nodeConfig },
-    // Use the new registry-driven API (falls back to category mapping if needed)
     ports: getPortsForNode(nodeConfig)
   };
 
   initializeNodeDimensions(node);
   return node;
-};
-
-// Gets all nodes connected to an AI Agent's bottom ports
-export const findAiAgentBottomConnectedNodes = (agent: NodeModel, diagramRef: any): NodeModel[] => {
-  if (!diagramRef || !agent) return [];
-  const connectors: any[] = (diagramRef.connectors && Array.isArray(diagramRef.connectors)) ? diagramRef.connectors : [];
-  const connectedNodes: NodeModel[] = [];
-
-  connectors.forEach((c: any) => {
-    if (!c || !c.sourceID || c.sourceID !== agent.id) return;
-    const portId = (c.sourcePortID || c.sourcePort) ? String(c.sourcePortID || c.sourcePort) : undefined;
-    if (portId?.toLowerCase().startsWith('bottom')) {
-      const targetNode = diagramRef.getObject(c.targetID) as NodeModel | undefined;
-      if (targetNode) connectedNodes.push(targetNode);
-    }
-  });
-
-  return connectedNodes;
-};
-
-// Get the position for a node that will be connected to an AI Agent's bottom port
-export const getAiAgentBottomNodePosition = (
-  agent: NodeModel,
-  portId: string,
-  diagramRef: any,
-  nodeToPlace?: NodeModel
-): { offsetX: number, offsetY: number } => {
-  // If not a bottom port, use default positioning
-  if (!portId.toLowerCase().startsWith('bottom')) {
-    const {
-      offsetX = 80,
-      offsetY = 80,
-      width = 150,
-      height = 100
-    } = agent;
-    return {
-      offsetX: offsetX + width * 2,
-      offsetY
-    };
-  }
-
-  // Find all nodes already connected to bottom ports (including the one we're placing if provided)
-  const bottomNodes = findAiAgentBottomConnectedNodes(agent, diagramRef);
-  if (nodeToPlace && !bottomNodes.includes(nodeToPlace)) {
-    bottomNodes.push(nodeToPlace);
-  }
-
-  const nodeCount = bottomNodes.length;
-  if (nodeCount === 0) return { offsetX: 0, offsetY: 0 };
-
-  // Calculate spacing based on node dimensions
-  const agentWidth = (agent.width && agent.width > 0) ? agent.width : (getNodeDimensions(agent).WIDTH || 150);
-  const nodeWidth = nodeToPlace?.width || 150;
-  const horizontalPadding = 50;
-  const horizontalSpacing = Math.max(nodeWidth + horizontalPadding, nodeWidth * 0.9 + 40);
-
-  // Center the row of nodes under the agent
-  const totalRowWidth = (nodeCount - 1) * horizontalSpacing;
-  const agentCenterX = (typeof agent.offsetX === 'number') ? agent.offsetX : 0;
-  const rowStartX = agentCenterX - totalRowWidth / 2;
-
-  // Place vertically below with proper gap
-  const agentY = (typeof agent.offsetY === 'number') ? agent.offsetY : 0;
-  const verticalGap = ((typeof agent.height === 'number' ? agent.height : 100) / 2) + (nodeToPlace?.height || 100) / 2 + 40;
-
-  // Return position for the new node based on how many bottom nodes exist
-  return {
-    offsetX: rowStartX + (bottomNodes.indexOf(nodeToPlace || bottomNodes[bottomNodes.length - 1])) * horizontalSpacing,
-    offsetY: agentY + verticalGap
-  };
 };
 
 // Calculates the optimal position for a new node based on the source node and port.
@@ -123,16 +52,6 @@ export const calculateNewNodePosition = (sourceNode: NodeModel, portId: string):
 
   // Handle specific port IDs for fine-tuned positioning
   switch (portId) {
-    // // --- AI Agent Ports ---
-    // case 'bottom-left-port':
-    //   offsetX = baseX - (nodeWidth + padding / 2);
-    //   offsetY = baseY + verticalSpacing;
-    //   break;
-    // case 'bottom-right-port':
-    //   offsetX = baseX + (nodeWidth + padding / 2);
-    //   offsetY = baseY + verticalSpacing;
-    //   break;
-
     // --- IF Condition Ports ---
     case 'right-top-port':
       offsetX = baseX + horizontalSpacing;
@@ -176,7 +95,6 @@ export const getNodeDimensions = (node: NodeModel): NodeDimensions => {
 
   if (!config) return NODE_DIMENSIONS.DEFAULT;
 
-  if (isAiAgentNode(config)) return NODE_DIMENSIONS.AI_AGENT;
   if (isStickyNote(config)) return NODE_DIMENSIONS.STICKY_NOTE;
 
   return NODE_DIMENSIONS.DEFAULT;
@@ -266,10 +184,6 @@ export const isActionNode = (nodeConfig: NodeConfig): boolean =>
 export const isConditionNode = (nodeConfig: NodeConfig): boolean =>
   nodeConfig?.category === 'condition';
 
-// Check if a node is an AI agent type
-export const isAiAgentNode = (nodeConfig: NodeConfig): boolean =>
-  nodeConfig?.category === 'ai-agent';
-
 // Check if a node is a sticky note
 export const isStickyNote = (nodeConfig: NodeConfig): boolean =>
   nodeConfig?.category === 'sticky';
@@ -277,10 +191,6 @@ export const isStickyNote = (nodeConfig: NodeConfig): boolean =>
 // Check if node is an if/switch condition type
 export const isIfConditionNode = (nodeConfig: NodeConfig): boolean =>
    nodeConfig?.category === 'condition' && nodeConfig.nodeType === 'If Condition';
-
-// Check if node is a tool type
-export const isToolNode = (nodeConfig: NodeConfig): boolean =>
-  nodeConfig?.category === 'tool';
 
 // Check if node is a switch case node
 export const isSwitchNode = (nodeConfig: NodeConfig): boolean =>

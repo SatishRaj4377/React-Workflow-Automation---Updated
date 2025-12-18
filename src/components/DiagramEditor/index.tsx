@@ -1,7 +1,7 @@
-import React, { useRef, useEffect, useState } from 'react';
-import { DiagramComponent, SnapSettingsModel, OverviewComponent, GridlinesModel, Inject, ConnectorModel, NodeModel, DiagramTools, UndoRedo, DataBinding, DiagramContextMenu, Keys, KeyModifiers, CommandManagerModel, UserHandleModel, UserHandleEventsArgs, Snapping, DiagramConstraints, DiagramModel, Connector, ComplexHierarchicalTree, LayoutModel } from '@syncfusion/ej2-react-diagrams';
+import React, { useRef, useEffect, useState, useMemo } from 'react';
+import { DiagramComponent, SnapSettingsModel, OverviewComponent, GridlinesModel, Inject, ConnectorModel, NodeModel, DiagramTools, UndoRedo, DataBinding, DiagramContextMenu, Keys, KeyModifiers, CommandManagerModel, UserHandleModel, UserHandleEventsArgs, Snapping, DiagramConstraints, DiagramModel, Connector, ComplexHierarchicalTree, LayoutModel, IScrollChangeEventArgs, IMouseEventArgs, ICollectionChangeEventArgs, IElementDrawEventArgs, IDoubleClickEventArgs, ISelectionChangeEventArgs } from '@syncfusion/ej2-react-diagrams';
 import { DiagramSettings, NodeConfig } from '../../types';
-import { getConnectorCornerRadius, getConnectorType, getFirstSelectedNode, getGridColor, getGridType, getNodeConfig,  getSnapConstraints, initializeNodeDimensions, isConnectorBetweenAgentAndTool, isNodeOutOfViewport, isStickyNote, prepareUserHandlePortData, updateNodeConstraints, isAgentBottomToToolConnector, computeConnectorLength, adjustUserHandlesForConnectorLength, attachNodeTemplateEvents, buildUserHandles, generatePortBasedUserHandles, updateNodePosition, updateNodeTemplates, updateNodeSelection, updateResizeHandleVisibility } from '../../utilities';
+import { getConnectorCornerRadius, getConnectorType, getFirstSelectedNode, getGridColor, getGridType, getNodeConfig,  getSnapConstraints, initializeNodeDimensions, isNodeOutOfViewport, isStickyNote, prepareUserHandlePortData, updateNodeConstraints, computeConnectorLength, adjustUserHandlesForConnectorLength, attachNodeTemplateEvents, buildUserHandles, generatePortBasedUserHandles, updateNodePosition, updateNodeTemplates, updateNodeSelection, updateResizeHandleVisibility } from '../../utilities';
 import { finalizeConnectorStyle, applyDisconnectedConnectorStyle, removeDisconnectedConnectorIfInvalid, applyConnectorHoverStyle, resetConnectorToDefaultStyle } from '../../utilities/connectorUtils';
 import { handleStickyNoteEditMode, initializeStickyNote } from '../../utilities/stickyNoteUtils';
 import { filterContextMenuItems, getAvailableContextMenuIds } from '../../utilities/contextMenuUtils';
@@ -33,7 +33,6 @@ interface DiagramEditorProps {
 
 const GRAY_COLOR = '#9193a2ff';
 const HOVER_COLOR = 'var(--accent-color)';
-const CONNECTOR_STROKEDASH_ARR = '5 3';
 
 // ============================================================================
 // Main Component
@@ -93,10 +92,10 @@ const DiagramEditor: React.FC<DiagramEditorProps> = ({
   // ========================================================================
 
   // Base user handles; specific selection-based adjustments are applied in an effect
-  const baseUserHandles: UserHandleModel[] = buildUserHandles();
+  const baseUserHandles: UserHandleModel[] = useMemo(() => buildUserHandles(), []);
 
   // Context menu configuration
-  const contextMenuSettings = {
+  const contextMenuSettings = useMemo(() => ({
     show: true,
     showCustomMenuOnly: true,
     items: [
@@ -108,20 +107,20 @@ const DiagramEditor: React.FC<DiagramEditorProps> = ({
       { text: 'Lock Workflow', id: 'lockWorkflow', iconCss: 'e-icons e-lock' },
       { text: 'Select All', id: 'selectAll', iconCss: 'e-icons e-select-all' },
     ],
-  };
+  }), []);
 
   // Layout configuration for hierarchical arrangement
-  const layoutSettings: LayoutModel = {
+  const layoutSettings: LayoutModel = useMemo(() => ({
     type: 'ComplexHierarchicalTree',
     orientation: 'LeftToRight',
     horizontalAlignment: 'Center',
     verticalAlignment: 'Center',
     horizontalSpacing: 80,
     verticalSpacing: 80,
-  };
+  }), []);
 
   // Grid and snap configuration based on diagram settings
-  const snapSettings: SnapSettingsModel = {
+  const snapSettings: SnapSettingsModel = useMemo(() => ({
     constraints: getSnapConstraints(diagramSettings),
     gridType: getGridType(diagramSettings),
     horizontalGridlines: { lineColor: getGridColor(diagramSettings) } as GridlinesModel,
@@ -129,7 +128,7 @@ const DiagramEditor: React.FC<DiagramEditorProps> = ({
     snapObjectDistance: 5,
     snapLineColor: 'var(--secondary-color)',
     snapAngle: 5,
-  };
+  }), [diagramSettings]);
 
   // ========================================================================
   // Node and Connector Defaults
@@ -148,11 +147,6 @@ const DiagramEditor: React.FC<DiagramEditorProps> = ({
       updateNodeTemplates(node, diagramRef);
       prepareUserHandlePortData(node);
       updateNodePosition(node, diagramRef);
-
-      // Exclude tool nodes from auto-layout
-      if (nodeConfig.category === 'tool') {
-        node.excludeFromLayout = true;
-      }
     }
 
     return node;
@@ -164,13 +158,10 @@ const DiagramEditor: React.FC<DiagramEditorProps> = ({
       return obj;
     }
 
-    const isConnectedToAIAgentAndTool = isConnectorBetweenAgentAndTool(obj, diagramRef.current);
-
     obj.type = getConnectorType(diagramSettings);
     obj.cornerRadius = getConnectorCornerRadius(diagramSettings);
     obj.style = {
       strokeColor: GRAY_COLOR,
-      strokeDashArray: !isConnectedToAIAgentAndTool ? '' : CONNECTOR_STROKEDASH_ARR,
       strokeWidth: 2,
     };
     obj.targetDecorator = {
@@ -194,22 +185,18 @@ const DiagramEditor: React.FC<DiagramEditorProps> = ({
 
     let handles: UserHandleModel[] = buildUserHandles();
     const firstNode = getFirstSelectedNode(diagram);
-    const selConnector = (diagram as any)?.selectedItems?.connectors?.[0];
+    const selectedConnector = diagram.selectedItems?.connectors?.[0];
 
-    if (selConnector && isAgentBottomToToolConnector(selConnector, diagram)) {
-      handles = handles.filter((h) => h.name !== 'insertNodeOnConnector');
-    }
-
-    if (firstNode && (diagram as any).selectedItems.nodes.length === 1) {
+    if (firstNode && diagram.selectedItems.nodes.length === 1) {
       const portHandles = generatePortBasedUserHandles(firstNode, diagram);
       handles.push(...portHandles);
-    } else if (selConnector) {
-      const length = computeConnectorLength(selConnector);
+    } else if (selectedConnector) {
+      const length = computeConnectorLength(selectedConnector);
       handles = adjustUserHandlesForConnectorLength(handles, length);
     }
 
-    (diagram as any).selectedItems.userHandles = handles;
-    (diagram as any).dataBind();
+    diagram.selectedItems.userHandles = handles;
+    diagram.dataBind();
   };
 
   // Handle user interactions with custom handles (add node, delete connector, etc.)
@@ -254,9 +241,9 @@ const DiagramEditor: React.FC<DiagramEditorProps> = ({
   // ========================================================================
 
   // Handle scroll/zoom changes - update overview and zoom display
-  const handleScrollChange = (args: any) => {
+  const handleScrollChange = (_args: IScrollChangeEventArgs) => {
     if (diagramRef.current) {
-      const currentZoom = Math.round((diagramRef.current as any)?.scrollSettings.currentZoom * 100);
+      const currentZoom = Math.round(diagramRef.current.scrollSettings.currentZoom * 100);
 
       // Update zoom percentage if changed
       if (currentZoom !== previousZoom) {
@@ -294,20 +281,18 @@ const DiagramEditor: React.FC<DiagramEditorProps> = ({
   // ========================================================================
 
   // Apply hover styling to connectors
-  const handleMouseEnter = (args: any) => {
-    const connector = args?.actualObject;
+  const handleMouseEnter = (args: IMouseEventArgs) => {
+    const connector = (args as any)?.actualObject;
     if (connector && connector instanceof Connector) {
       applyConnectorHoverStyle(connector, HOVER_COLOR);
     }
   };
 
   // Reset connector styling on mouse leave
-  const handleMouseLeave = (args: any) => {
-    const connector = args?.element;
+  const handleMouseLeave = (args: IMouseEventArgs) => {
+    const connector = (args as any)?.element;
     if (connector && connector instanceof Connector) {
-      setTimeout(() => {
-        resetConnectorToDefaultStyle(connector);
-      });
+      resetConnectorToDefaultStyle(connector);
     }
   };
 
@@ -316,9 +301,9 @@ const DiagramEditor: React.FC<DiagramEditorProps> = ({
   // ========================================================================
 
   // Handle addition of nodes and connectors to the diagram
-  const handleCollectionChange = (args: any) => {
-    if (args.type === 'Addition' && args.element) {
-      const element = args.element;
+  const handleCollectionChange = (args: ICollectionChangeEventArgs) => {
+    if (args.type === 'Addition' && (args as any).element) {
+      const element = (args as any).element as any;
 
       // Node addition
       if (!element.sourceID) {
@@ -327,7 +312,7 @@ const DiagramEditor: React.FC<DiagramEditorProps> = ({
 
       // Connector draw completion and Addition
       if (element.sourceID && element.targetID) {
-        finalizeConnectorStyle(element, diagramRef.current);
+        finalizeConnectorStyle(element);
       } else if (element.sourceID === '' || element.targetID === '') {
         // Remove incomplete connector
         setTimeout(() => {
@@ -377,17 +362,17 @@ const DiagramEditor: React.FC<DiagramEditorProps> = ({
   };
 
   // Handle drawing event - remove incomplete connectors
-  const handleElementDraw = (args: any) => {
-    if (!args || args.objectType !== 'Connector') return;
+  const handleElementDraw = (args: IElementDrawEventArgs) => {
+    if (!args || (args as any).objectType !== 'Connector') return;
 
-    const connector = args.source;
+    const connector = (args as any).source as any;
     if (!connector || typeof connector !== 'object') return;
 
     // Apply dotted styling for disconnected connector
     applyDisconnectedConnectorStyle(connector);
 
     // Remove connector if still disconnected after draw complete
-    if (args.state === 'Completed') {
+    if ((args as any).state === 'Completed') {
       removeDisconnectedConnectorIfInvalid(connector, diagramRef);
       // Refresh handles since connection state may have changed after draw completes
       setTimeout(() => refreshSelectedUserHandles());
@@ -399,8 +384,8 @@ const DiagramEditor: React.FC<DiagramEditorProps> = ({
   // ========================================================================
 
   // Handle diagram canvas clicks
-  const handleClick = (args: any) => {
-    const clickedElement = args.element;
+  const handleClick = (args: IMouseEventArgs) => {
+    const clickedElement = (args as any).element;
 
     // Reset drawing tool if userhandle mode active
     if (isUserHandleAddNodeEnabled && diagramRef?.current) {
@@ -414,17 +399,18 @@ const DiagramEditor: React.FC<DiagramEditorProps> = ({
     }
 
     // Canvas click - close palettes
-    if (onCanvasClick && args.actualObject === undefined) {
+    if (onCanvasClick && (args as any).actualObject === undefined) {
       onCanvasClick();
     }
   };
 
   // Handle double-click on nodes
-  const handleDoubleClick = (args: any) => {
-    if (!args?.source?.id) return;
+  const handleDoubleClick = (args: IDoubleClickEventArgs) => {
+    const src: any = (args as any)?.source;
+    if (!src?.id) return;
 
-    const nodeId = args.source.id;
-    const node = args.source;
+    const nodeId = src.id as string;
+    const node = src as NodeModel;
     const nodeConfig = (node.addInfo as any)?.nodeConfig as NodeConfig | undefined;
 
     if (!nodeConfig) return;
@@ -444,18 +430,18 @@ const DiagramEditor: React.FC<DiagramEditorProps> = ({
   };
 
   // Handle selection change - update selected nodes for custom selection style
- const handleSelectionChange = (args: any) => {
+ const handleSelectionChange = (args: ISelectionChangeEventArgs) => {
     // Prevent any selection when workflow is locked
     if (isWorkflowLocked) {
-      try { args.cancel = true; } catch {}
+      args.cancel = true as any;
       if (diagramRef.current) {
         diagramRef.current.clearSelection();
       }
       return;
     }
 
-    if (args?.newValue && args.newValue.length > 0) {
-      const selectedIds = args.newValue.map((item: any) => item.id);
+    if ((args as any)?.newValue && (args as any).newValue.length > 0) {
+      const selectedIds = (args as any).newValue.map((item: any) => item.id as string);
       setSelectedNodeIds(selectedIds);
 
       updateNodeSelection(selectedIds);
@@ -475,11 +461,11 @@ const DiagramEditor: React.FC<DiagramEditorProps> = ({
     const diagram = diagramRef.current!;
     const firstNode = getFirstSelectedNode(diagram);
 
-    const selNodes = diagram?.selectedItems?.nodes ?? [];
-    const selConns = diagram?.selectedItems?.connectors ?? [];
+    const selectedNodes = diagram?.selectedItems?.nodes ?? [];
+    const selectedConnectors = diagram?.selectedItems?.connectors ?? [];
 
-    const hasNode = selNodes.length > 0;
-    const hasConnector = selConns.length > 0;
+    const hasNode = selectedNodes.length > 0;
+    const hasConnector = selectedConnectors.length > 0;
     const nodeIsStickyNote = firstNode && isStickyNote((firstNode?.addInfo as any)?.nodeConfig);
 
     const availableIds = getAvailableContextMenuIds(args.items);
@@ -489,9 +475,9 @@ const DiagramEditor: React.FC<DiagramEditorProps> = ({
 
   // Handle context menu item selection
   const handleContextMenuClick = (args: any) => {
-    if (!args?.item?.id) return;
+    if (!(args as any)?.item?.id) return;
 
-    const itemId = args.item.id as string;
+    const itemId = (args as any).item.id as string;
     const diagram = diagramRef.current;
 
     if (!diagram) return;
@@ -521,8 +507,8 @@ const DiagramEditor: React.FC<DiagramEditorProps> = ({
       case 'addSticky': {
         if (onAddStickyNote) {
           const position =
-            args.event && typeof args.event === 'object'
-              ? { x: args.event.pageX, y: args.event.pageY, fromMouse: true }
+            (args as any).event && typeof (args as any).event === 'object'
+              ? { x: (args as any).event.pageX, y: (args as any).event.pageY, fromMouse: true }
               : { x: 300, y: 300, fromMouse: false };
           onAddStickyNote(position);
         }
@@ -563,9 +549,11 @@ const DiagramEditor: React.FC<DiagramEditorProps> = ({
     }
 
     // Broadcast lock state for other UI
-    try {
-      window.dispatchEvent(new CustomEvent('workflow-lock-changed', { detail: { locked } }));
-    } catch {}
+    if (typeof window !== 'undefined') {
+      try {
+        window.dispatchEvent(new CustomEvent('workflow-lock-changed', { detail: { locked } }));
+      } catch {}
+    }
   };
 
   // Subtle nudge to draw attention to the lock button when user interacts
@@ -633,8 +621,8 @@ const DiagramEditor: React.FC<DiagramEditorProps> = ({
   // Cleanup timeouts on unmount
   useEffect(() => {
     return () => {
-      if (overviewTimeoutRef.current) clearTimeout(overviewTimeoutRef.current as any);
-      if (zoomTimeoutRef.current) clearTimeout(zoomTimeoutRef.current as any);
+      if (overviewTimeoutRef.current) clearTimeout(overviewTimeoutRef.current);
+      if (zoomTimeoutRef.current) clearTimeout(zoomTimeoutRef.current);
     };
   }, []);
 
@@ -670,8 +658,9 @@ const DiagramEditor: React.FC<DiagramEditorProps> = ({
 
   // Load saved diagram on mount
   useEffect(() => {
-    if (diagramRef.current && project?.workflowData?.diagramString) {
-      diagramRef.current.loadDiagram(project.workflowData.diagramString);
+    const diagram = diagramRef.current;
+    if (diagram && project?.workflowData?.diagramString) {
+      diagram.loadDiagram(project.workflowData.diagramString);
 
       if (!hasFirstNodeAdded) {
         setHasFirstNodeAdded(true);
@@ -680,8 +669,8 @@ const DiagramEditor: React.FC<DiagramEditorProps> = ({
 
       // Reset and fit template diagrams
       if ((project as any).isTemplate) {
-        (diagramRef.current as any).reset();
-        (diagramRef.current as any).fitToPage();
+        (diagram as any).reset();
+        (diagram as any).fitToPage();
       }
 
       // Apply lock state if present in project data
@@ -691,11 +680,13 @@ const DiagramEditor: React.FC<DiagramEditorProps> = ({
           setIsWorkflowLocked(true);
           applyWorkflowLock(true);
         } else {
-          try { window.dispatchEvent(new CustomEvent('workflow-lock-changed', { detail: { locked: false } })); } catch {}
+          if (typeof window !== 'undefined') {
+            try { window.dispatchEvent(new CustomEvent('workflow-lock-changed', { detail: { locked: false } })); } catch {}
+          }
         }
       } catch {}
     }
-  }, [project?.workflowData?.diagramString]);
+  }, [diagramRef.current, project?.workflowData?.diagramString]);
 
   // Update diagram when settings change
   useEffect(() => {
@@ -751,7 +742,7 @@ const DiagramEditor: React.FC<DiagramEditorProps> = ({
       {/* Initial add button overlay */}
       {showInitialAddButton && (
         <div className="center-initial-plus-btn">
-          <button className="initial-plus-btn-actual" type="button" onClick={onInitialAddClick}>
+          <button className="initial-plus-btn-actual" type="button" onClick={onInitialAddClick} aria-label="Add a trigger">
             <span className="initial-plus-icon">+</span>
           </button>
           <div className="initial-plus-label">Add a trigger</div>

@@ -105,13 +105,10 @@ export interface StickyNotePosition {
 }
 
 export interface PortConfiguration {
-  topPort?: boolean;
   leftPort?: boolean;
   rightPort?: boolean;
   rightTopPort?: boolean;
   rightBottomPort?: boolean;
-  bottomLeftPort?: boolean;
-  bottomRightPort?: boolean;
 }
 
 export interface ToastMessage {

@@ -1,4 +1,4 @@
-import { getNodeConfig, calculateNewNodePosition, createConnector, createNodeFromTemplate, isAiAgentNode, findAiAgentBottomConnectedNodes, getAiAgentBottomNodePosition, isAgentBottomToToolConnector, getNodeCenter, findFirstPortId, adjustNodesSpacing, applyStaggerMetadata, getNextStaggeredOffset } from './index';
+import { getNodeConfig, calculateNewNodePosition, createConnector, createNodeFromTemplate, getNodeCenter, findFirstPortId, adjustNodesSpacing, applyStaggerMetadata, getNextStaggeredOffset } from './index';
 import { NodeTemplate, StickyNotePosition } from '../types';
 import { DiagramTools, NodeModel } from '@syncfusion/ej2-react-diagrams';
 
@@ -45,11 +45,6 @@ export function isEditingTextElement(active: Element | null): boolean {
   const tag = (el.tagName || '').toLowerCase();
   if (tag === 'input' || tag === 'textarea') return true;
   return el.getAttribute('contenteditable') === 'true';
-}
-
-// Determine palette filter context based on port and node type
-export function determinePaletteFilterContext(isAgent: boolean, isBottomPort: boolean): string {
-  return isAgent && isBottomPort ? 'port-agent-bottom' : 'port-core-flow';
 }
 
 // Validate sticky note position object
@@ -128,7 +123,7 @@ export function addNodeFromPort(
   diagramRef: any,
   selectedPortConnection: { nodeId: string; portId: string },
   nodeTemplate: NodeTemplate,
-  callbacks: { resetState: () => void; repositionTargets: (node: NodeModel) => void }
+  callbacks: { resetState: () => void; }
 ): void {
   if (!diagramRef || !selectedPortConnection) return;
 
@@ -143,20 +138,11 @@ export function addNodeFromPort(
   const connector = createConnector(
     selectedPortConnection.nodeId,
     newNode.id || '',
-    selectedPortConnection.portId,
-    nodeTemplate?.category === 'tool' ? 'top-port' : 'left-port'
+    selectedPortConnection.portId
   );
 
   diagramRef.add(newNode);
   diagramRef.add(connector);
-
-  // Reposition AI Agent bottom targets if adding from bottom port
-  try {
-    const srcCfg = getNodeConfig(sourceNode as NodeModel);
-    if (srcCfg && isAiAgentNode(srcCfg) && selectedPortConnection.portId.toLowerCase().startsWith('bottom')) {
-      callbacks.repositionTargets(sourceNode as NodeModel);
-    }
-  } catch (err) {}
 
   diagramRef.tool = DiagramTools.Default;
   callbacks.resetState();
@@ -175,15 +161,6 @@ export function insertNodeBetweenSelectedConnector(
   if (!diagramRef || !selectedConnectorForInsertion) return;
 
   const conn = selectedConnectorForInsertion as any;
-
-  // Restrict: do not allow inserting into AI Agent bottom* -> Tool connectors
-  try {
-    if (isAgentBottomToToolConnector(conn, diagramRef)) {
-      callbacks.resetConnectorMode();
-      callbacks.closePanel();
-      return;
-    }
-  } catch {}
 
   const sourceNode = diagramRef.getObject(conn.sourceID) as NodeModel | null;
   const targetNode = diagramRef.getObject(conn.targetID) as NodeModel | null;
@@ -229,32 +206,4 @@ export function insertNodeBetweenSelectedConnector(
   adjustNodesSpacing(sourceNode, targetNode, 250);
   callbacks.resetConnectorMode();
   callbacks.closePanel();
-}
-
-// Auto-align all nodes in diagram and fix AI Agent bottom targets spacing
-export function handleAutoAlign(
-  diagramRef: any,
-  callbacks: { repositionAgentTargets: (node: NodeModel) => void }
-): void {
-  if (!diagramRef) return;
-
-  diagramRef.doLayout();
-
-  // Reposition all AI Agent bottom targets to maintain spacing
-  const nodes: any[] = diagramRef.nodes && Array.isArray(diagramRef.nodes) ? diagramRef.nodes : [];
-  nodes.forEach((n: NodeModel) => {
-    try {
-      const cfg = getNodeConfig(n);
-      if (cfg && isAiAgentNode(cfg)) {
-        const bottomTargets = findAiAgentBottomConnectedNodes(n, diagramRef);
-        if (bottomTargets.length > 0) {
-          callbacks.repositionAgentTargets(n);
-        }
-      }
-    } catch (err) {}
-  });
-
-  diagramRef.dataBind();
-  diagramRef.reset();
-  diagramRef.fitToPage();
 }
