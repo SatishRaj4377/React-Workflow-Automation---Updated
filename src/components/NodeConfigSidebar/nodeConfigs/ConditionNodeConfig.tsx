@@ -4,8 +4,9 @@ import { ButtonComponent } from '@syncfusion/ej2-react-buttons';
 import { TextBoxComponent } from '@syncfusion/ej2-react-inputs';
 import { VariablePickerTextBox } from '../components/VariablePickerTextBox';
 import { ConditionComparator, ConditionJoiner, ConditionRow } from '../../../types';
-import { OP_OPTIONS, orderByPreferredGroup, usesRightOperand } from '../../../constants';
+import { OP_OPTIONS, orderByPreferredGroup } from '../../../constants';
 import { inferKindFromText, getPreferredOperatorGroup } from '../../../utilities/conditionUtils';
+import { UNARY_COMPARATORS } from '../../../constants';
 
 export interface ConditionNodeConfigProps {
   value?: ConditionRow[];
@@ -74,7 +75,7 @@ const ConditionNodeConfig: React.FC<ConditionNodeConfigProps> = ({
           const kind = inferKindFromText(row.left ?? '');
           const operatorOptions = getOperatorOptionsForRow(i);
           const showJoinerBelow = i < rows.length - 1;
-          const requiresRightOperand = usesRightOperand(row.comparator);
+          const requiresRightOperand = !UNARY_COMPARATORS.has(row.comparator as ConditionComparator);
 
           return (
             <React.Fragment key={i}>

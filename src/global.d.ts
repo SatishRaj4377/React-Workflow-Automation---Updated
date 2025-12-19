@@ -1,4 +1,3 @@
-
 // For image files
 declare module '*.jpg';
 declare module '*.jpeg';

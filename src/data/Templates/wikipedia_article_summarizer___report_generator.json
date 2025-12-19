@@ -1,5 +1,6 @@
 {
   "id": "project-1764746975048",
+  "order": "2",
   "name": "Wikipedia Article Summarizer & Report Generator",
   "description": "Template for fetching Wikipedia article summaries and generating a Word doc.",
   "lastModified": "2025-12-03T08:28:15.586Z",

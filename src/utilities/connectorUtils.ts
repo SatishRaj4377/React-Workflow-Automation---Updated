@@ -35,25 +35,25 @@ export const computeConnectorLength = (connector: any): number => {
 // Returns adjusted user handles (offset and size) for a given connector length
 export const adjustUserHandlesForConnectorLength = (
   userHandles: UserHandleModel[],
-  length: number
+  connectorLength: number
 ): UserHandleModel[] => {
   // desired pixel gap between handles (approx). Keep small and clamp.
-  const desiredGapPx = length < 100 ? 20 : 30;
-  let insertOffset = 0.4;
-  let deleteOffset = 0.6;
+  const desiredGapPx = connectorLength < 100 ? 20 : 30;
+  let insertHandleOffset = 0.4;
+  let deleteHandleOffset = 0.6;
 
-  if (isFinite(length) && length > 0) {
+  if (isFinite(connectorLength) && connectorLength > 0) {
     const maxFraction = 0.3; // don't push handles beyond reasonable bounds
-    const frac = Math.min(maxFraction, desiredGapPx / length);
+    const frac = Math.min(maxFraction, desiredGapPx / connectorLength);
     const mid = 0.5;
-    insertOffset = Math.max(0.1, mid - frac / 2);
-    deleteOffset = Math.min(0.9, mid + frac / 2);
+    insertHandleOffset = Math.max(0.1, mid - frac / 2);
+    deleteHandleOffset = Math.min(0.9, mid + frac / 2);
   }
 
-  return userHandles.map((h) => {
-    if (h.name === 'insertNodeOnConnector') return { ...h, offset: insertOffset, size: length < 100 ? 20 : h.size } as UserHandleModel;
-    if (h.name === 'deleteConnector') return { ...h, offset: deleteOffset, size: length < 100 ? 21 : h.size } as UserHandleModel;
-    return h;
+  return userHandles.map((handle) => {
+    if (handle.name === 'insertNodeOnConnector') return { ...handle, offset: insertHandleOffset, size: connectorLength < 100 ? 20 : handle.size } as UserHandleModel;
+    if (handle.name === 'deleteConnector') return { ...handle, offset: deleteHandleOffset, size: connectorLength < 100 ? 21 : handle.size } as UserHandleModel;
+    return handle;
   });
 };
 

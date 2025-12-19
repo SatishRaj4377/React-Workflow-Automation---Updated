@@ -1,5 +1,5 @@
 import { NodeModel } from "@syncfusion/ej2-react-diagrams";
-import { ConnectorType, GridStyle, NodeCategories, NodeStatus, NodeType, PaletteCategoryLabel, PaletteFilterMode, SnappingSettings, ToastType } from "./types";
+import { ConditionComparator, ConditionJoiner, ConnectorType, GridStyle, NodeCategories, NodeStatus, NodeType, OpKind, PaletteCategoryLabel, PaletteFilterMode, SnappingSettings, ToastType } from "./types";
 
 export interface NodeConfig {
   id: string;
@@ -166,8 +166,17 @@ export interface NodeExecutionResult {
   error?: string;
 }
 
-export interface ServerNodeConfig {
-  nodeType: string;
-  category: string;
-  endpoint: string;
+export interface OpOption {
+  group: OpKind;              // group header
+  text: string;               // display text
+  value: ConditionComparator; // canonical comparator
+  [key: string]: unknown;     // to satisfy Syncfusion field mapping signature
+}
+
+export interface ConditionRow {
+  left: string;                 // Variable or literal; supports {{ }} and bare "$." expressions
+  comparator: ConditionComparator;     // Operator picked from grouped list
+  right: string;                // Variable/literal; may be unused for unary ops
+  name?: string;                // For Switch Case: optional case name to show near the port
+  joiner?: ConditionJoiner;            // AND/OR from the second row onward (combines with previous)
 }

@@ -21,7 +21,7 @@ body, .e-control, .e-card{
   flex-direction: column;
 }
 
-/* Custom Theme Variables */
+/* Light Theme Variables */
 :root {
   --primary-color: #2563eb;
   --secondary-color: #1d4ed8;
@@ -103,7 +103,7 @@ body, .e-control, .e-card{
 
 }
 
-/* Dark theme */
+/* Dark theme Variables*/
 [data-theme="dark"] {
   --primary-color: #286fe4;
   --secondary-color: #3b82f6;
@@ -171,11 +171,6 @@ body, .e-control, .e-card{
   --toast-info-text: #dbeafe;
   --toast-info-icon-bg: #2563eb;
   --toast-info-icon-color: #dbeafe;
-}
-
-[data-theme="dark"] body {
-  background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
-  color: var(--text-primary);
 }
 
 /* Horizontal tag style */
@@ -282,7 +277,7 @@ a {
   border-radius: var(--border-radius) !important;
 }
 
-/* Selection Color Update */
+/* Text Selection Color Update */
 /* Default selection styles */
 input.e-input::selection,
 textarea.e-input::selection,
@@ -299,7 +294,6 @@ textarea.e-input::selection,
   background: var(--primary-color) !important;
   color: var(--surface-color) !important;
 }
-
 
 /* Chekbox Styling */
 .e-checkbox-wrapper .e-frame{

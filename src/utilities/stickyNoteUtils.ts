@@ -78,8 +78,6 @@ export const convertMarkdownToHtml = (markdown: string): string => {
     .replace(/\n/g, '<br>');
 };
 
-// --- Sticky Note Editor Functions (moved from stickyNoteEditorUtils) ---
-
 // Initialize sticky note node with styling and event handlers
 export const initializeStickyNote = (
   stickyNode: NodeModel,

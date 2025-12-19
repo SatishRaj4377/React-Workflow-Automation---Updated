@@ -97,10 +97,5 @@ export type ConditionComparator =
 
 export type ConditionValueKind = 'string' | 'number' | 'boolean' | 'date' | 'time' | 'array' | 'object';
 
-export interface ConditionRow {
-  left: string;                 // Variable or literal; supports {{ }} and bare "$." expressions
-  comparator: ConditionComparator;     // Operator picked from grouped list
-  right: string;                // Variable/literal; may be unused for unary ops
-  name?: string;                // For Switch Case: optional case name to show near the port
-  joiner?: ConditionJoiner;            // AND/OR from the second row onward (combines with previous)
-}
+// Condition operator dropdown typing
+export type OpKind = 'String' | 'Number' | 'Boolean' | 'Date' | 'Time' | 'Array' | 'Object';

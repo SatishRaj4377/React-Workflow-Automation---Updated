@@ -99,6 +99,7 @@ export function attachNodeTemplateEvents(node: NodeModel, onNodeToolbarAction?: 
   }, 0);
 }
 
+// Resets the updated html template again to the node
 export function refreshNodeTemplate(
   diagram: DiagramComponent | null,
   nodeId: string,

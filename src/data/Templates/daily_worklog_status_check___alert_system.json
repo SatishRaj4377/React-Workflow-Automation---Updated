@@ -1,5 +1,6 @@
 {
   "id": "project-1764760765462",
+  "order": "6",
   "name": "Daily Worklog Status Check & Alert System",
   "description": "Template for tracking worklogs and sending notifications.",
   "lastModified": "2025-12-03T11:28:21.465Z",

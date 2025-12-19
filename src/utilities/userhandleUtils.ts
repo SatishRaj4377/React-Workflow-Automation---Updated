@@ -100,8 +100,8 @@ export function refreshSelectedNodesUserHandles(diagram?: DiagramComponent | nul
     const portHandles = generatePortBasedUserHandles(firstNode, diagram);
     handles.push(...portHandles);
   } else if (selectedConnector) {
-    const length = computeConnectorLength(selectedConnector as any);
-    handles = adjustUserHandlesForConnectorLength(handles, length);
+    const connectorLength = computeConnectorLength(selectedConnector as any);
+    handles = adjustUserHandlesForConnectorLength(handles, connectorLength);
   }
 
   diagram.selectedItems.userHandles = handles;

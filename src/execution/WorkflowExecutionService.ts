@@ -412,10 +412,6 @@ export class WorkflowExecutionService {
 
   /**
    * Execute ONLY the selected node (no upstream/downstream traversal).
-   * - Intended for design-time "Execute step" to quickly see a node's output & context.
-   * - If inputs are missing, the node's executor shows toasts (as implemented already).
-   * - For AI Agent nodes, the executor itself will locate connected model/tools via ports,
-   *   as long as `context.diagram` is present.
    */
   public async executeSingleNode(nodeId: string): Promise<{ success: boolean; error?: string; output?: any }> {
     try {

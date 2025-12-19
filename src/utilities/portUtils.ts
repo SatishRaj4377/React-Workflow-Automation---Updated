@@ -17,6 +17,7 @@ export const findFirstPortId = (node: NodeModel, wantOut: boolean): string => {
   return match?.id || (wantOut ? 'right-port' : 'left-port');
 };
 
+// Node port creating factory
 export const createPort = (
   id: string,
   offset: { x: number; y: number },

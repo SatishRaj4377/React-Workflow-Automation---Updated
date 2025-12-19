@@ -669,49 +669,6 @@ const DiagramEditor: React.FC<DiagramEditorProps> = ({
     refreshSelectedNodesUserHandles(diagramRef.current!);
   }, [selectedNodeIds]);
 
-  // Handle space key press/release for robust pan toggle
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.code === 'Space' && !isPanning) {
-        // Ignore when typing in inputs/editors (reuse shared utility)
-        if (isEditingTextElement(document.activeElement)) return;
-
-        event.preventDefault();
-        if (diagramRef.current) {
-          setPreviousDiagramTool(diagramRef.current.tool);
-          diagramRef.current.tool = DiagramTools.ZoomPan;
-          setIsPanning(true);
-        }
-      }
-    };
-
-    const handleKeyUp = (event: KeyboardEvent) => {
-      if (event.code === 'Space' && isPanning) {
-        event.preventDefault();
-        if (diagramRef.current) {
-          diagramRef.current.tool = previousDiagramTool;
-          setIsPanning(false);
-        }
-      }
-    };
-
-    const handleWindowBlur = () => {
-      if (isPanning && diagramRef.current) {
-        diagramRef.current.tool = previousDiagramTool;
-        setIsPanning(false);
-      }
-    };
-
-    document.addEventListener('keydown', handleKeyDown);
-    document.addEventListener('keyup', handleKeyUp);
-    window.addEventListener('blur', handleWindowBlur);
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown);
-      document.removeEventListener('keyup', handleKeyUp);
-      window.removeEventListener('blur', handleWindowBlur);
-    };
-  }, [isPanning, previousDiagramTool]);
-
   // Load saved diagram on mount
   useEffect(() => {
     const diagram = diagramRef.current;
@@ -723,7 +680,7 @@ const DiagramEditor: React.FC<DiagramEditorProps> = ({
         onNodeAddedFirstTime?.();
       }
 
-      // Reset and fit template diagrams
+      // Reset and fit template project diagrams
       if ((project as any).isTemplate) {
         (diagram as any).reset();
         (diagram as any).fitToPage();
@@ -776,6 +733,72 @@ const DiagramEditor: React.FC<DiagramEditorProps> = ({
       setShowOverview(true);
     }
   }, [diagramSettings]);
+
+  // Handle space key press/release for robust pan toggle
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.code === 'Space' && !isPanning) {
+        // Ignore when typing in inputs/editors
+        if (isEditingTextElement(document.activeElement)) return;
+
+        event.preventDefault();
+        if (diagramRef.current) {
+          setPreviousDiagramTool(diagramRef.current.tool);
+          diagramRef.current.tool = DiagramTools.ZoomPan;
+          setIsPanning(true);
+        }
+      }
+    };
+
+    const handleKeyUp = (event: KeyboardEvent) => {
+      if (event.code === 'Space' && isPanning) {
+        event.preventDefault();
+        if (diagramRef.current) {
+          diagramRef.current.tool = previousDiagramTool;
+          setIsPanning(false);
+        }
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    document.addEventListener('keyup', handleKeyUp);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      document.removeEventListener('keyup', handleKeyUp);
+    };
+  }, [isPanning, previousDiagramTool]);
+
+  // Disable browser zoom (Ctrl + +/-) and route to diagram zoom instead
+  useEffect(() => {
+    const zoomStep = 0.1;
+
+    const zoomDiagram = (direction: 'ZoomIn' | 'ZoomOut') => {
+      const diagram = diagramRef.current;
+      if (!diagram) return;
+      try {
+        diagram.zoomTo({ type: direction as any, zoomFactor: zoomStep });
+      } catch {}
+    };
+
+    const handleCtrlKeyZoom = (e: KeyboardEvent) => {
+      if (!e.ctrlKey) return;
+      if (isEditingTextElement(document.activeElement)) return;
+
+      const key = e.key;
+      if (key === '+' || key === '=') {
+        e.preventDefault();
+        zoomDiagram('ZoomIn');
+      } else if (key === '-' || key === '_') {
+        e.preventDefault();
+        zoomDiagram('ZoomOut');
+      } 
+    };
+
+    window.addEventListener('keydown', handleCtrlKeyZoom);
+    return () => {
+      window.removeEventListener('keydown', handleCtrlKeyZoom);
+    };
+  }, []);
 
   // Pass diagram ref to parent
   useEffect(() => {

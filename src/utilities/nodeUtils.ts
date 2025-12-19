@@ -90,6 +90,7 @@ export const getNodeDisplayName = (node: NodeModel | null | undefined): string =
   return config?.displayName || 'Unnamed Node';
 };
 
+// Returns the node size based on type of ndoe
 export const getNodeDimensions = (node: NodeModel): NodeDimensions => {
   const config = getNodeConfig(node);
 
